@@ -1,1 +1,8 @@
-GTPEngine.h
+class GTPEngine
+{
+public:
+	GTPEngine(void);
+	~GTPEngine();
+
+	void parse();
+};

@@ -10,7 +10,7 @@ GoBoard::~GoBoard(void)
 
 }
 
-const int GoBoard::Size()
+const int GoBoard::Size() const
 {
 	return BoardSize;
 }

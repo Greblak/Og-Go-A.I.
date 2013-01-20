@@ -2,6 +2,7 @@
 #define __GOBLOCK_H__
 
 #include "GoPoint.h"
+#include <list>
 
 class GoBlock
 {

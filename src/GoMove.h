@@ -7,13 +7,12 @@
 class GoMove
 {
 public:
-	GoMove(void);
+	GoMove(int color, GoPoint* point, GoBlock* block);
 	virtual ~GoMove();
 
-private:
-	GoStoneColor Color;
-	GoPoint Point;
-	GoBlock* Block;
+	const int Color;
+	const GoPoint* Point;
+	const GoBlock* Block;
 };
 
 #endif //#ifndef __GOMOVE_H__

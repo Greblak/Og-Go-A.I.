@@ -15,12 +15,26 @@ Version 0.3 - Begin work on move desiding algorithms. Type yet undefined.
 
 
 ***/
-
+#include <iostream>
 #include "GTPEngine.h"
 #include "GoBoard.h"
+
+
 
 int main(int argc, char *argv[])
 {
 	GTPEngine gtp = GTPEngine();
-	gtp.parse();
+	while(true)
+	{
+		try
+		{
+			gtp.parse();	
+		}
+		catch( const char * str )
+		{
+			std::cerr<<"? Fatal exception raised: "<<str<<"\n\n"<<"Exiting...";
+			return 1;
+		}
+	}
+	
 }

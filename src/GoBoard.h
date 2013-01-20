@@ -4,9 +4,8 @@
 #include "GoPoint.h"
 #include "GoMove.h"
 #include "GoState.h"
+#include "Config.h"
 #include <list>
-
-const int BOARD_DEFAULT_SIZE = 19;
 
 class GoBoard
 {

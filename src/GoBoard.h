@@ -21,15 +21,17 @@ public:
 		static const int CurrentPlayer();
 		int NextPlayer() const;
 
-		int North(GoPoint p) const;
-		int South(GoPoint p) const;
-		int West(GoPoint p) const;
-		int East(GoPoint p) const;
+		const int North( GoPoint p) const;
+		const int South( GoPoint p) const;
+		const int West( GoPoint p) const;
+		const int East( GoPoint p) const;
+		const int Pos( GoPoint p) const;
 
 		bool IsSuicide(GoPoint p) const;
 		bool IsRealPoint(GoPoint p) const;
 
-		bool IsLegal(GoPoint p, int color) const;
+		inline bool IsLegal(){return true;}
+		bool IsLegal(const GoPoint& p, int color); 
 
 		const bool CapturedStones() const;
 		const std::list<GoPoint> GetCapturedStones() const;

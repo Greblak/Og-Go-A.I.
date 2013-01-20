@@ -12,7 +12,7 @@
 
 GTPEngine::GTPEngine(void)
 {
-	game = NULL;
+	game = new GoGame(BOARD_DEFAULT_SIZE);
 }
 
 GTPEngine::~GTPEngine()
@@ -41,7 +41,7 @@ void GTPEngine::parse()
 	}
 	else if(args[0] == "boardsize")
 	{
-		if(game != NULL)
+		if(game != NULL && game->Board->Size() != atoi(args[1].c_str()))
 			throw "Boardsize has already been set.";
 
 		int bsize;
@@ -69,7 +69,14 @@ void GTPEngine::parse()
 	}
 	else if(args[0] == "genmove")
 	{
+		
 		GoPoint pos = game->GenerateMove(ColorFromString(args[1]));
+		
+		std::stringstream ss;
+		ss <<"= " << ColumnIntToString(pos.x)<<RowIntToString(pos.y);
+		
+		Log::Out(ss.str());
+
 	}
 	else
 		throw "Unknown command";
@@ -111,4 +118,16 @@ const int GTPEngine::ColorFromString(std::string str) const
 		return B_WHITE;
 	else
 		throw "Error converting string to BoardColor";
+}
+
+const char GTPEngine::ColumnIntToString(int n) const 
+{
+	if(n>=GTP_OFFSET_I)
+		n++;
+	return n+GTP_OFFSET_UPPERCASE_A;
+}
+
+const int GTPEngine::RowIntToString(int n) const 
+{
+	return n+1;
 }

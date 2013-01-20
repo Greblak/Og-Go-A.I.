@@ -20,7 +20,7 @@ public:
 	const char ColumnIntToString(int n) const ;
 
 	const int RowStringToInt(std::string str) const ;
-	const char RowIntToString(int n) const ;
+	const int RowIntToString(int n) const ;
 
 	const int ColorFromString(std::string str) const;
 };

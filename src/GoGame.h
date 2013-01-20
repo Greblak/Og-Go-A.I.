@@ -11,7 +11,7 @@ public:
 
 	GoBoard* Board;
 
-	const GoPoint GenerateMove(int color);
+	GoPoint GenerateMove(int color);
 	void Play(int color, int x, int y);
 };
 

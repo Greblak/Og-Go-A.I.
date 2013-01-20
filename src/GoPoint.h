@@ -51,8 +51,9 @@ class GoPoint
 public:
 	GoPoint(void);
 	virtual ~GoPoint();
-
-
+	int x;
+	int y;
+	int color;
 private:
 
 };

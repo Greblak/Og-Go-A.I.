@@ -1,4 +1,7 @@
+#include <sstream>
+#include "Log.h"
 #include "GoGame.h"
+#include <cstdlib>
 
 GoGame::GoGame(int boardSize)
 {
@@ -15,7 +18,21 @@ void GoGame::Play(int color, int x, int y)
 	
 }
 
-const GoPoint GoGame::GenerateMove(int color)
+GoPoint GoGame::GenerateMove(int color)
 {
-	return GoPoint();
+	GoPoint point = GoPoint();
+	point.color = color;
+	point.x = rand()%19;
+	point.y = rand()%19;
+	bool t = Board->IsLegal();
+
+	while(!Board->IsLegal(point, point.color))
+	{
+		point.x = rand()%19;
+		point.y = rand()%19;
+	}
+
+	Board->Play(point);
+
+	return point;
 }

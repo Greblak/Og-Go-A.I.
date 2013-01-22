@@ -41,6 +41,8 @@ public:
 
 		const GoMove* Play(GoPoint p, int color);
 		const GoMove* Play(GoPoint p);
+
+		void DisplayCurrentState() const;
 private:
 	int BoardSize;
 	GoState State;

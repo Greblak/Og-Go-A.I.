@@ -1,6 +1,7 @@
 #include "Log.h"
 #include "GoBoard.h"
 #include "GoPoint.h"
+#include "GTPEngine.h"
 
 GoBoard::GoBoard(int size)
 {
@@ -21,14 +22,16 @@ const int GoBoard::Size() const
 
 const GoMove* GoBoard::Play(GoPoint p, int color)
 {
+	State.stones[Pos(p)] = color;
+	std::cout << "? Played "<<p.color<<" at " <<Pos(p)<<"\n";
+	std::cout << State.stones[Pos(p)]<<"\n";
 	GoMove* m = new GoMove(color, &p ,0);
 	return m;
 }
 
 const GoMove* GoBoard::Play(GoPoint p)
 {
-	State.stones[Pos(p)] = p.color;
-	return Play(p, CurrentPlayer());
+	return Play(p,p.color);
 }
 
 const int GoBoard::CurrentPlayer()
@@ -91,4 +94,35 @@ int GoBoard::West(const GoPoint p) const
 int GoBoard::East(const GoPoint p) const
 {
 	return Pos(p)+POS_WE;
+}
+
+void GoBoard::DisplayCurrentState() const
+{
+	std::cout<<"# Showing current gamestate\n\n";
+	for(int i = 0; i<BOARD_MAX_SIZE;i++)
+	{
+		std::cout<<"\n "<<(char)(GTPEngine::ColumnIntToString(i));
+		for(int j = 0; j<BOARD_MAX_SIZE;j++)
+		{
+			if(State.stones[BOARD_MAX_SIZE*i+j] == NONE)
+				std::cout<< " -";
+			else if(State.stones[BOARD_MAX_SIZE*i+j] == B_BLACK)
+				std::cout<< " O";
+			else if(State.stones[BOARD_MAX_SIZE*i+j] == B_WHITE)
+				std::cout<< " X";
+			else
+				throw "Wrong int domain in board representation";
+		}
+
+
+
+	}
+	std::cout<<"\n   ";
+	int l = 0;
+	for(int k = 1; k<=BOARD_MAX_SIZE; k++)
+	{
+		l = k>9 ? k-11 : k-1;
+		std::cout<<GTPEngine::RowIntToString(l)<<" ";
+	}
+	std::cout<<"\n";
 }

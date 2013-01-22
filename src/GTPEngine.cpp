@@ -37,7 +37,7 @@ void GTPEngine::parse()
 		Log::Out("= "+PROGRAM_GTP_VERSION);
 	else if(args[0] == "list_commands")
 	{
-		Log::Out("= name\nversion\nprotocol_version\nlist_commands\nboardsize\ngenmove\nplay\nclear_board");
+		Log::Out("= name\nversion\nprotocol_version\nlist_commands\nboardsize\ngenmove\nplay\nclear_board\nshowboard");
 	}
 	else if(args[0] == "boardsize")
 	{
@@ -77,6 +77,10 @@ void GTPEngine::parse()
 		
 		Log::Out(ss.str());
 
+	}
+	else if(args[0] == "showboard")
+	{
+		game->Board->DisplayCurrentState();
 	}
 	else
 		throw "Unknown command";
@@ -120,14 +124,14 @@ const int GTPEngine::ColorFromString(std::string str) const
 		throw "Error converting string to BoardColor";
 }
 
-const char GTPEngine::ColumnIntToString(int n) const 
+const char GTPEngine::ColumnIntToString(int n) 
 {
 	if(n>=GTP_OFFSET_I)
 		n++;
 	return n+GTP_OFFSET_UPPERCASE_A;
 }
 
-const int GTPEngine::RowIntToString(int n) const 
+const int GTPEngine::RowIntToString(int n) 
 {
 	return ++n; //To account for 0-indexed to 1-indexed 
 }

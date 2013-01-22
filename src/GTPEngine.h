@@ -19,10 +19,10 @@ public:
 	void parse();
 
 	const int ColumnStringToInt(std::string str) const ;
-	const char ColumnIntToString(int n) const ;
+	static const char ColumnIntToString(int n) ;
 
 	const int RowStringToInt(std::string str) const ;
-	const int RowIntToString(int n) const ;
+	static const int RowIntToString(int n)  ;
 
 	const int ColorFromString(std::string str) const;
 };

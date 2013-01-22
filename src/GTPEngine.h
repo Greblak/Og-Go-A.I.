@@ -1,3 +1,5 @@
+#ifndef __GTPENGINE_H__
+#define __GTPENGINE_H__
 #include <string>
 #include "GoGame.h"
 
@@ -24,3 +26,5 @@ public:
 
 	const int ColorFromString(std::string str) const;
 };
+
+#endif //#ifndef __GTPENGINE_H__

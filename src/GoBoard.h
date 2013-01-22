@@ -21,22 +21,22 @@ public:
 		static const int CurrentPlayer();
 		int NextPlayer() const;
 
-		const int North( GoPoint p) const;
-		const int South( GoPoint p) const;
-		const int West( GoPoint p) const;
-		const int East( GoPoint p) const;
-		const int Pos( GoPoint p) const;
+		int North(const GoPoint p) const;
+		int South(const GoPoint p) const;
+		int West(const GoPoint p) const;
+		int East(const GoPoint p) const;
+		int Pos(const GoPoint p) const;
 
-		bool IsSuicide(GoPoint p) const;
-		bool IsRealPoint(GoPoint p) const;
+		bool IsSuicide(const GoPoint p) const;
+		bool IsRealPoint(const GoPoint p) const;
 
-		inline bool IsLegal(){return true;}
 		bool IsLegal(const GoPoint& p, int color); 
 
 		const bool CapturedStones() const;
 		const std::list<GoPoint> GetCapturedStones() const;
 
-		int Liberties(GoPoint p) const;
+		//Finds number of liberties for all stones in the same group as p
+		const int Liberties(const GoPoint p) const;
 		bool InAtari(GoPoint p) const;
 
 		const GoMove* Play(GoPoint p, int color);

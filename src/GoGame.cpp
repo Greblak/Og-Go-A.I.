@@ -24,7 +24,6 @@ GoPoint GoGame::GenerateMove(int color)
 	point.color = color;
 	point.x = rand()%19;
 	point.y = rand()%19;
-	bool t = Board->IsLegal();
 
 	while(!Board->IsLegal(point, point.color))
 	{

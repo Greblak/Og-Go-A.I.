@@ -129,5 +129,5 @@ const char GTPEngine::ColumnIntToString(int n) const
 
 const int GTPEngine::RowIntToString(int n) const 
 {
-	return n+1;
+	return ++n; //To account for 0-indexed to 1-indexed 
 }

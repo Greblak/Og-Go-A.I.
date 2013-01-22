@@ -10,4 +10,5 @@ default: $(OBJECTS)
 %.o: %.cpp
 	$(CC) -c $(CC_FLAGS) $< -o $@
 clean:
+	
 	rm -f $(EXEC) $(OBJECTS)

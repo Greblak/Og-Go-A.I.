@@ -9,6 +9,7 @@
 #include "GoPoint.h"
 #include "Config.h"
 #include "GoGame.h"
+#include "Exception.h"
 
 GTPEngine::GTPEngine(void)
 {
@@ -42,7 +43,7 @@ void GTPEngine::parse()
 	else if(args[0] == "boardsize")
 	{
 		if(game != NULL && game->Board->Size() != atoi(args[1].c_str()))
-			throw "Boardsize has already been set.";
+			throw Exception("Boardsize already set");
 
 		int bsize;
 		try
@@ -51,7 +52,7 @@ void GTPEngine::parse()
 			}
 		catch( char * str)
 		{
-			throw "Invalid boardsize. NaN";
+			throw Exception("Invalid boardsize. NaN.");;
 		}
 
 		game = new GoGame(bsize);	
@@ -83,7 +84,7 @@ void GTPEngine::parse()
 		game->Board->DisplayCurrentState();
 	}
 	else
-		throw "Unknown command";
+		throw Exception("Unknown command");
 }
 
 const int GTPEngine::ColumnStringToInt(std::string str) const
@@ -96,7 +97,9 @@ const int GTPEngine::ColumnStringToInt(std::string str) const
 		n = n - GTP_OFFSET_LOWERCASE_A;
 
 	if(n < 0 || n > BOARD_MAX_SIZE || n == GTP_OFFSET_I)
-		throw "Invalid board column. ";
+	{
+		throw Exception("Invalid column.");
+	}
 
 	if(n>= GTP_OFFSET_I)
 		n--;
@@ -106,10 +109,21 @@ const int GTPEngine::ColumnStringToInt(std::string str) const
 
 const int GTPEngine::RowStringToInt(std::string str) const
 {
-	int n = str[0] - GTP_OFFSET_NUM;
+	int n = (str[1] - GTP_OFFSET_NUM);
+	if(n>9)
+		throw Exception("Invalid row");
 
-	if(n < 0 || n > BOARD_MAX_SIZE)
-		throw "Invalid board row. ";
+	std::cout<<str<<" "<<n<< " " ;
+	if(str[2] != 0)
+	{
+		n*=10;
+		n+= str[2] - GTP_OFFSET_NUM;
+	}
+	n--;
+
+	std::cout<< " to "<<n<<"\n";
+	if(n < 0 || n >= BOARD_MAX_SIZE)
+		throw Exception("Invalid row.");
 
 	return n;
 }
@@ -121,7 +135,7 @@ const int GTPEngine::ColorFromString(std::string str) const
 	else if(str == "b" || str == "B" || str == "black" || str == "BLACK")
 		return B_WHITE;
 	else
-		throw "Error converting string to BoardColor";
+		throw Exception("Unable to convert string to BoardColor.");
 }
 
 const char GTPEngine::ColumnIntToString(int n) 

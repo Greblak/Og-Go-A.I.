@@ -4,12 +4,64 @@
 		"selected_items":
 		[
 			[
-				"strs",
-				"stringstream	typedef"
+				"BOOST_CHECK_THR",
+				"BOOST_CHECK_THROW(S, E)	macro"
+			],
+			[
+				"BOOST_CHECK_THROW",
+				"BOOST_CHECK_THROW(S, E)	macro"
+			],
+			[
+				"c",
+				"ColumnStringToInt(std::string str) const	const int"
+			],
+			[
+				"BOOST_CHECK_",
+				"BOOST_CHECK_NO_THROW(S)	macro"
+			],
+			[
+				"GT",
+				"GTPEngine	class"
+			],
+			[
+				"BOOST_AUTO_TEST_",
+				"BOOST_AUTO_TEST_SUITE_END()	macro"
+			],
+			[
+				"st",
+				"stones	int [361]"
+			],
+			[
+				"s",
+				"c_str() const	const char *"
+			],
+			[
+				"Bo",
+				"BOARD_MAX_SIZE	const int"
 			],
 			[
 				"GTP",
-				"GTP_OFFSET_NUM	const int"
+				"GTP_OFFSET_UPPERCASE_A	const int"
+			],
+			[
+				"BOAR",
+				"BOARD_MAX_SIZE	const int"
+			],
+			[
+				"BOA",
+				"BOARD_MAX_SIZE	const int"
+			],
+			[
+				"POS",
+				"POS_WE	const int"
+			],
+			[
+				"Go",
+				"GoStoneColor	enum"
+			],
+			[
+				"strs",
+				"stringstream	typedef"
 			],
 			[
 				"Row",
@@ -44,20 +96,12 @@
 				"GTP_OFFSET_NUM	const int"
 			],
 			[
-				"Go",
-				"GoGame"
-			],
-			[
 				"Col",
 				"ColumnStringToInt(std::string str) const	const int"
 			],
 			[
 				"Con",
 				"ColumnStringToInt(char str) const	const int"
-			],
-			[
-				"GT",
-				"GTP_OFFSET_NUM	const int"
 			],
 			[
 				"GTP_",
@@ -74,28 +118,16 @@
 			[
 				"PROGRAM",
 				"PROGRAM_GTP_VERSION	const std::string"
-			],
-			[
-				"BOA",
-				"BOARD_MAX_SIZE	const int"
 			]
 		]
 	},
 	"buffers":
 	[
 		{
-			"file": "Config.h",
+			"file": "GoMove.h",
 			"settings":
 			{
-				"buffer_size": 340,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "GoBlock",
-			"settings":
-			{
-				"buffer_size": 5727110,
+				"buffer_size": 381,
 				"line_ending": "Unix"
 			}
 		},
@@ -103,15 +135,7 @@
 			"file": "GoBlock.h",
 			"settings":
 			{
-				"buffer_size": 209,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "GoBoard.cpp",
-			"settings":
-			{
-				"buffer_size": 771,
+				"buffer_size": 364,
 				"line_ending": "Unix"
 			}
 		},
@@ -119,15 +143,99 @@
 			"file": "GoBoard.h",
 			"settings":
 			{
-				"buffer_size": 1113,
+				"buffer_size": 1199,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "GoGame.cpp",
+			"file": "GoBoard.cpp",
 			"settings":
 			{
-				"buffer_size": 518,
+				"buffer_size": 2467,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/rune/Desktop/Bacheloroppg/Reports/Pre-report/Og-Go A.I. Pre-Report.tex",
+			"settings":
+			{
+				"buffer_size": 23090,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "test/test_all.cpp",
+			"settings":
+			{
+				"buffer_size": 120,
+				"line_ending": "Unix",
+				"name": "#define BOOST_TEST_MODULE const_string test"
+			}
+		},
+		{
+			"file": "test/makefile",
+			"settings":
+			{
+				"buffer_size": 236,
+				"line_ending": "Unix",
+				"name": "CXXFLAGS=-I/opt/local/include"
+			}
+		},
+		{
+			"file": "test/test_GTP.cpp",
+			"settings":
+			{
+				"buffer_size": 903,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "GTPEngine.cpp",
+			"settings":
+			{
+				"buffer_size": 2958,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Exception.h",
+			"settings":
+			{
+				"buffer_size": 297,
+				"line_ending": "Unix",
+				"name": "clas"
+			}
+		},
+		{
+			"file": "Exception.cpp",
+			"settings":
+			{
+				"buffer_size": 54,
+				"line_ending": "Unix",
+				"name": "Exception::~Exception()"
+			}
+		},
+		{
+			"file": "/media/Data/Dropbox/UiA Vår 2013/Bacheloroppg/Reports/Pre-report/bibliography.bib",
+			"settings":
+			{
+				"buffer_size": 788,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/media/Data/Dropbox/UiA Vår 2013/Bacheloroppg/Meeting minutes/02 - Jan 22.txt",
+			"settings":
+			{
+				"buffer_size": 167,
+				"line_ending": "Unix",
+				"name": "Redmine"
+			}
+		},
+		{
+			"settings":
+			{
+				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		},
@@ -140,26 +248,18 @@
 			}
 		},
 		{
+			"file": "GoGame.cpp",
+			"settings":
+			{
+				"buffer_size": 490,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "GoMove.cpp",
 			"settings":
 			{
-				"buffer_size": 147,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "GoMove.h",
-			"settings":
-			{
-				"buffer_size": 279,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "GoPoint.cpp",
-			"settings":
-			{
-				"buffer_size": 75,
+				"buffer_size": 150,
 				"line_ending": "Unix"
 			}
 		},
@@ -172,34 +272,29 @@
 			}
 		},
 		{
+			"file": "Makefile",
+			"settings":
+			{
+				"buffer_size": 244,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "#ifndef __GTPENGINE_H__\n#define __GTPENGINE_H__\n#include <string>\n#include \"GoGame.h\"\n\nconst int GTP_OFFSET_UPPERCASE_A = 65; //Makes col A 0-indexed\nconst int GTP_OFFSET_I = 8; //Offset to handle the missing I\nconst int GTP_OFFSET_LOWERCASE_A = 97; //Makes col a 0-indexed\nconst int 	GTP_OFFSET_NUM = 49; //Makes row 1 0-indexed\n\n\nclass GTPEngine\n{\n	GoGame* game;\npublic:\n	GTPEngine(void);\n	~GTPEngine();\n\n	void parse();\n\n	const int ColumnStringToInt(std::string str) const ;\n	static const char ColumnIntToString(int n) ;\n\n	const int RowStringToInt(std::string str) const ;\n	static const int RowIntToString(int n)  ;\n\n	const int ColorFromString(std::string str) const;\n};\n\n#endif //#ifndef __GTPENGINE_H__",
+			"file": "GTPEngine.h",
+			"file_size": 705,
+			"file_write_time": 1358849335000000,
+			"settings":
+			{
+				"buffer_size": 706,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "GoState.h",
 			"settings":
 			{
-				"buffer_size": 357,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "GTPEngine.cpp",
-			"settings":
-			{
-				"buffer_size": 2713,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "GTPEngine.h",
-			"settings":
-			{
-				"buffer_size": 620,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Log.h",
-			"settings":
-			{
-				"buffer_size": 400,
+				"buffer_size": 363,
 				"line_ending": "Unix"
 			}
 		},
@@ -207,15 +302,7 @@
 			"file": "main.cpp",
 			"settings":
 			{
-				"buffer_size": 722,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Makefile",
-			"settings":
-			{
-				"buffer_size": 244,
+				"buffer_size": 870,
 				"line_ending": "Unix"
 			}
 		}
@@ -264,16 +351,38 @@
 	},
 	"file_history":
 	[
+		"/home/rune/Og-Go-A.I./Research project/src/GTPEngine.cpp",
+		"/media/Data/Dropbox/UiA Vår 2013/Bacheloroppg/Reports/Pre-report/Og-Go A.I. Pre-Report.tex",
+		"/home/rune/Desktop/Bacheloroppg/Reports/Pre-report/Og-Go A.I. Pre-Report.tex",
+		"/media/Data/Dropbox/UiA Vår 2013/Bacheloroppg/Reports/Pre-report/Og-Go A.I. Pre-Report.pdf",
+		"/media/Data/Dropbox/UiA Vår 2013/Bacheloroppg/Reports/Pre-report/bibliography.bib",
+		"/usr/include/c++/4.6/bits/basic_ios.tcc",
+		"/home/rune/Og-Go-A.I./Research project/src/oggoai",
+		"/home/rune/Og-Go-A.I./Research project/src/GoState.h",
+		"/home/rune/Og-Go-A.I./Research project/src/GoBoard.cpp",
+		"/home/rune/Og-Go-A.I./Research project/src/GoState",
+		"/home/rune/Og-Go-A.I./Research project/src/Config.h",
+		"/home/rune/Og-Go-A.I./Research project/src/Makefile",
+		"/home/rune/Og-Go-A.I./Research project/src/GoBlock.h",
+		"/home/rune/Og-Go-A.I./Research project/src/GoPoint.h",
+		"/home/rune/Og-Go-A.I./Research project/src/GTPEngine.h",
+		"/home/rune/Og-Go-A.I./Research project/src/GoPoint.cpp",
+		"/home/rune/Og-Go-A.I./Research project/src/main.cpp",
+		"/home/rune/Og-Go-A.I./Research project/src/Log.h",
+		"/home/rune/Og-Go-A.I./Research project/src/GoMove.h",
+		"/home/rune/Og-Go-A.I./Research project/src/GoBlock.cpp",
+		"/home/rune/Og-Go-A.I./Research project/src/GoMove.cpp",
+		"/home/rune/Og-Go-A.I./Research project/src/GoBlock",
+		"/home/rune/Og-Go-A.I./Research project/.gitignore",
+		"/home/rune/Og-Go-A.I./Research project/src/Og-Go A.I.sublime-workspace",
 		"/home/rune/Og-Go-A.I./Research project/src/Og-Go A.I.sublime-project",
 		"/home/rune/.config/sublime-text-2/Packages/SublimeGDB/SublimeGDB.sublime-settings",
 		"/home/rune/Og-Go-A.I./Research project/src/main.o",
 		"/home/rune/Og-Go-A.I./Research project/src/GTPEngine.o",
 		"/home/rune/Og-Go-A.I./Research project/src/GoPoint.o",
 		"/home/rune/Og-Go-A.I./Research project/src/GoMove.o",
-		"/media/Data/Dropbox/UiA Vår 2013/Bacheloroppg/Reports/Pre-report/Og-Go A.I. Pre-Report.tex",
 		"/home/rune/Og-Go-A.I./Research project/src/GoGame.o",
 		"/home/rune/Og-Go-A.I./Research project/src/GoBoard.o",
-		"/home/rune/Og-Go-A.I./Research project/src/GoState",
 		"/media/Data/Utv/Bachelor/gitrepos/Og-Go-A.I./src/GoBlock.h",
 		"/media/Data/Utv/Bachelor/gitrepos/Og-Go-A.I./src/GoBlock",
 		"/media/Data/Utv/Bachelor/gitrepos/Og-Go-A.I./src/GoBoard.cpp",
@@ -283,13 +392,11 @@
 		"/media/Data/Utv/Bachelor/gitrepos/Og-Go-A.I./src/GoState.h",
 		"/media/Data/Utv/Bachelor/gitrepos/Og-Go-A.I./src/GoPoint.cpp",
 		"/media/Data/Utv/Bachelor/gitrepos/Og-Go-A.I./src/GTPEngine.h",
-		"/home/rune/Og-Go-A.I./Research project/src/GTPEngine.cpp",
 		"/media/Data/Utv/Bachelor/gitrepos/Og-Go-A.I./src/main.cpp",
 		"/media/Data/Utv/Bachelor/gitrepos/Og-Go-A.I./src/Makefile",
 		"/media/Data/Utv/Bachelor/gitrepos/Og-Go-A.I./src/GTPEngine.cpp",
 		"/media/Data/Dropbox/UiA Vår 2013/Bacheloroppg/Reports/Pre-report/sty/statprosj.sty",
 		"/media/Data/Dropbox/UiA Vår 2013/Bacheloroppg/Reports/Pre-report/sty/runetex.sty",
-		"/media/Data/Dropbox/UiA Vår 2013/Bacheloroppg/Reports/Pre-report/bibliography.bib",
 		"/media/Data/Dropbox/UiA Vår 2013/Bacheloroppg/Reports/Pre-report/Og-Go A.I. Pre-Report.bbl",
 		"/home/rune/Og-Go-A.I./src/GoBoard.h",
 		"/home/rune/Og-Go-A.I./src/GoBoard.cpp",
@@ -328,6 +435,12 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"kyu",
+			"suicide",
+			"section",
+			"\\",
+			"stones",
+			"Nc",
 			"GTP_OFFSET_UPPERCASE_A",
 			"ss",
 			"str",
@@ -354,15 +467,41 @@
 	"groups":
 	[
 		{
-			"selected": 15,
+			"selected": 8,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "Config.h",
+					"file": "GoMove.h",
 					"settings":
 					{
-						"buffer_size": 340,
+						"buffer_size": 381,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								66,
+								66
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "GoBlock.h",
+					"settings":
+					{
+						"buffer_size": 364,
 						"regions":
 						{
 						},
@@ -384,11 +523,307 @@
 					"type": "text"
 				},
 				{
-					"buffer": 1,
-					"file": "GoBlock",
+					"buffer": 2,
+					"file": "GoBoard.h",
 					"settings":
 					{
-						"buffer_size": 5727110,
+						"buffer_size": 1199,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1122,
+								1122
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 455.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "GoBoard.cpp",
+					"settings":
+					{
+						"buffer_size": 2467,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2309,
+								2309
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1243.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/home/rune/Desktop/Bacheloroppg/Reports/Pre-report/Og-Go A.I. Pre-Report.tex",
+					"settings":
+					{
+						"buffer_size": 23090,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								23009,
+								23009
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeX/LaTeX.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 702.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "test/test_all.cpp",
+					"settings":
+					{
+						"buffer_size": 120,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								84,
+								84
+							]
+						],
+						"settings":
+						{
+							"auto_name": "#define BOOST_TEST_MODULE const_string test",
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "test/makefile",
+					"settings":
+					{
+						"buffer_size": 236,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								236,
+								236
+							]
+						],
+						"settings":
+						{
+							"auto_name": "CXXFLAGS=-I/opt/local/include",
+							"syntax": "Packages/Makefile/Makefile.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "test/test_GTP.cpp",
+					"settings":
+					{
+						"buffer_size": 903,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								754,
+								754
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "GTPEngine.cpp",
+					"settings":
+					{
+						"buffer_size": 2958,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2352,
+								2352
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1143.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "Exception.h",
+					"settings":
+					{
+						"buffer_size": 297,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								85,
+								85
+							]
+						],
+						"settings":
+						{
+							"auto_name": "clas",
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "Exception.cpp",
+					"settings":
+					{
+						"buffer_size": 54,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								25,
+								25
+							]
+						],
+						"settings":
+						{
+							"auto_name": "Exception::~Exception()",
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "/media/Data/Dropbox/UiA Vår 2013/Bacheloroppg/Reports/Pre-report/bibliography.bib",
+					"settings":
+					{
+						"buffer_size": 788,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								518,
+								518
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeX/Bibtex.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "/media/Data/Dropbox/UiA Vår 2013/Bacheloroppg/Meeting minutes/02 - Jan 22.txt",
+					"settings":
+					{
+						"buffer_size": 167,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								167,
+								167
+							]
+						],
+						"settings":
+						{
+							"auto_name": "Redmine",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"settings":
+					{
+						"buffer_size": 0,
 						"regions":
 						{
 						},
@@ -410,114 +845,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "GoBlock.h",
-					"settings":
-					{
-						"buffer_size": 209,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "GoBoard.cpp",
-					"settings":
-					{
-						"buffer_size": 771,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								281,
-								281
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 108.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "GoBoard.h",
-					"settings":
-					{
-						"buffer_size": 1113,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								725,
-								725
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 255.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "GoGame.cpp",
-					"settings":
-					{
-						"buffer_size": 518,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								491,
-								491
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 172.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
+					"buffer": 14,
 					"file": "GoGame.h",
 					"settings":
 					{
@@ -528,8 +856,8 @@
 						"selection":
 						[
 							[
-								135,
-								135
+								154,
+								154
 							]
 						],
 						"settings":
@@ -543,19 +871,46 @@
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 15,
+					"file": "GoGame.cpp",
+					"settings":
+					{
+						"buffer_size": 490,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								463,
+								463
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 39.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 16,
 					"file": "GoMove.cpp",
 					"settings":
 					{
-						"buffer_size": 147,
+						"buffer_size": 150,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								145,
-								145
+								107,
+								107
 							]
 						],
 						"settings":
@@ -569,59 +924,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 8,
-					"file": "GoMove.h",
-					"settings":
-					{
-						"buffer_size": 279,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "GoPoint.cpp",
-					"settings":
-					{
-						"buffer_size": 75,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 10,
+					"buffer": 17,
 					"file": "GoPoint.h",
 					"settings":
 					{
@@ -632,8 +935,8 @@
 						"selection":
 						[
 							[
-								2100,
-								2100
+								1970,
+								1970
 							]
 						],
 						"settings":
@@ -641,146 +944,13 @@
 							"syntax": "Packages/C++/C++.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 767.0,
+						"translation.y": 312.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 11,
-					"file": "GoState.h",
-					"settings":
-					{
-						"buffer_size": 357,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								298,
-								298
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "GTPEngine.cpp",
-					"settings":
-					{
-						"buffer_size": 2713,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1503,
-								1503
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 714.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 13,
-					"file": "GTPEngine.h",
-					"settings":
-					{
-						"buffer_size": 620,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								535,
-								535
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 153.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 14,
-					"file": "Log.h",
-					"settings":
-					{
-						"buffer_size": 400,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 15,
-					"file": "main.cpp",
-					"settings":
-					{
-						"buffer_size": 722,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 16,
+					"buffer": 18,
 					"file": "Makefile",
 					"settings":
 					{
@@ -791,8 +961,8 @@
 						"selection":
 						[
 							[
-								216,
-								216
+								0,
+								0
 							]
 						],
 						"settings":
@@ -801,6 +971,85 @@
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "GTPEngine.h",
+					"settings":
+					{
+						"buffer_size": 706,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								285,
+								285
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 20,
+					"file": "GoState.h",
+					"settings":
+					{
+						"buffer_size": 363,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 21,
+					"file": "main.cpp",
+					"settings":
+					{
+						"buffer_size": 870,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								870,
+								870
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 58.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -845,7 +1094,7 @@
 	},
 	"output.exec":
 	{
-		"height": 186.0
+		"height": 203.0
 	},
 	"replace":
 	{
@@ -859,19 +1108,63 @@
 		[
 			[
 				"gtp",
-				"/home/rune/Og-Go-A.I./Research project/src/GTPEngine.cpp"
+				"src/GTPEngine.cpp"
+			],
+			[
+				"main",
+				"src/main.cpp"
+			],
+			[
+				"state",
+				"src/GoState.h"
+			],
+			[
+				"gtpe",
+				"src/GTPEngine.cpp"
 			],
 			[
 				"",
-				"/home/rune/Og-Go-A.I./Research project/src/GTPEngine.cpp"
+				"src/GoBoard.cpp"
+			],
+			[
+				"make",
+				"src/Makefile"
+			],
+			[
+				"board",
+				"src/GoBoard.h"
+			],
+			[
+				"blo",
+				"src/GoBlock.h"
+			],
+			[
+				"block",
+				"src/GoBlock.h"
+			],
+			[
+				"poin",
+				"src/GoPoint.h"
+			],
+			[
+				"move",
+				"src/GoMove.cpp"
+			],
+			[
+				"goboar",
+				"src/GoBoard.h"
+			],
+			[
+				"boar",
+				"src/GoBoard.cpp"
+			],
+			[
+				"gop",
+				"src/GoPoint.h"
 			],
 			[
 				"b",
 				"/home/rune/Og-Go-A.I./Research project/src/GoBoard.cpp"
-			],
-			[
-				"make",
-				"/home/rune/Og-Go-A.I./Research project/src/Makefile"
 			],
 			[
 				"game",
@@ -910,19 +1203,7 @@
 				"/home/rune/Og-Go-A.I./Research project/src/GoPoint.h"
 			],
 			[
-				"goboar",
-				"/home/rune/Og-Go-A.I./Research project/src/GoBoard.cpp"
-			],
-			[
-				"boar",
-				"/home/rune/Og-Go-A.I./Research project/src/GoBoard.h"
-			],
-			[
 				"boa",
-				"/home/rune/Og-Go-A.I./Research project/src/GoBoard.h"
-			],
-			[
-				"board",
 				"/home/rune/Og-Go-A.I./Research project/src/GoBoard.h"
 			],
 			[
@@ -938,10 +1219,6 @@
 				"/home/rune/Og-Go-A.I./Research project/src/GoState"
 			],
 			[
-				"gop",
-				"/home/rune/Og-Go-A.I./Research project/src/GoPoint.h"
-			],
-			[
 				"gob",
 				"/home/rune/Og-Go-A.I./src/GoBoard.h"
 			],
@@ -950,28 +1227,12 @@
 				"/home/rune/Og-Go-A.I./src/GoGame.cpp"
 			],
 			[
-				"poin",
-				"/home/rune/Og-Go-A.I./src/GoPoint.h"
-			],
-			[
-				"state",
-				"/home/rune/Og-Go-A.I./src/GoState.h"
-			],
-			[
 				"t",
 				"/home/rune/Og-Go-A.I./src/GTPEngine.h"
 			],
 			[
 				"conf",
 				"/home/rune/Og-Go-A.I./src/Config.h"
-			],
-			[
-				"gtpe",
-				"/home/rune/Og-Go-A.I./src/GTPEngine.cpp"
-			],
-			[
-				"main",
-				"/home/rune/Og-Go-A.I./src/main.cpp"
 			],
 			[
 				"log",
@@ -1007,7 +1268,7 @@
 	"show_minimap": true,
 	"show_open_files": false,
 	"show_tabs": true,
-	"side_bar_visible": true,
+	"side_bar_visible": false,
 	"side_bar_width": 150.0,
 	"status_bar_visible": true
 }

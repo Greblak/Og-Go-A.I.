@@ -18,6 +18,7 @@ Version 0.3 - Begin work on move desiding algorithms. Type yet undefined.
 #include <iostream>
 #include "GTPEngine.h"
 #include "GoBoard.h"
+#include "Exception.h"
 
 
 
@@ -33,6 +34,11 @@ int main(int argc, char *argv[])
 		catch( const char * str )
 		{
 			std::cerr<<"? Fatal exception raised: "<<str<<"\n\n"<<"Exiting...";
+			return 1;
+		}
+		catch (Exception e)
+		{
+			std::cerr<<"? Fatal exception raised: "<<e.getMessage()<<"\n\n"<<"Exiting...";
 			return 1;
 		}
 	}

@@ -10,12 +10,40 @@ GoBoard::GoBoard(int size)
 		throw "Invalid boardsize.";
 	BoardSize = size;
 	for(int i = 0; i<(sizeof(State.stones)/sizeof(State.stones[0])); i++)
+	{
 		State.stones[i] = NONE;
+		if(IsBorder(i))
+			State.numNeighbours[i] = 3;
+		else if(IsCorner(i))
+			State.numNeighbours[i] = 2;
+		else //Mid board
+			State.numNeighbours[i] = 4;
+	}
 }
 
 GoBoard::~GoBoard(void)
 {
 
+}
+
+const bool GoBoard::IsBorder(int pos) const
+{
+	if(pos%BOARD_MAX_SIZE==0)
+		return true;
+	if(pos%BOARD_MAX_SIZE==18)
+		return true;
+	if(pos>= 0 && pos <=18)
+		return true;
+	if(pos<= BOARD_MAX_SIZE*BOARD_MAX_SIZE && pos >= BOARD_MAX_SIZE*BOARD_MAX_SIZE-19)
+	return false;
+}
+
+const bool GoBoard::IsCorner(int pos) const
+{
+	if(pos == 0 || pos == 18 || pos == BOARD_MAX_SIZE*BOARD_MAX_SIZE-1 || pos == BOARD_MAX_SIZE*BOARD_MAX_SIZE-19)
+		return true;
+	else
+		return false;
 }
 
 const int GoBoard::Size() const
@@ -25,14 +53,21 @@ const int GoBoard::Size() const
 
 const GoMove* GoBoard::Play(GoPoint p, int color)
 {
-	State.stones[Pos(p)] = color;
-	GoMove* m = new GoMove(color, &p ,0);
-	return m;
+	if(!IsLegal(p, p.color))
+		throw "Illegal move";
+	AddStone(Pos(p),p.color);
+	
+	return 0;
 }
 
 const GoMove* GoBoard::Play(GoPoint p)
 {
 	return Play(p,p.color);
+}
+
+void GoBoard::AddStone(int point, int color)
+{
+	State.stones[point] = color;
 }
 
 const int GoBoard::CurrentPlayer()

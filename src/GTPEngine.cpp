@@ -30,6 +30,12 @@ void GTPEngine::parse()
 	std::vector<std::string> args;
 	boost::split(args, userInput,boost::is_any_of( " " ));
 
+	game->Board->IsBorder(0);
+	game->Board->IsBorder(17);
+	game->Board->IsBorder(18);
+	game->Board->IsBorder(19);
+
+
 	if(args[0] == "name")
 		Log::Out("= "+PROGRAM_NAME);
 	else if(args[0] == "version")

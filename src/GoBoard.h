@@ -16,7 +16,8 @@ public:
 		const int Size() const;
 		bool Occupied(GoPoint p) const;
 		bool IsEmpty(GoPoint p) const;
-		bool IsBorder(GoPoint p) const;
+		const bool IsBorder(int pos) const;
+		const bool IsCorner(int pos) const;
 		bool IsColor(GoPoint p, int c) const;
 		static const int CurrentPlayer();
 		int NextPlayer() const;
@@ -41,6 +42,9 @@ public:
 
 		const GoMove* Play(GoPoint p, int color);
 		const GoMove* Play(GoPoint p);
+
+		void AddStone(int point, int color);
+		void UpdateBlocks(int point, int color);
 
 		void DisplayCurrentState() const;
 private:

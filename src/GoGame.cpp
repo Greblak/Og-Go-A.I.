@@ -15,7 +15,8 @@ GoGame::~GoGame()
 
 void GoGame::Play(int color, int x, int y)
 {
-	
+	GoPoint p = GoPoint(x,y,color);
+	Board->Play(p);
 }
 
 GoPoint GoGame::GenerateMove(int color)

@@ -16,7 +16,7 @@ struct GoState
 	int bw_prisoners[2];
 	int bw_numstones[2];
 	int stones[BOARD_MAX_SIZE*BOARD_MAX_SIZE];
-
+	int numNeighbours[BOARD_MAX_SIZE*BOARD_MAX_SIZE];
 	bool isNewPosition;
 };
 

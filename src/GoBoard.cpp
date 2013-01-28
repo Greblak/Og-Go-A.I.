@@ -1,6 +1,8 @@
 #include "Log.h"
 #include "GoBoard.h"
 #include "GoPoint.h"
+#include "GoBlock.h"
+#include "GoState.h"
 #include <sstream>
 #include "GTPEngine.h"
 
@@ -12,12 +14,20 @@ GoBoard::GoBoard(int size)
 	for(int i = 0; i<(sizeof(State.stones)/sizeof(State.stones[0])); i++)
 	{
 		State.stones[i] = NONE;
+		std::fill(State.numNeighbours[S_BLACK], State.numNeighbours[S_BLACK]+BOARD_MAX_SIZE*BOARD_MAX_SIZE, 0);
+		std::fill(State.numNeighbours[S_WHITE], State.numNeighbours[S_WHITE]+BOARD_MAX_SIZE*BOARD_MAX_SIZE, 0);
 		if(IsBorder(i))
-			State.numNeighbours[i] = 3;
+		{
+			State.numNeighboursEmpty[i] = 3;
+		}
 		else if(IsCorner(i))
-			State.numNeighbours[i] = 2;
+		{
+			State.numNeighboursEmpty[i]= 2;
+		}
 		else //Mid board
-			State.numNeighbours[i] = 4;
+		{
+			State.numNeighboursEmpty[i] = 4;
+		}
 	}
 }
 
@@ -35,7 +45,37 @@ const bool GoBoard::IsBorder(int pos) const
 	if(pos>= 0 && pos <=18)
 		return true;
 	if(pos<= BOARD_MAX_SIZE*BOARD_MAX_SIZE && pos >= BOARD_MAX_SIZE*BOARD_MAX_SIZE-19)
+		return true;
 	return false;
+}
+
+const bool GoBoard::Occupied(GoPoint p) const
+{
+	if(State.stones[Pos(p)] != NONE)
+		return true;
+	return false;
+}
+
+bool GoBoard::IsRealPoint(GoPoint p) const
+{
+	if(Pos(p) <= BOARD_MAX_SIZE*BOARD_MAX_SIZE && Pos(p) >= 0)
+		return true;
+	else
+		return false;
+}
+const bool GoBoard::IsEmpty(GoPoint p) const
+{
+	return !Occupied(p);
+}
+
+void GoBoard::UpdateBlocks(const GoPoint p)
+{
+	
+}
+
+void GoBoard::KillDeadBlocks()
+{
+
 }
 
 const bool GoBoard::IsCorner(int pos) const
@@ -68,6 +108,10 @@ const GoMove* GoBoard::Play(GoPoint p)
 void GoBoard::AddStone(int point, int color)
 {
 	State.stones[point] = color;
+	--State.numNeighboursEmpty[point-POS_WE];
+	--State.numNeighboursEmpty[point+POS_WE];
+	--State.numNeighboursEmpty[point-POS_NS];
+	--State.numNeighboursEmpty[point+POS_NS];
 }
 
 const int GoBoard::CurrentPlayer()
@@ -109,7 +153,10 @@ bool GoBoard::IsSuicide(const GoPoint p) const
 
 const int GoBoard::Liberties(const GoPoint p) const
 {
-	return 4;
+	if(IsRealPoint(p))
+		if(Occupied(p))
+			return State.blockPointers[Pos(p)]->Liberties();
+	return -1;
 }
 
 int GoBoard::North(const GoPoint p) const

@@ -3,11 +3,7 @@
 
 #include "GoState.h"
 #include "GoPoint.h"
-#include <list>
-// #include "GoBlock.h"
-
-
-
+class GoBlock;
 struct GoState
 {
 	GoPoint koPoint;
@@ -16,8 +12,10 @@ struct GoState
 	int bw_prisoners[2];
 	int bw_numstones[2];
 	int stones[BOARD_MAX_SIZE*BOARD_MAX_SIZE];
-	int numNeighbours[BOARD_MAX_SIZE*BOARD_MAX_SIZE];
+	int numNeighbours[2][BOARD_MAX_SIZE*BOARD_MAX_SIZE]; //[Color][Pos]
+	int numNeighboursEmpty[BOARD_MAX_SIZE*BOARD_MAX_SIZE]; 
 	bool isNewPosition;
+	GoBlock* blockPointers[BOARD_MAX_SIZE*BOARD_MAX_SIZE];
 };
 
 #endif //#ifndef __GOSTATE_H__

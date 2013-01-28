@@ -3,8 +3,8 @@
 
 #include "GoPoint.h"
 #include "GoMove.h"
-#include "GoState.h"
 #include "Config.h"
+#include "GoState.h"
 #include <list>
 
 class GoBoard
@@ -14,8 +14,8 @@ public:
 	virtual ~GoBoard();
 
 		const int Size() const;
-		bool Occupied(GoPoint p) const;
-		bool IsEmpty(GoPoint p) const;
+		const bool Occupied(GoPoint p) const;
+		const bool IsEmpty(GoPoint p) const;
 		const bool IsBorder(int pos) const;
 		const bool IsCorner(int pos) const;
 		bool IsColor(GoPoint p, int c) const;
@@ -32,6 +32,9 @@ public:
 		bool IsRealPoint(const GoPoint p) const;
 
 		bool IsLegal(const GoPoint& p, int color); 
+
+		void UpdateBlocks(const GoPoint p);
+		void KillDeadBlocks();
 
 		const bool CapturedStones() const;
 		const std::list<GoPoint> GetCapturedStones() const;
@@ -51,5 +54,6 @@ private:
 	int BoardSize;
 	GoState State;
 };
+
 
 #endif //#ifndef __GOBOARD_H__

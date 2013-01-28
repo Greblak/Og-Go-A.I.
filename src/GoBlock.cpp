@@ -1,5 +1,10 @@
 #include "GoBlock.h"
 
+GoBlock::GoBlock(GoBoard& b):board(b)
+{
+
+}
+
 GoBlock::~GoBlock()
 {
 

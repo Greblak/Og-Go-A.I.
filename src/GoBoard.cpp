@@ -7,7 +7,6 @@
 #include "GTPEngine.h"
 
 #include <iostream>
-using namespace std;
 
 GoBoard::GoBoard(int size)
 {
@@ -15,21 +14,12 @@ GoBoard::GoBoard(int size)
 		throw "Invalid boardsize.";
 	BoardSize = size;
 
-	cout << ((size_t)(&State)) << endl;
-
 	for(int i = 0; i<(BOARD_MAX_SIZE*BOARD_MAX_SIZE); i++)
-	{
-		//cout << "fuckka !! " << endl;
-		State.numNeighbours[S_WHITE][i] = 0;
-		//cout << "fuckka !2! " << endl;
-		State.numNeighbours[S_BLACK][i] = 0;
-		//cout << "fuckka !3! " << endl;
-	}
-
-	for(int i = 0; i<(sizeof(State.stones)/sizeof(State.stones[0])); i++)
 	{
 		State.stones[i] = NONE;
 	
+		State.numNeighbours[S_WHITE][i] = 0;
+		State.numNeighbours[S_BLACK][i] = 0;
 		
 		if(IsBorder(i))
 		{
@@ -197,7 +187,7 @@ int GoBoard::East(const GoPoint p) const
 void GoBoard::DisplayCurrentState() const
 {
 	std::cout<<"=1 \n Showing current gamestate\n";
-	for(int i = 0; i<BOARD_MAX_SIZE;i++)
+	for(int i = BOARD_MAX_SIZE-1; i>=0;i--)
 	{
 		if(i+1 >= 10)
 			std::cout<<"\n "<<(i+1);

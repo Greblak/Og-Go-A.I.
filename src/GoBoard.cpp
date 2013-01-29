@@ -11,11 +11,12 @@ GoBoard::GoBoard(int size)
 	if(size > BOARD_MAX_SIZE || size < BOARD_MINIMUM_SIZE)
 		throw "Invalid boardsize.";
 	BoardSize = size;
+	// std::fill(State.numNeighbours[S_BLACK], State.numNeighbours[S_BLACK]+BOARD_MAX_SIZE*BOARD_MAX_SIZE, 0);
+	// 	std::fill(State.numNeighbours[S_WHITE], State.numNeighbours[S_WHITE]+BOARD_MAX_SIZE*BOARD_MAX_SIZE, 0);
 	for(int i = 0; i<(sizeof(State.stones)/sizeof(State.stones[0])); i++)
 	{
 		State.stones[i] = NONE;
-		std::fill(State.numNeighbours[S_BLACK], State.numNeighbours[S_BLACK]+BOARD_MAX_SIZE*BOARD_MAX_SIZE, 0);
-		std::fill(State.numNeighbours[S_WHITE], State.numNeighbours[S_WHITE]+BOARD_MAX_SIZE*BOARD_MAX_SIZE, 0);
+		
 		if(IsBorder(i))
 		{
 			State.numNeighboursEmpty[i] = 3;
@@ -155,7 +156,7 @@ const int GoBoard::Liberties(const GoPoint p) const
 {
 	if(IsRealPoint(p))
 		if(Occupied(p))
-			return State.blockPointers[Pos(p)]->Liberties();
+			// return State.blockPointers[Pos(p)]->Liberties();
 	return -1;
 }
 

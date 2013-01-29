@@ -3,6 +3,7 @@
 
 #include "GoState.h"
 #include "GoPoint.h"
+
 class GoBlock;
 struct GoState
 {

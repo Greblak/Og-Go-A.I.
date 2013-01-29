@@ -38,12 +38,15 @@ const int POS_NS = BOARD_MAX_SIZE;
 
 enum GoStoneColor
 {
-	S_BLACK, S_WHITE
+	S_BLACK = 0,
+	S_WHITE
 };
 
 enum GoBoardColor
 {
-	NONE, B_BLACK, B_WHITE
+	NONE = 0,
+	B_BLACK,
+	B_WHITE
 };
 
 class GoPoint

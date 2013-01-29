@@ -6,16 +6,30 @@
 #include <sstream>
 #include "GTPEngine.h"
 
+#include <iostream>
+using namespace std;
+
 GoBoard::GoBoard(int size)
 {
 	if(size > BOARD_MAX_SIZE || size < BOARD_MINIMUM_SIZE)
 		throw "Invalid boardsize.";
 	BoardSize = size;
-	// std::fill(State.numNeighbours[S_BLACK], State.numNeighbours[S_BLACK]+BOARD_MAX_SIZE*BOARD_MAX_SIZE, 0);
-	// 	std::fill(State.numNeighbours[S_WHITE], State.numNeighbours[S_WHITE]+BOARD_MAX_SIZE*BOARD_MAX_SIZE, 0);
+
+	cout << ((size_t)(&State)) << endl;
+
+	for(int i = 0; i<(BOARD_MAX_SIZE*BOARD_MAX_SIZE); i++)
+	{
+		//cout << "fuckka !! " << endl;
+		State.numNeighbours[S_WHITE][i] = 0;
+		//cout << "fuckka !2! " << endl;
+		State.numNeighbours[S_BLACK][i] = 0;
+		//cout << "fuckka !3! " << endl;
+	}
+
 	for(int i = 0; i<(sizeof(State.stones)/sizeof(State.stones[0])); i++)
 	{
 		State.stones[i] = NONE;
+	
 		
 		if(IsBorder(i))
 		{
@@ -156,7 +170,7 @@ const int GoBoard::Liberties(const GoPoint p) const
 {
 	if(IsRealPoint(p))
 		if(Occupied(p))
-			// return State.blockPointers[Pos(p)]->Liberties();
+			return State.blockPointers[Pos(p)]->Liberties();
 	return -1;
 }
 

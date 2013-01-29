@@ -10,19 +10,19 @@ BOOST_AUTO_TEST_CASE(test_test) {
 	GTPEngine g;
 
   //Col string to int
-  BOOST_CHECK_EQUAL(g.ColumnStringToInt("A1"),0);
-  BOOST_CHECK_THROW(g.ColumnStringToInt("I20"), Exception);
-  BOOST_CHECK_THROW(g.ColumnStringToInt("I2"), Exception);
-  BOOST_CHECK_THROW(g.ColumnStringToInt("a"), Exception);
-  BOOST_CHECK_THROW(g.ColumnStringToInt("11"), Exception);
-  BOOST_CHECK_NO_THROW(g.ColumnStringToInt("AA"));
+  BOOST_CHECK_EQUAL(g.ColumnStringToInt("A"),0);
+  BOOST_CHECK_THROW(g.ColumnStringToInt("I"), Exception);
+  BOOST_CHECK_THROW(g.ColumnStringToInt("I"), Exception);
+  BOOST_CHECK_NO_THROW(g.ColumnStringToInt("a"));
+  BOOST_CHECK_THROW(g.ColumnStringToInt("1"), Exception);
+  BOOST_CHECK_NO_THROW(g.ColumnStringToInt("A"));
 
   //Row string to int
-  BOOST_CHECK_EQUAL(g.RowStringToInt("A1"),0);
-  BOOST_CHECK_EQUAL(g.RowStringToInt("A19"),18);
-  BOOST_CHECK_THROW(g.RowStringToInt("A20"), Exception);
-  BOOST_CHECK_THROW(g.RowStringToInt("aa"), Exception);
-  BOOST_CHECK_THROW(g.RowStringToInt("AA"), Exception);
+  BOOST_CHECK_EQUAL(g.RowStringToInt("1"),0);
+  BOOST_CHECK_EQUAL(g.RowStringToInt("19"),18);
+  BOOST_CHECK_THROW(g.RowStringToInt("20"), Exception);
+  BOOST_CHECK_THROW(g.RowStringToInt("a"), Exception);
+  BOOST_CHECK_THROW(g.RowStringToInt("A"), Exception);
   
 }
 

@@ -65,7 +65,7 @@ void GTPEngine::parse()
 	else if(args[0] == "play")
 	{
 		game->Play(ColorFromString(args[1]), ColumnStringToInt(args[2].substr(0,1)), 
-			RowStringToInt(args[2].substr(1,1)));
+			RowStringToInt(args[2].substr(1,2)));
 		Log::Out("= 1");
 	}
 	else if(args[0] == "genmove")
@@ -91,11 +91,11 @@ const int GTPEngine::ColumnStringToInt(std::string str) const
 {
 	int n = str[0];
 	
-	if(n >= GTP_OFFSET_UPPERCASE_A)
-		n = n - GTP_OFFSET_UPPERCASE_A;
-	else
+	if(n >= GTP_OFFSET_LOWERCASE_A)
 		n = n - GTP_OFFSET_LOWERCASE_A;
-
+	else
+		n = n - GTP_OFFSET_UPPERCASE_A;
+	
 	if(n < 0 || n > BOARD_MAX_SIZE || n == GTP_OFFSET_I)
 	{
 		throw Exception("Invalid column.");
@@ -109,21 +109,18 @@ const int GTPEngine::ColumnStringToInt(std::string str) const
 
 const int GTPEngine::RowStringToInt(std::string str) const
 {
-	int n = (str[1] - GTP_OFFSET_NUM);
+	int n = (str[0] - GTP_OFFSET_NUM);
 	if(n>9)
-		throw Exception("Invalid row");
-
-	std::cout<<str<<" "<<n<< " " ;
-	if(str[2] != 0)
+		throw Exception("Invalid row input");
+	if(str[1] != 0)
 	{
 		n*=10;
-		n+= str[2] - GTP_OFFSET_NUM;
+		n+= str[1] - GTP_OFFSET_NUM;
 	}
 	n--;
 
-	std::cout<< " to "<<n<<"\n";
 	if(n < 0 || n >= BOARD_MAX_SIZE)
-		throw Exception("Invalid row.");
+		throw Exception("Invalid row number");
 
 	return n;
 }

@@ -141,28 +141,53 @@ const bool GoBoard::IsLibertyOfBlock(const int point, const int anchor) const
 	if(!Occupied(anchor))
 		return false;
 	const GoBlock* block = State.blockPointers[anchor];
-	if(North(point) != -1 && State.blockPointers[North(point)] == block)
+	if(North(point) != -1 && State.blockPointers[North(point)] == block && !Occupied(point))
+	{
+		std::cout<<point<<" is a liberty of the group at "<<North(point)<< "with anchor in "<<anchor<<std::endl;
 		return true;
-	if(South(point) != -1 && State.blockPointers[South(point)] == block)
+	}
+	if(South(point) != -1 && State.blockPointers[South(point)] == block && !Occupied(point))
+	{
+		std::cout<<point<<" is a liberty of the group at "<<South(point)<< "with anchor in "<<anchor<<std::endl;
 		return true;
-	if(West(point) != -1 && State.blockPointers[West(point)] == block)
+	}
+	if(West(point) != -1 && State.blockPointers[West(point)] == block && !Occupied(point))
+	{
+		std::cout<<point<<" is a liberty of the group at "<<West(point)<< "with anchor in "<<anchor<<std::endl;
 		return true;
-	if(East(point) != -1 && State.blockPointers[East(point)] == block)
+	}
+	if(East(point) != -1 && State.blockPointers[East(point)] == block && !Occupied(point))
+	{
+		std::cout<<point<<" is a liberty of the group at "<<East(point)<< "with anchor in "<<anchor<<std::endl;
 		return true;
+	}
 	return false;
 }
 
 const int GoBoard::FindCommonLiberties(const int point, const int anchor) const
 {
+	std::cout<<"Finding common liberties between point: "<<point<<" and block at "<<anchor<<std::endl;
 	int commonLiberties = 0;
 	if(North(point)!=-1 && point != anchor && IsLibertyOfBlock(North(point),anchor))
+	{
 		++commonLiberties;
+		std::cout<<"Common liberty at "<<North(point)<<std::endl;
+	}
 	if(South(point)!=-1 && point != anchor && IsLibertyOfBlock(South(point),anchor))
+	{
 		++commonLiberties;
+		std::cout<<"Common liberty at "<<South(point)<<std::endl;
+	}
 	if(West(point)!=-1 && point != anchor && IsLibertyOfBlock(West(point),anchor))
+	{
 		++commonLiberties;
+		std::cout<<"Common liberty at "<<West(point)<<std::endl;
+	}
 	if(East(point)!=-1 && point != anchor && IsLibertyOfBlock(East(point),anchor))
+	{
 		++commonLiberties;
+		std::cout<<"Common liberty at "<<East(point)<<std::endl;
+	}
 	return commonLiberties;
 }
 

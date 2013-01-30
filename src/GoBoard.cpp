@@ -75,7 +75,33 @@ const bool GoBoard::IsEmpty(GoPoint p) const
 
 void GoBoard::UpdateBlocks(const GoPoint p)
 {
-	
+	UpdateBlocks(Pos(p), p.color);
+}
+
+void GoBoard::UpdateBlocks(int pos, int color)
+{
+	if(State.numNeighbours[color][pos] == 0) //Solo stone. Create new block
+	{
+		GoBlock* b = new GoBlock();
+		b->anchor = pos;
+		b->color = color;
+		b->board = this;
+		b->liberties= Liberties(pos);
+		State.blockPointers[pos] = b;
+	}
+	else
+	{
+		if (State.stones[pos - POS_NS] == color)
+			State.blockPointers[pos] = State.blockPointers[pos - POS_NS];
+		else if (State.stones[pos + POS_NS] == color)
+			State.blockPointers[pos] = State.blockPointers[pos + POS_NS];
+		else if (State.stones[pos - POS_WE] == color)
+			State.blockPointers[pos] = State.blockPointers[pos - POS_WE];
+		else if (State.stones[pos + POS_WE] == color)
+			State.blockPointers[pos] = State.blockPointers[pos + POS_WE];
+
+		State.blockPointers[pos]->liberties += Liberties(pos) - 1;
+	}
 }
 
 void GoBoard::KillDeadBlocks()
@@ -160,8 +186,13 @@ const int GoBoard::Liberties(const GoPoint p) const
 {
 	if(IsRealPoint(p))
 		if(Occupied(p))
-			return State.blockPointers[Pos(p)]->Liberties();
+			return Liberties(Pos(p));
 	return -1;
+}
+
+const int GoBoard::Liberties(int pos) const
+{
+	return State.blockPointers[pos]->liberties;
 }
 
 int GoBoard::North(const GoPoint p) const

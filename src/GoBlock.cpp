@@ -1,6 +1,6 @@
 #include "GoBlock.h"
 
-GoBlock::GoBlock(GoBoard& b):board(b)
+GoBlock::GoBlock(GoBoard& b, int color, GoPoint anchor):color(color),anchor(anchor),board(b)
 {
 
 }

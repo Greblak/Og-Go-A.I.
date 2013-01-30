@@ -41,6 +41,7 @@ public:
 
 		//Finds number of liberties for all stones in the same group as p
 		const int Liberties(const GoPoint p) const;
+		const int Liberties(int pos) const;
 		bool InAtari(GoPoint p) const;
 
 		const GoMove* Play(GoPoint p, int color);

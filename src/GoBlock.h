@@ -9,15 +9,14 @@
 class GoBlock
 {
 public:
-	GoBlock(GoBoard& b);
+	GoBlock();
 	virtual ~GoBlock();
-	int Liberties() const;
-private:
-	GoStoneColor color;
-	GoPoint anchor;
+	int liberties;
+	int color;
+	int anchor;
 	std::list<GoPoint*> stones;
 
-	GoBoard& board;
+	GoBoard* board;
 };
 
 #endif //#ifndef __GOBLOCK_H__

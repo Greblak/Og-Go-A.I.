@@ -63,9 +63,10 @@ public:
 
 		void DisplayCurrentState() const;
 		GoState State;
+		BlockList blocks;	
+		
 private:
 	int BoardSize;
-	BlockList blocks;
 	
 };
 

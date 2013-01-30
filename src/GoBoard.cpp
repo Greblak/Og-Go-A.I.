@@ -138,7 +138,15 @@ void GoBoard::UpdateBlocks(int pos, int color)
 		State.blockPointers[pos]->liberties += State.numNeighboursEmpty[pos] - commonLiberties; //Subtract one since the new stone is always placed on a liberty for the block.
 		std::cout<< " Stone liberties :"<<State.numNeighboursEmpty[pos] <<" Common: "<<commonLiberties<< " New liberty total: "<<State.blockPointers[pos]->liberties<<std::endl; 
 		
-		//TODO: Handle block joining to prevent counting common liberties twice. 
+		//TODO: Handle block joining
+		//Detect neighbouring blocks to perform join.
+		if(State.stones[North(pos)] == boardColor && State.blockPointers[North(pos)] != State.blockPointers[pos])
+		{
+			GoBlock* curBlock = State.blockPointers[pos];
+			GoBlock* copyBlock = State.blockPointers[North(pos)];
+			//curBlock->ImportBlock(copyBlock); TODO: Not functioning properly.
+			//TODO Find common liberties and prevent multiple counting
+		}
 		
 	}
 	
@@ -156,6 +164,7 @@ void GoBoard::KillDeadBlocks()
 		{
 			GoBlock* killblock = (*it);
 			it = blocks.erase(it);
+			killblock->RemoveStones();
 			delete killblock;
 		}
 	}
@@ -297,9 +306,9 @@ bool GoBoard::IsLegal(const GoPoint& p, int color)
 bool GoBoard::IsSuicide(const GoPoint p) const
 {
 	int Nc = State.stones[North(p)];
-	int Sc = State.stones[North(p)];
-	int Wc = State.stones[North(p)];
-	int Ec = State.stones[North(p)];
+	int Sc = State.stones[South(p)];
+	int Wc = State.stones[West(p)];
+	int Ec = State.stones[East(p)];
 	if(Nc == NONE || Nc == p.color ||
 		Sc == NONE || Sc == p.color ||
 		Wc == NONE || Wc == p.color ||

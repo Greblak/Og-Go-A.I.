@@ -18,6 +18,8 @@ public:
 	std::list<int> stones;
 	
 	const int Liberties() const;
+	void ImportBlock(GoBlock* block);
+	void RemoveStones();
 
 	GoBoard* board;
 };

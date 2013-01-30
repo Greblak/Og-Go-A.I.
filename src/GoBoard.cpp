@@ -176,6 +176,7 @@ const bool GoBoard::IsLibertyOfBlock(const int point, const int anchor) const
 		return false;
 	const GoBlock* block = State.blockPointers[anchor];
 	if(North(point) != -1 && State.blockPointers[North(point)] == block && State.blockPointers[North(point)] != State.blockPointers[point])
+
 	{
 		std::cout<<point<<" is a liberty of the group at "<<North(point)<< "with anchor in "<<anchor<<std::endl;
 		return true;
@@ -200,6 +201,7 @@ const bool GoBoard::IsLibertyOfBlock(const int point, const int anchor) const
 
 const int GoBoard::FindCommonLiberties(const int point, const int anchor) const
 {
+	std::cout<<"Finding common liberties between point: "<<point<<" and block at "<<anchor<<std::endl;
 	int commonLiberties = 0;
 	if(North(point)!=-1 && point != anchor && IsLibertyOfBlock(North(point),anchor))
 	{

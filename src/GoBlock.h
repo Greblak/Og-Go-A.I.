@@ -15,6 +15,8 @@ public:
 	int color;
 	int anchor;
 	std::list<GoPoint*> stones;
+	
+	const int Liberties() const;
 
 	GoBoard* board;
 };

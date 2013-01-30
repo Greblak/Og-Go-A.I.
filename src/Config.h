@@ -11,4 +11,11 @@ const int BOARD_DEFAULT_SIZE = 19;
 const int BOARD_MAX_SIZE = 19;
 const int BOARD_MINIMUM_SIZE = 2;
 
+const int BOARD_BOTTOM_LEFT = 0;
+const int BOARD_BOTTOM_RIGHT = 18;
+const int BOARD_TOP_LEFT = 342;
+const int BOARD_TOP_RIGHT = 360;
+
+#define DEBUG_MODE
+
 #endif //#ifndef __CONFIG_H__

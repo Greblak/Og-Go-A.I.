@@ -26,6 +26,10 @@ public:
 		int South(const GoPoint p) const;
 		int West(const GoPoint p) const;
 		int East(const GoPoint p) const;
+		int North(const int) const;
+		int South(const int) const;
+		int West(const int) const;
+		int East(const int) const;
 		int Pos(const GoPoint p) const;
 
 		bool IsSuicide(const GoPoint p) const;
@@ -51,9 +55,10 @@ public:
 		void UpdateBlocks(int point, int color);
 
 		void DisplayCurrentState() const;
+		GoState State;
 private:
 	int BoardSize;
-	GoState State;
+	
 };
 
 

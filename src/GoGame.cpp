@@ -10,13 +10,12 @@ GoGame::GoGame(int boardSize)
 
 GoGame::~GoGame()
 {
-
+	delete Board;
 }
 
 void GoGame::Play(int color, int x, int y)
 {
 	GoPoint p = GoPoint(x,y,color);
-	// std::cout << "Play()" << std::endl;
 	Board->Play(p);
 }
 

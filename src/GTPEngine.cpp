@@ -60,6 +60,8 @@ void GTPEngine::parse()
 	}
 	else if(args[0] == "clear_board")
 	{
+		delete game;
+		game = new GoGame(BOARD_DEFAULT_SIZE);
 		Log::Out("= 1");
 	}
 	else if(args[0] == "play")
@@ -83,6 +85,16 @@ void GTPEngine::parse()
 	{
 		game->Board->DisplayCurrentState();
 	}
+	#ifdef DEBUG_MODE
+	else if(args[0] == "d")
+	{
+		if(args[1] == "libstone")
+		{	
+			GoPoint p = GoPoint(ColumnStringToInt(args[2].substr(0,1)),RowStringToInt(args[2].substr(1,2)),B_WHITE);
+			std::cout<<"= "<<game->Board->State.numNeighboursEmpty[game->Board->Pos(p)]<<"\n\n";
+		}
+	}
+	#endif //IFDEF DEBUG_MODE
 	else
 		throw Exception("Unknown command");
 }

@@ -14,7 +14,8 @@ public:
 	virtual ~GoBoard();
 
 		const int Size() const;
-		const bool Occupied(GoPoint p) const;
+		const bool Occupied(const GoPoint p) const;
+		const bool Occupied(const int p) const;
 		const bool IsEmpty(GoPoint p) const;
 		const bool IsBorder(int pos) const;
 		const bool IsCorner(int pos) const;
@@ -37,6 +38,8 @@ public:
 
 		bool IsLegal(const GoPoint& p, int color); 
 
+		const bool IsLibertyOfBlock(const int point, const int anchor) const;
+		const int FindCommonLiberties(const int point, const int anchor) const; //Used when joining a single stone to a block
 		void UpdateBlocks(const GoPoint p);
 		void KillDeadBlocks();
 

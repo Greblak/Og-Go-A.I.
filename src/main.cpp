@@ -10,8 +10,9 @@ Version 0.1 - Basic framework, GTP communication and Random play algorithm
 
 Planned milestones
 
-Version 0.2 - Benson's algorithm for determining unconditional life
-Version 0.3 - Begin work on move desiding algorithms. Type yet undefined.
+Version 0.2 - Captures stones and connects blocks
+Version 0.3 - Benson's algorithm for determining unconditional life
+Version 0.4 - Begin work on move-deciding algorithms. Type yet undefined.
 
 
 ***/

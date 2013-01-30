@@ -6,6 +6,7 @@
 
 #include <list>
 
+class GoBoard;
 class GoBlock
 {
 public:

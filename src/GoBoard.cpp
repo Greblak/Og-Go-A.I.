@@ -87,9 +87,21 @@ void GoBoard::UpdateBlocks(const GoPoint p)
 
 void GoBoard::UpdateBlocks(int pos, int color)
 {
+	int boardColor = color == S_BLACK? B_BLACK : B_WHITE;
+	//Remove blockliberties of opposite color
+	if(North(pos) != -1 && IsLibertyOfBlock(pos,North(pos)))
+		State.blockPointers[North(pos)]->liberties--;
+	if(South(pos) != -1 && IsLibertyOfBlock(pos,South(pos)))
+		State.blockPointers[South(pos)]->liberties--;
+	if(West(pos) != -1 && IsLibertyOfBlock(pos,West(pos)))
+		State.blockPointers[West(pos)]->liberties--;
+	if(East(pos) != -1 && IsLibertyOfBlock(pos,East(pos)))
+		State.blockPointers[East(pos)]->liberties--;
+	
 	if(State.numNeighbours[color][pos] == 0) //Solo stone. Create new block
 	{
 		GoBlock* b = new GoBlock();
+		blocks.push_back(b);
 		b->anchor = pos;
 		b->color = color;
 		b->board = this;
@@ -101,39 +113,52 @@ void GoBoard::UpdateBlocks(int pos, int color)
 	else //Not solo. Attach to block
 	{
 		int commonLiberties = 0;
-		if (South(pos) != -1 && State.stones[South(pos)] == color)
+		if (South(pos) != -1 && State.stones[South(pos)] == boardColor)
 		{
 			commonLiberties = FindCommonLiberties(pos,South(pos));
 			State.blockPointers[pos] = State.blockPointers[South(pos)];
 		}
-		else if (North(pos) != -1 && State.stones[North(pos)] == color)
+		else if (North(pos) != -1 && State.stones[North(pos)] == boardColor)
 		{
 			commonLiberties = FindCommonLiberties(pos,North(pos));
 			State.blockPointers[pos] = State.blockPointers[North(pos)];
 		}
-		else if (West(pos) != -1 && State.stones[West(pos)] == color)
+		else if (West(pos) != -1 && State.stones[West(pos)] == boardColor)
 		{
 			commonLiberties = FindCommonLiberties(pos,West(pos));
 			State.blockPointers[pos] = State.blockPointers[West(pos)];
 		}
-		else if (East(pos) != -1 && State.stones[East(pos)] == color)
+		else if (East(pos) != -1 && State.stones[East(pos)] == boardColor)
 		{
 			commonLiberties = FindCommonLiberties(pos,East(pos));
 			State.blockPointers[pos] = State.blockPointers[East(pos)];
 		}
-		State.blockPointers[pos]->stones.push_back(pos);
+		
 		std::cout<<"Old libcount: "<<State.blockPointers[pos]->liberties;
-		State.blockPointers[pos]->liberties += State.numNeighboursEmpty[pos] - commonLiberties - 1; //Subtract one since the new stone is always placed on a liberty for the block.
+		State.blockPointers[pos]->liberties += State.numNeighboursEmpty[pos] - commonLiberties; //Subtract one since the new stone is always placed on a liberty for the block.
 		std::cout<< " Stone liberties :"<<State.numNeighboursEmpty[pos] <<" Common: "<<commonLiberties<< " New liberty total: "<<State.blockPointers[pos]->liberties<<std::endl; 
 		
 		//TODO: Handle block joining to prevent counting common liberties twice. 
 		
 	}
+	
+	State.blockPointers[pos]->stones.push_back(pos);
+	
+	KillDeadBlocks();
+
 }
 
 void GoBoard::KillDeadBlocks()
 {
-
+	for(BlockListIterator it = blocks.begin(); it != blocks.end(); it++)
+	{
+		if((*it)->Liberties() == 0)
+		{
+			GoBlock* killblock = (*it);
+			it = blocks.erase(it);
+			delete killblock;
+		}
+	}
 }
 
 const bool GoBoard::IsLibertyOfBlock(const int point, const int anchor) const
@@ -141,22 +166,22 @@ const bool GoBoard::IsLibertyOfBlock(const int point, const int anchor) const
 	if(!Occupied(anchor))
 		return false;
 	const GoBlock* block = State.blockPointers[anchor];
-	if(North(point) != -1 && State.blockPointers[North(point)] == block && !Occupied(point))
+	if(North(point) != -1 && State.blockPointers[North(point)] == block && State.blockPointers[North(point)] != State.blockPointers[point])
 	{
 		std::cout<<point<<" is a liberty of the group at "<<North(point)<< "with anchor in "<<anchor<<std::endl;
 		return true;
 	}
-	if(South(point) != -1 && State.blockPointers[South(point)] == block && !Occupied(point))
+	if(South(point) != -1 && State.blockPointers[South(point)] == block && State.blockPointers[South(point)] != State.blockPointers[point])
 	{
 		std::cout<<point<<" is a liberty of the group at "<<South(point)<< "with anchor in "<<anchor<<std::endl;
 		return true;
 	}
-	if(West(point) != -1 && State.blockPointers[West(point)] == block && !Occupied(point))
+	if(West(point) != -1 && State.blockPointers[West(point)] == block && State.blockPointers[West(point)] != State.blockPointers[point])
 	{
 		std::cout<<point<<" is a liberty of the group at "<<West(point)<< "with anchor in "<<anchor<<std::endl;
 		return true;
 	}
-	if(East(point) != -1 && State.blockPointers[East(point)] == block && !Occupied(point))
+	if(East(point) != -1 && State.blockPointers[East(point)] == block && State.blockPointers[East(point)] != State.blockPointers[point])
 	{
 		std::cout<<point<<" is a liberty of the group at "<<East(point)<< "with anchor in "<<anchor<<std::endl;
 		return true;
@@ -166,27 +191,22 @@ const bool GoBoard::IsLibertyOfBlock(const int point, const int anchor) const
 
 const int GoBoard::FindCommonLiberties(const int point, const int anchor) const
 {
-	std::cout<<"Finding common liberties between point: "<<point<<" and block at "<<anchor<<std::endl;
 	int commonLiberties = 0;
 	if(North(point)!=-1 && point != anchor && IsLibertyOfBlock(North(point),anchor))
 	{
 		++commonLiberties;
-		std::cout<<"Common liberty at "<<North(point)<<std::endl;
 	}
 	if(South(point)!=-1 && point != anchor && IsLibertyOfBlock(South(point),anchor))
 	{
 		++commonLiberties;
-		std::cout<<"Common liberty at "<<South(point)<<std::endl;
 	}
 	if(West(point)!=-1 && point != anchor && IsLibertyOfBlock(West(point),anchor))
 	{
 		++commonLiberties;
-		std::cout<<"Common liberty at "<<West(point)<<std::endl;
 	}
 	if(East(point)!=-1 && point != anchor && IsLibertyOfBlock(East(point),anchor))
 	{
 		++commonLiberties;
-		std::cout<<"Common liberty at "<<East(point)<<std::endl;
 	}
 	return commonLiberties;
 }
@@ -220,11 +240,12 @@ const GoMove* GoBoard::Play(GoPoint p)
 
 void GoBoard::AddStone(int point, int color)
 {
+	int boardColor = color == S_BLACK? B_BLACK : B_WHITE;
 //	int w = West(point);
 //	int e = East(point);
 //	int n = North(point);
 //	int s = South(point);
-	State.stones[point] = color;
+	State.stones[point] = boardColor;
 	if(West(point) != -1)
 	{
 		

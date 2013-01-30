@@ -5,7 +5,11 @@
 #include "GoMove.h"
 #include "Config.h"
 #include "GoState.h"
+#include "GoBlock.h"
 #include <list>
+
+typedef std::list<GoBlock*> BlockList;
+typedef std::list<GoBlock*>::iterator BlockListIterator;
 
 class GoBoard
 {
@@ -61,8 +65,11 @@ public:
 		GoState State;
 private:
 	int BoardSize;
+	BlockList blocks;
 	
 };
+
+
 
 
 #endif //#ifndef __GOBOARD_H__

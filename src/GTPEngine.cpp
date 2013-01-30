@@ -93,6 +93,11 @@ void GTPEngine::parse()
 			GoPoint p = GoPoint(ColumnStringToInt(args[2].substr(0,1)),RowStringToInt(args[2].substr(1,2)),B_WHITE);
 			std::cout<<"= "<<game->Board->State.numNeighboursEmpty[game->Board->Pos(p)]<<"\n\n";
 		}
+		if(args[1] == "libblock")
+		{	
+			GoPoint p = GoPoint(ColumnStringToInt(args[2].substr(0,1)),RowStringToInt(args[2].substr(1,2)),B_WHITE);
+			std::cout<<"= "<<game->Board->State.blockPointers[game->Board->Pos(p)]->Liberties()<<"\n\n";
+		}
 	}
 	#endif //IFDEF DEBUG_MODE
 	else
@@ -140,9 +145,9 @@ const int GTPEngine::RowStringToInt(std::string str) const
 const int GTPEngine::ColorFromString(std::string str) const
 {
 	if(str == "w" || str == "W" || str == "white" || str == "WHITE")
-		return B_BLACK;
+		return S_BLACK;
 	else if(str == "b" || str == "B" || str == "black" || str == "BLACK")
-		return B_WHITE;
+		return S_WHITE;
 	else
 		throw Exception("Unable to convert string to BoardColor.");
 }

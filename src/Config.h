@@ -16,6 +16,15 @@ const int BOARD_BOTTOM_RIGHT = 18;
 const int BOARD_TOP_LEFT = 342;
 const int BOARD_TOP_RIGHT = 360;
 
-#define DEBUG_MODE
+enum LoggingLevels
+{
+	ERROR = 0,
+	DEBUG,
+	VERBOSE
+};
 
 #endif //#ifndef __CONFIG_H__
+#ifndef DEBUG_MODE
+#define DEBUG_MODE
+#endif
+

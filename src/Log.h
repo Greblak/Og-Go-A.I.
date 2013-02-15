@@ -3,12 +3,20 @@
 class Log
 {
 public:
-	Log(void);
-	~Log();
+	 //None/ERROR by default, unless otherwise overwritten by program arguments
+
+	inline Log(void)
+	{
+
+	};
+	inline ~Log()
+	{
+	};
 
 	inline static void Out(std::string message)
 	{
-		std::cout<<message<<"\n\n";
+		if(LogLevel > DEBUG)
+			std::cout<<message<<"\n\n";
 		//TODO: Implement log to file or other
 	}
 	inline static void Err(std::string message)

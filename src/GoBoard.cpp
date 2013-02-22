@@ -25,7 +25,6 @@ GoBoard::GoBoard(int size)
 		if(IsCorner(i))
 		{
 			State.numNeighboursEmpty[i]= 2;
-			std::cout<<"Corner: "<<i<<std::endl;
 		}
 		else if(IsBorder(i))
 		{

@@ -1,11 +1,13 @@
 #include <iostream>
+#include "Config.h"
 
+extern int LogLevel;
 class Log
 {
 public:
 	 //None/ERROR by default, unless otherwise overwritten by program arguments
 
-	inline Log(void)
+	inline Log(int level)
 	{
 
 	};
@@ -13,15 +15,26 @@ public:
 	{
 	};
 
+	//Verbose output
 	inline static void Out(std::string message)
 	{
 		if(LogLevel > DEBUG)
-			std::cout<<message<<"\n\n";
+		  std::cout<<message<<std::endl;
 		//TODO: Implement log to file or other
 	}
-	inline static void Err(std::string message)
+
+	//Debugging output. Note inclusion of file and line. __FILE__ and __LINE__ will be used
+	inline static void Deb(std::string message, std::string file, int line)
 	{
-		std::cerr<<message<<"\n\n";
+		if(LogLevel >= DEBUG)
+		  std::cout<<file<<":"<<line<<" - "<<message<<std::endl;
+		//TODO: Implement log to file or other
+	}
+
+	//Erronous output. Note inclusion of file and line. __FILE__ and __LINE__ will be used
+	inline static void Err(const std::string message, const char* file, const int line)
+	{
+		std::cerr<<"Error in "<<file<<":"<<line<<" - "<< message<<"\n\n";
 		//TODO: Implement log to file or other
 	}
 	inline static void In(std::string message)

@@ -143,7 +143,7 @@
 			"file": "GoBlock.h",
 			"settings":
 			{
-				"buffer_size": 326,
+				"buffer_size": 385,
 				"line_ending": "Unix"
 			}
 		},
@@ -151,7 +151,7 @@
 			"file": "GoBlock.cpp",
 			"settings":
 			{
-				"buffer_size": 158,
+				"buffer_size": 1088,
 				"line_ending": "Unix"
 			}
 		},
@@ -159,7 +159,7 @@
 			"file": "GoBoard.h",
 			"settings":
 			{
-				"buffer_size": 1401,
+				"buffer_size": 1944,
 				"line_ending": "Unix"
 			}
 		},
@@ -167,7 +167,7 @@
 			"file": "GoBoard.cpp",
 			"settings":
 			{
-				"buffer_size": 4294,
+				"buffer_size": 10003,
 				"line_ending": "Unix"
 			}
 		},
@@ -175,7 +175,31 @@
 			"file": "GTPEngine.cpp",
 			"settings":
 			{
-				"buffer_size": 2992,
+				"buffer_size": 3599,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Og-Go A.I.sublime-project",
+			"settings":
+			{
+				"buffer_size": 269,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/rune/.config/sublime-text-2/Packages/SublimeGDB/SublimeGDB.sublime-settings",
+			"settings":
+			{
+				"buffer_size": 2718,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Makefile",
+			"settings":
+			{
+				"buffer_size": 244,
 				"line_ending": "Unix"
 			}
 		},
@@ -183,7 +207,7 @@
 			"file": "Config.h",
 			"settings":
 			{
-				"buffer_size": 340,
+				"buffer_size": 494,
 				"line_ending": "Unix"
 			}
 		}
@@ -194,6 +218,14 @@
 		"height": 392.0,
 		"selected_items":
 		[
+			[
+				"gdb",
+				"SublimeGDB: Start Debugging"
+			],
+			[
+				"debu",
+				"SublimeGDB: Start Debugging"
+			],
 			[
 				"GDB",
 				"Preferences: SublimeGDB Settings – Default"
@@ -215,7 +247,7 @@
 				"Preferences: SublimeClang Settings – Default"
 			]
 		],
-		"width": 422.0
+		"width": 449.0
 	},
 	"console":
 	{
@@ -361,7 +393,7 @@
 	"groups":
 	[
 		{
-			"selected": 4,
+			"selected": 5,
 			"sheets":
 			[
 				{
@@ -369,20 +401,21 @@
 					"file": "GoBlock.h",
 					"settings":
 					{
-						"buffer_size": 326,
+						"buffer_size": 385,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								128,
-								128
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C++.tmLanguage"
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -395,20 +428,21 @@
 					"file": "GoBlock.cpp",
 					"settings":
 					{
-						"buffer_size": 158,
+						"buffer_size": 1088,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								31,
-								31
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C++.tmLanguage"
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -421,15 +455,15 @@
 					"file": "GoBoard.h",
 					"settings":
 					{
-						"buffer_size": 1401,
+						"buffer_size": 1944,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1352,
-								1352
+								0,
+								0
 							]
 						],
 						"settings":
@@ -448,15 +482,15 @@
 					"file": "GoBoard.cpp",
 					"settings":
 					{
-						"buffer_size": 4294,
+						"buffer_size": 10003,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								358,
-								358
+								613,
+								613
 							]
 						],
 						"settings":
@@ -475,15 +509,15 @@
 					"file": "GTPEngine.cpp",
 					"settings":
 					{
-						"buffer_size": 2992,
+						"buffer_size": 3599,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1353,
-								1353
+								0,
+								0
 							]
 						],
 						"settings":
@@ -499,18 +533,98 @@
 				},
 				{
 					"buffer": 5,
-					"file": "Config.h",
+					"file": "Og-Go A.I.sublime-project",
 					"settings":
 					{
-						"buffer_size": 340,
+						"buffer_size": 269,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								334,
-								334
+								269,
+								269
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/home/rune/.config/sublime-text-2/Packages/SublimeGDB/SublimeGDB.sublime-settings",
+					"settings":
+					{
+						"buffer_size": 2718,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								208,
+								208
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "Makefile",
+					"settings":
+					{
+						"buffer_size": 244,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								167,
+								167
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Makefile/Makefile.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "Config.h",
+					"settings":
+					{
+						"buffer_size": 494,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
 							]
 						],
 						"settings":
@@ -575,6 +689,10 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"break",
+				"GDB Breakpoints"
+			],
 			[
 				"sta",
 				"src/GoState.h"

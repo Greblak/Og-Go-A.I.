@@ -25,7 +25,7 @@ Version 0.4 - Begin work on move-deciding algorithms. Type yet undefined.
 #include "Exception.h"
 
 
-int LogLevel = ERROR;
+int LogLevel;
 #include "Log.h"
 
 /*
@@ -38,6 +38,7 @@ Arguments taken:
 
 int main(int argc, char *argv[])
 {
+  LogLevel = ERROR;
 	for (int i = 1; i < argc; i++)
 	{
 	 if(strcmp(argv[i], "-v") == 0)
@@ -46,6 +47,7 @@ int main(int argc, char *argv[])
 	 	LogLevel = DEBUG;
 	}
 
+	Log::Out("Starting GTP Engine");
 	GTPEngine gtp = GTPEngine();
 	while(true)
 	{

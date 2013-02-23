@@ -132,10 +132,14 @@ void GoBoard::UpdateBlocks(int pos, int color)
 			commonLiberties = FindCommonLiberties(pos,East(pos));
 			State.blockPointers[pos] = State.blockPointers[East(pos)];
 		}
-		
-		std::cout<<"Old libcount: "<<State.blockPointers[pos]->liberties;
+		std::stringstream ss;
+		ss<<"Old libcount: "<<State.blockPointers[pos]->liberties;
+		Log::Deb(ss.str(),__FILE__,__LINE__);
 		State.blockPointers[pos]->liberties += State.numNeighboursEmpty[pos] - commonLiberties; //Subtract one since the new stone is always placed on a liberty for the block.
-		std::cout<< " Stone liberties :"<<State.numNeighboursEmpty[pos] <<" Common: "<<commonLiberties<< " New liberty total: "<<State.blockPointers[pos]->liberties<<std::endl; 
+		std::stringstream sss;
+		sss<< " Stone liberties :"<<State.numNeighboursEmpty[pos] <<" Common: "<<commonLiberties<< " New liberty total: "<<State.blockPointers[pos]->liberties; 
+		Log::Deb(sss.str(),__FILE__,__LINE__);
+	
 		
 		//TODO: Handle block joining
 		//Detect neighbouring blocks to perform join.
@@ -264,7 +268,6 @@ void GoBoard::AddStone(int point, int color)
 	}
 	if(East(point) != -1)
 	{
-		int w = West(point);
 		--State.numNeighboursEmpty[East(point)];
 		++State.numNeighbours[color][East(point)];
 	}
@@ -320,10 +323,9 @@ bool GoBoard::IsSuicide(const GoPoint p) const
 
 const int GoBoard::Liberties(const GoPoint p) const
 {
-	if(IsRealPoint(p))
-		if(Occupied(p))
-			return Liberties(Pos(p));
-	return -1;
+  if(IsRealPoint(p) && Occupied(p))
+	return Liberties(Pos(p));
+  return -1;
 }
 
 const int GoBoard::Liberties(int pos) const

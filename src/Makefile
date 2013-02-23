@@ -3,7 +3,7 @@ CC_FLAGS = -g -Wall
 SOURCES = $(wildcard *.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
 EXEC = oggoai
-
+all: default
 default: $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(EXEC)
 	chmod +x $(EXEC)

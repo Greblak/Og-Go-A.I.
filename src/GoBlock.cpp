@@ -1,6 +1,7 @@
 #include "GoBlock.h"
 #include <iostream>
 #include "Log.h"
+#include <sstream>
 GoBlock::GoBlock()
 {
 
@@ -25,7 +26,9 @@ const int GoBlock::Liberties() const
 }
 void GoBlock::ImportBlock(GoBlock* block)
 {
-  Log::Deb("Importing block",__FILE__,__LINE__);
+  std::stringstream ss;
+  ss << "Importing block "<<block->anchor<< " into " <<anchor;
+  Log::Deb(ss.str(),__FILE__,__LINE__);
   int newLiberties = 0;
   for(std::list<int>::iterator it = block->stones.begin(); it != block->stones.end(); it++)
     {

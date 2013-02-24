@@ -37,20 +37,19 @@ void GTPEngine::parse()
 {
   std::string userInput;
   std::getline(std::cin, userInput);
-  Log::In(userInput);
 
   std::vector<std::string> args;
   boost::split(args, userInput,boost::is_any_of( " " ));
 
   if(args[0] == "name")
-    Log::Out("= "+PROGRAM_NAME);
+    LOG_OUT << "= "+PROGRAM_NAME;
   else if(args[0] == "version")
-    Log::Out("= "+PROGRAM_VERSION);
+    LOG_OUT << "= "+PROGRAM_VERSION;
   else if(args[0] == "protocol_version")
-    Log::Out("= "+PROGRAM_GTP_VERSION);
+    LOG_OUT << "= "+PROGRAM_GTP_VERSION;
   else if(args[0] == "list_commands")
     {
-      Log::Out("= name\nversion\nprotocol_version\nlist_commands\nboardsize\ngenmove\nplay\nclear_board\nshowboard");
+      LOG_OUT << "= name\nversion\nprotocol_version\nlist_commands\nboardsize\ngenmove\nplay\nclear_board\nshowboard";
     }
   else if(args[0] == "boardsize")
     {
@@ -68,30 +67,24 @@ void GTPEngine::parse()
       }
 
       game = new GoGame(bsize);
-      Log::Out("= 1");
+      LOG_OUT << "= 1";
     }
   else if(args[0] == "clear_board")
     {
       delete game;
       game = new GoGame(BOARD_DEFAULT_SIZE);
-      Log::Out("= 1");
+      LOG_OUT << "= 1";
     }
   else if(args[0] == "play" || (LogLevel >= DEBUG && args[0] == "p"))
     {
       game->Play(ColorFromString(args[1]), ColumnStringToInt(args[2].substr(0,1)),
           RowStringToInt(args[2].substr(1,2)));
-      Log::Out("= 1");
+      LOG_OUT << "= 1";
     }
   else if(args[0] == "genmove")
     {
-
       GoPoint pos = game->GenerateMove(ColorFromString(args[1]));
-
-      std::stringstream ss;
-      ss <<"= " << ColumnIntToString(pos.x)<<RowIntToString(pos.y);
-
-      Log::Out(ss.str());
-
+      LOG_OUT <<"= " << ColumnIntToString(pos.x)<<RowIntToString(pos.y);
     }
   else if(args[0] == "showboard")
     {
@@ -103,12 +96,12 @@ void GTPEngine::parse()
       if(args[1] == "libstone")
         {
           GoPoint p = GoPoint(ColumnStringToInt(args[2].substr(0,1)),RowStringToInt(args[2].substr(1,2)),B_WHITE);
-          std::cout<<"= "<<game->Board->State.numNeighboursEmpty[game->Board->Pos(p)]<<"\n\n";
+          LOG_DEBUG << "= "<<game->Board->State.numNeighboursEmpty[game->Board->Pos(p)]<<"\n\n";
         }
       if(args[1] == "libblock")
         {
           GoPoint p = GoPoint(ColumnStringToInt(args[2].substr(0,1)),RowStringToInt(args[2].substr(1,2)),B_WHITE);
-          std::cout<<"= "<<game->Board->State.blockPointers[game->Board->Pos(p)]->Liberties()<<"\n\n";
+          LOG_DEBUG << "= "<<game->Board->State.blockPointers[game->Board->Pos(p)]->Liberties()<<"\n\n";
         }
     }
 #endif //IFDEF DEBUG_MODE

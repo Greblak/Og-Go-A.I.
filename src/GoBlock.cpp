@@ -26,14 +26,12 @@ const int GoBlock::Liberties() const
 }
 void GoBlock::ImportBlock(GoBlock* block)
 {
-  std::stringstream ss;
-  ss << "Importing block "<<block->anchor<< " into " <<anchor;
-  Log::Deb(ss.str(),__FILE__,__LINE__);
+
+  LOG_DEBUG << "Importing block "<<block->anchor<< " into " <<anchor;
   int newLiberties = 0;
   for(std::list<int>::iterator it = block->stones.begin(); it != block->stones.end(); it++)
     {
-
-      std::cout<<"Checking uncommon liberties for stone at "<<(*it)<<std::endl<<"Numblibs for stone: "<<board->State.numNeighboursEmpty[(*it)]<<std::endl;
+      LOG_DEBUG << "Checking uncommon liberties for stone at "<<(*it)<<std::endl<<"Numblibs for stone: "<<board->State.numNeighboursEmpty[(*it)];
       if(board->State.stones[board->North(*it)] == NONE && !board->IsLibertyOfBlock(board->North(*it),anchor))
          ++newLiberties;
       if(board->State.stones[board->South(*it)] == NONE && !board->IsLibertyOfBlock(board->South(*it),anchor))
@@ -46,16 +44,17 @@ void GoBlock::ImportBlock(GoBlock* block)
       //Import all stones
       stones.push_back((*it));
     }
-  std::cout<<"Libs for this block: "<<liberties<< " + Unique libs for other block: "<<newLiberties<<std::endl;
+  LOG_DEBUG << "Libs for this block: "<<liberties<< " + Unique libs for other block: "<<newLiberties;
+
   liberties += newLiberties;
-  std::cout<<"Blocks joined. "<<" - New number of liberties: "<<liberties<<std::endl;
+  LOG_DEBUG << "Blocks joined. "<<" - New number of liberties: "<<liberties;
   delete block;
 }
 void GoBlock::RemoveStones()
 {
   for(std::list<int>::iterator it = stones.begin(); it!=stones.end(); it++)
     {
-      std::cout<<"Deleting stone at position: "<<(*it)<<std::endl;
+      LOG_DEBUG << "Deleting stone at position: "<<(*it);
       board->State.stones[(*it)] = NONE;
     }
 }

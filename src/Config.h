@@ -18,7 +18,8 @@ const int BOARD_TOP_RIGHT = 360;
 
 enum LoggingLevels
 {
-	ERROR = 0,
+        PRINT = 0,
+	ERROR,
 	DEBUG,
 	VERBOSE
 };

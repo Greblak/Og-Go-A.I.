@@ -140,7 +140,11 @@ void GoBoard::UpdateBlocks(int pos, int color)
       b->board = this;
       b->liberties= State.numNeighboursEmpty[pos];
       State.blockPointers[pos] = b;
-      std::cout<<"Single stone with liberties: "<<b->liberties<<std::endl;
+//      std::stringstream ss;
+//      ss<<"Single stone places with liberties: "<<b->liberties;
+//      Log::Deb(ss.str(),__FILE__,__LINE__);
+
+      LOG_DEBUG << "Single stone places with liberties: "<<b->liberties;
 
     }
   else //Not solo. Attach to block
@@ -170,15 +174,10 @@ void GoBoard::UpdateBlocks(int pos, int color)
           uniqueLiberties = FindUniqueLiberties(pos, State.blockPointers[East(pos)]);
           State.blockPointers[pos] = State.blockPointers[East(pos)];
         }
-      std::stringstream ss;
-      ss<<"Old block("<<State.blockPointers[pos]->anchor<<") libcount: "<<State.blockPointers[pos]->liberties;
-      Log::Deb(ss.str(),__FILE__,__LINE__);
+      LOG_DEBUG << "Old block("<<State.blockPointers[pos]->anchor<<") libcount: "<<State.blockPointers[pos]->liberties;
       //Subtract one since the new stone is always placed on a liberty for the block.
       State.blockPointers[pos]->liberties += uniqueLiberties;
-      std::stringstream sss;
-      sss<< " Stone liberties :"<<State.numNeighboursEmpty[pos] <<" Unique: "<<uniqueLiberties<< " New block liberty total: "<<State.blockPointers[pos]->liberties;
-      Log::Deb(sss.str(),__FILE__,__LINE__);
-
+      LOG_DEBUG <<  " Stone liberties :"<<State.numNeighboursEmpty[pos] <<" Unique: "<<uniqueLiberties<< " New block liberty total: "<<State.blockPointers[pos]->liberties;
 
       //TODO: Handle block joining
       //Detect neighboring blocks to perform join.
@@ -253,9 +252,7 @@ const bool GoBoard::IsLibertyOfBlock(const int point, const int anchor) const
 
 const int GoBoard::FindCommonLiberties(const int point, const int anchor) const
 {
-  std::stringstream ss;
-  ss<<"Finding common liberties between point: "<<point<<" and block at "<<anchor;
-  Log::Verbose(ss.str(),__FILE__,__LINE__);
+  LOG_DEBUG << "Finding common liberties between point: "<<point<<" and block at "<<anchor;
 
   int commonLiberties = 0;
   if(North(point)!=-1 && point != anchor && IsLibertyOfBlock(North(point),anchor))
@@ -294,9 +291,8 @@ const GoMove* GoBoard::Play(GoPoint p, int color)
 {
   if(!IsLegal(p, p.color))
     throw "Illegal move";
-  std::stringstream ss;
-  ss<<"Playing color "<<p.color<<" at "<<p.x<<","<<p.y;
-  Log::Deb(ss.str(),__FILE__,__LINE__);
+
+  LOG_DEBUG << "Playing color "<<p.color<<" at "<<p.x<<","<<p.y;
   AddStone(Pos(p),p.color);
 
   return 0;
@@ -438,33 +434,32 @@ int GoBoard::East(const GoPoint p) const
 
 void GoBoard::DisplayCurrentState() const
 {
-  std::cout<<"=1 \n Showing current gamestate\n";
+  LOG_OUT << "=1 \n Showing current gamestate\n";
   for(int i = BOARD_MAX_SIZE-1; i>=0;i--)
     {
       if(i+1 >= 10)
-        std::cout<<"\n "<<(i+1);
+        LOG_OUT<<"\n "<<(i+1);
       else
-        std::cout<<"\n  "<<(i+1);
+        LOG_OUT<<"\n  "<<(i+1);
       for(int j = 0; j<BOARD_MAX_SIZE;j++)
         {
           if(State.stones[BOARD_MAX_SIZE*i+j] == NONE)
-            std::cout<< " -";
+            LOG_OUT<< " -";
           else if(State.stones[BOARD_MAX_SIZE*i+j] == B_BLACK)
-            std::cout<< " O";
+            LOG_OUT<< " O";
           else if(State.stones[BOARD_MAX_SIZE*i+j] == B_WHITE)
-            std::cout<< " X";
+            LOG_OUT<< " X";
           else
             {
-              std::stringstream ss;
-              ss << "Wrong domain in board representation "<< State.stones[BOARD_MAX_SIZE*i+j];
-              throw ss.str().c_str();
+              LOG_ERROR<< "Wrong domain in board representation "<< State.stones[BOARD_MAX_SIZE*i+j];
+              throw "Domain error in board representation. See log file for details";
             }
         }
     }
-  std::cout<<"\n    ";
+  LOG_OUT<<"\n    ";
   for(int k = 0; k<BOARD_MAX_SIZE; k++)
     {
-      std::cout<<GTPEngine::ColumnIntToString(k)<<" ";
+      LOG_OUT<<GTPEngine::ColumnIntToString(k)<<" ";
     }
-  std::cout<<"\n\n\n\n\n";
+  LOG_OUT<<"\n\n\n\n\n";
 }

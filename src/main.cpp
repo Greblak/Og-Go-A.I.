@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
         doTests = true;
     }
 
+  LOG_VERBOSE << "Built " << __DATE__ << " - " << __TIME__;
   LOG_OUT << "Starting GTP Engine";
   GTPEngine gtp = GTPEngine();
   while(true)

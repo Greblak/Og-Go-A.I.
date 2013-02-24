@@ -2,7 +2,7 @@ CC = g++
 CC_FLAGS = -g -Wall
 SOURCES = $(wildcard *.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
-EXEC = oggoai
+EXEC = ../bin/oggoai
 all: default
 default: $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(EXEC)

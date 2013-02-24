@@ -11,19 +11,20 @@
 #include "GoGame.h"
 #include "Exception.h"
 
+extern int LogLevel;
 extern bool doTests;
 GTPEngine::GTPEngine(void)
 {
   game = new GoGame(BOARD_DEFAULT_SIZE);
   if(doTests)
     {
-      Log::Deb("Setting up block join testbed. Play at C3",__FILE__,__LINE__);
-      game->Play(S_WHITE,0,0);
-      game->Play(S_WHITE,1,0);
-      game->Play(S_WHITE,2,0);
-      game->Play(S_WHITE,2,1);
-      game->Play(S_WHITE,0,2);
-      game->Play(S_WHITE,1,2);
+//      Log::Deb("Setting up block join testbed. Play at C3",__FILE__,__LINE__);
+//      game->Play(S_WHITE,0,0);
+//      game->Play(S_WHITE,1,0);
+//      game->Play(S_WHITE,2,0);
+//      game->Play(S_WHITE,2,1);
+//      game->Play(S_WHITE,0,2);
+//      game->Play(S_WHITE,1,2);
     }
 }
 
@@ -75,7 +76,7 @@ void GTPEngine::parse()
       game = new GoGame(BOARD_DEFAULT_SIZE);
       Log::Out("= 1");
     }
-  else if(args[0] == "play")
+  else if(args[0] == "play" || (LogLevel >= DEBUG && args[0] == "p"))
     {
       game->Play(ColorFromString(args[1]), ColumnStringToInt(args[2].substr(0,1)),
           RowStringToInt(args[2].substr(1,2)));

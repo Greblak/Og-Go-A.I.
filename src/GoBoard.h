@@ -44,6 +44,7 @@ public:
 
 		const bool IsLibertyOfBlock(const int point, const int anchor) const;
 		const int FindCommonLiberties(const int point, const int anchor) const; //Used when joining a single stone to a block
+		const int FindUniqueLiberties(const int stone, const GoBlock* block) const;
 		void UpdateBlocks(const GoPoint p);
 		void KillDeadBlocks();
 

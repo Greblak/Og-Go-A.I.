@@ -85,17 +85,50 @@ void GoBoard::UpdateBlocks(const GoPoint p)
   UpdateBlocks(Pos(p), p.color);
 }
 
+const int GoBoard::FindUniqueLiberties(const int stone, const GoBlock* block) const
+{
+  int uniqueLiberties;
+
+  int lib;
+  for(int i = 0; i < 4; i++)
+    {
+      if(i == 0)
+        lib = North(stone);
+      else if(i == 1)
+        lib = South(stone);
+      else if(i == 2)
+        lib = West(stone);
+      else if(i == 3)
+        lib = East(stone);
+      if(State.stones[lib] == NONE)
+        {
+          if(State.blockPointers[North(lib)] != block &&
+              State.blockPointers[South(lib)] != block &&
+              State.blockPointers[West(lib)] != block &&
+              State.blockPointers[East(lib)] != block)
+            ++uniqueLiberties;
+        }
+    }
+  return uniqueLiberties;
+}
+
 void GoBoard::UpdateBlocks(int pos, int color)
 {
   int boardColor = color == S_BLACK? B_BLACK : B_WHITE;
   //Remove blockliberties of opposite color
   if(North(pos) != -1 && IsLibertyOfBlock(pos,North(pos)))
     State.blockPointers[North(pos)]->liberties--;
-  if(South(pos) != -1 && IsLibertyOfBlock(pos,South(pos)))
+  if(South(pos) != -1 &&
+      (State.blockPointers[South(pos)] != State.blockPointers[North(pos)]) //These are in place on west and east as well, to prevent removing too several liberties from the same group
+      && IsLibertyOfBlock(pos,South(pos)))
     State.blockPointers[South(pos)]->liberties--;
-  if(West(pos) != -1 && IsLibertyOfBlock(pos,West(pos)))
+  if(West(pos) != -1
+      && (State.blockPointers[West(pos)] != State.blockPointers[North(pos)] && State.blockPointers[West(pos)] != State.blockPointers[South(pos)])
+      && IsLibertyOfBlock(pos,West(pos)))
     State.blockPointers[West(pos)]->liberties--;
-  if(East(pos) != -1 && IsLibertyOfBlock(pos,East(pos)))
+  if(East(pos) != -1
+      && (State.blockPointers[East(pos)] != State.blockPointers[North(pos)] && State.blockPointers[East(pos)] != State.blockPointers[South(pos)] && State.blockPointers[East(pos)] != State.blockPointers[West(pos)])
+      && IsLibertyOfBlock(pos,East(pos)))
     State.blockPointers[East(pos)]->liberties--;
 
   if(State.numNeighbours[color][pos] == 0) //Solo stone. Create new block
@@ -107,39 +140,43 @@ void GoBoard::UpdateBlocks(int pos, int color)
       b->board = this;
       b->liberties= State.numNeighboursEmpty[pos];
       State.blockPointers[pos] = b;
-      std::cout<<"Original libs: "<<b->liberties<<std::endl;
+      std::cout<<"Single stone with liberties: "<<b->liberties<<std::endl;
 
     }
   else //Not solo. Attach to block
     {
-      int commonLiberties = 0;
+      int uniqueLiberties = 0;
       if (South(pos) != -1 && State.stones[South(pos)] == boardColor)
         {
-          commonLiberties = FindCommonLiberties(pos,South(pos));
+          //          commonLiberties = FindCommonLiberties(pos,South(pos));
+          uniqueLiberties = FindUniqueLiberties(pos, State.blockPointers[South(pos)]);
           State.blockPointers[pos] = State.blockPointers[South(pos)];
         }
       else if (North(pos) != -1 && State.stones[North(pos)] == boardColor)
         {
-          commonLiberties = FindCommonLiberties(pos,North(pos));
+          //          commonLiberties = FindCommonLiberties(pos,North(pos));
+          uniqueLiberties = FindUniqueLiberties(pos, State.blockPointers[North(pos)]);
           State.blockPointers[pos] = State.blockPointers[North(pos)];
         }
       else if (West(pos) != -1 && State.stones[West(pos)] == boardColor)
         {
-          commonLiberties = FindCommonLiberties(pos,West(pos));
+          //          commonLiberties = FindCommonLiberties(pos,West(pos));
+          uniqueLiberties = FindUniqueLiberties(pos, State.blockPointers[West(pos)]);
           State.blockPointers[pos] = State.blockPointers[West(pos)];
         }
       else if (East(pos) != -1 && State.stones[East(pos)] == boardColor)
         {
-          commonLiberties = FindCommonLiberties(pos,East(pos));
+          //          commonLiberties = FindCommonLiberties(pos,East(pos));
+          uniqueLiberties = FindUniqueLiberties(pos, State.blockPointers[East(pos)]);
           State.blockPointers[pos] = State.blockPointers[East(pos)];
         }
       std::stringstream ss;
-      ss<<"Old libcount: "<<State.blockPointers[pos]->liberties;
+      ss<<"Old block("<<State.blockPointers[pos]->anchor<<") libcount: "<<State.blockPointers[pos]->liberties;
       Log::Deb(ss.str(),__FILE__,__LINE__);
       //Subtract one since the new stone is always placed on a liberty for the block.
-      State.blockPointers[pos]->liberties += State.numNeighboursEmpty[pos] - commonLiberties;
+      State.blockPointers[pos]->liberties += uniqueLiberties;
       std::stringstream sss;
-      sss<< " Stone liberties :"<<State.numNeighboursEmpty[pos] <<" Common: "<<commonLiberties<< " New liberty total: "<<State.blockPointers[pos]->liberties;
+      sss<< " Stone liberties :"<<State.numNeighboursEmpty[pos] <<" Unique: "<<uniqueLiberties<< " New block liberty total: "<<State.blockPointers[pos]->liberties;
       Log::Deb(sss.str(),__FILE__,__LINE__);
 
 

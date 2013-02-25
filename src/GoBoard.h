@@ -39,6 +39,8 @@ public:
 
 		bool IsSuicide(const GoPoint p) const;
 		bool IsRealPoint(const GoPoint p) const;
+		bool IsRealPoint(const int p) const;
+
 
 		bool IsLegal(const GoPoint& p, int color); 
 
@@ -46,7 +48,7 @@ public:
 		const int FindCommonLiberties(const int point, const int anchor) const; //Used when joining a single stone to a block
 		const int FindUniqueLiberties(const int stone, const GoBlock* block) const;
 		void UpdateBlocks(const GoPoint p);
-		void KillDeadBlocks();
+		void KillSurroundingDeadBlocks(const int p);
 
 		const bool CapturedStones() const;
 		const std::list<GoPoint> GetCapturedStones() const;
@@ -60,6 +62,7 @@ public:
 		const GoMove* Play(GoPoint p);
 
 		void AddStone(int point, int color);
+		void RemoveStone(const int pos);
 		void UpdateBlocks(int point, int color);
 
 		void DisplayCurrentState() const;

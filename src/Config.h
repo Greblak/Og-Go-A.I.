@@ -16,6 +16,8 @@ const int BOARD_BOTTOM_RIGHT = 18;
 const int BOARD_TOP_LEFT = 342;
 const int BOARD_TOP_RIGHT = 360;
 
+const int NO_KO_POINT = -1;
+
 enum LoggingLevels
 {
         PRINT = 0,

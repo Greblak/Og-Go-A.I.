@@ -10,6 +10,7 @@ GoBlock::GoBlock()
 GoBlock::~GoBlock()
 {	
   //Remove itself from Board:
+  LOG_DEBUG << "Block deconstructor intialized";
   for(BlockListIterator it = board->blocks.begin(); it != board->blocks.end(); it++)
     {
       if((*it) == (this))
@@ -19,6 +20,7 @@ GoBlock::~GoBlock()
         }
     }
   board = 0;
+  LOG_DEBUG << "Block deconstructor complete.";
 }
 const int GoBlock::Liberties() const
 {
@@ -40,7 +42,7 @@ void GoBlock::ImportBlock(GoBlock* block)
          ++newLiberties;
       if(board->State.stones[board->West(*it)] == NONE && !board->IsLibertyOfBlock(board->West(*it),anchor))
          ++newLiberties;
-      std::cout<<"Current unique liberties" <<newLiberties<<std::endl;
+      LOG_DEBUG << "Current unique liberties" <<newLiberties<<std::endl;
       //Import all stones
       stones.push_back((*it));
     }
@@ -55,6 +57,7 @@ void GoBlock::RemoveStones()
   for(std::list<int>::iterator it = stones.begin(); it!=stones.end(); it++)
     {
       LOG_DEBUG << "Deleting stone at position: "<<(*it);
-      board->State.stones[(*it)] = NONE;
+      board->RemoveStone(*it);
     }
+  LOG_DEBUG << "All stones removed";
 }

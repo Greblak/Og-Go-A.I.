@@ -1,4 +1,5 @@
 #include "Log.h"
+#include "Config.h"
 #include "GoBoard.h"
 #include "GoPoint.h"
 #include "GoBlock.h"
@@ -14,11 +15,13 @@ GoBoard::GoBoard(int size)
   if(size > BOARD_MAX_SIZE || size < BOARD_MINIMUM_SIZE)
     throw "Invalid boardsize.";
   BoardSize = size;
-
+ State.koPoint = NO_KO_POINT;
+ LOG_DEBUG<< "KOPOINT SET TO "<<State.koPoint;
   //Initializing board
   for(int i = 0; i<(BOARD_MAX_SIZE*BOARD_MAX_SIZE); i++)
     {
       State.stones[i] = NONE;
+     
 
       State.numNeighbours[S_WHITE][i] = 0;
       State.numNeighbours[S_BLACK][i] = 0;
@@ -63,14 +66,19 @@ const bool GoBoard::Occupied(const GoPoint p) const
 
 const bool GoBoard::Occupied(const int p) const
 {
-  if(State.stones[p] != NONE)
+  if(IsRealPoint(p) && State.stones[p] != NONE)
     return true;
   return false;
 }
 
 bool GoBoard::IsRealPoint(GoPoint p) const
 {
-  if(Pos(p) <= BOARD_MAX_SIZE*BOARD_MAX_SIZE && Pos(p) >= 0)
+  return IsRealPoint(Pos(p));
+ }
+
+bool GoBoard::IsRealPoint(int p) const
+{
+  if(p <= BOARD_MAX_SIZE*BOARD_MAX_SIZE && p >= 0)
     return true;
   else
     return false;
@@ -117,11 +125,17 @@ void GoBoard::UpdateBlocks(int pos, int color)
   int boardColor = color == S_BLACK? B_BLACK : B_WHITE;
   //Remove blockliberties of opposite color
   if(North(pos) != -1 && IsLibertyOfBlock(pos,North(pos)))
+    {
     State.blockPointers[North(pos)]->liberties--;
+    LOG_DEBUG << "Removed liberty for block at "<< North(pos);
+    }
   if(South(pos) != -1 &&
       (State.blockPointers[South(pos)] != State.blockPointers[North(pos)]) //These are in place on west and east as well, to prevent removing too several liberties from the same group
       && IsLibertyOfBlock(pos,South(pos)))
+    {
     State.blockPointers[South(pos)]->liberties--;
+    LOG_DEBUG << "Removed liberty for block at "<< North(pos);
+    }
   if(West(pos) != -1
       && (State.blockPointers[West(pos)] != State.blockPointers[North(pos)] && State.blockPointers[West(pos)] != State.blockPointers[South(pos)])
       && IsLibertyOfBlock(pos,West(pos)))
@@ -140,9 +154,6 @@ void GoBoard::UpdateBlocks(int pos, int color)
       b->board = this;
       b->liberties= State.numNeighboursEmpty[pos];
       State.blockPointers[pos] = b;
-//      std::stringstream ss;
-//      ss<<"Single stone places with liberties: "<<b->liberties;
-//      Log::Deb(ss.str(),__FILE__,__LINE__);
 
       LOG_DEBUG << "Single stone places with liberties: "<<b->liberties;
 
@@ -200,24 +211,43 @@ void GoBoard::UpdateBlocks(int pos, int color)
         }
 
     }
-
+  LOG_DEBUG << "Stone added";
   State.blockPointers[pos]->stones.push_back(pos);
-
-  KillDeadBlocks();
+  KillSurroundingDeadBlocks(pos);
 
 }
 
-void GoBoard::KillDeadBlocks()
+void GoBoard::KillSurroundingDeadBlocks(const int pos)
 {
-  for(BlockListIterator it = blocks.begin(); it != blocks.end(); it++)
+  //Reset kopoint
+  State.koPoint = NO_KO_POINT;
+  for(int i = 0; i<4; i++)
     {
-      if((*it)->Liberties() == 0)
-        {
-          GoBlock* killblock = (*it);
-          it = blocks.erase(it);
-          killblock->RemoveStones();
-          delete killblock;
-        }
+      int blockPos = -1;
+      if(i == 0 && IsRealPoint(North(pos)) && State.stones[North(pos)] != NONE)
+	blockPos = North(pos);
+      if(i == 1 && IsRealPoint(South(pos)) && State.stones[South(pos)] != NONE)
+	blockPos = South(pos);
+      if(i == 2 && IsRealPoint(West(pos)) && State.stones[West(pos)] != NONE)
+	blockPos = West(pos);
+      if(i == 3 && IsRealPoint(East(pos)) && State.stones[East(pos)] != NONE)
+	blockPos = East(pos);
+      if(blockPos == -1)
+	continue;
+      GoBlock* p_block = State.blockPointers[blockPos];
+      if(p_block->Liberties() == 0)
+	{
+	  //Create ko-point if applicable(Single stone)
+	  if(p_block->stones.size()==1)
+	    {
+	      State.koPoint = blockPos;
+	      LOG_DEBUG << "Ko-point is now on "<<State.koPoint;
+	    }
+
+	  p_block->RemoveStones();
+	  delete p_block;
+	}
+      i++;
     }
 }
 
@@ -341,6 +371,41 @@ const int GoBoard::CurrentPlayer()
   return 0;
 }
 
+void GoBoard::RemoveStone(const int pos)
+{
+  int stoneColor = State.stones[pos] == B_BLACK? S_BLACK : S_WHITE;
+  //Handling opened liberties
+  if(IsRealPoint(North(pos)))
+    {
+      ++State.numNeighboursEmpty[North(pos)];
+      --State.numNeighbours[stoneColor][North(pos)];
+      if(State.stones[North(pos)] != NONE)
+	++State.blockPointers[North(pos)]->liberties;
+    }
+  if(IsRealPoint(South(pos)))
+    {
+      ++State.numNeighboursEmpty[South(pos)];
+      --State.numNeighbours[stoneColor][South(pos)];
+	if(State.stones[South(pos)] != NONE)
+	  ++State.blockPointers[South(pos)]->liberties;
+    }
+  if(IsRealPoint(West(pos)))
+    {
+      ++State.numNeighboursEmpty[West(pos)];
+      --State.numNeighbours[stoneColor][West(pos)];
+      if(State.stones[West(pos)] != NONE)
+	++State.blockPointers[West(pos)]->liberties;
+    }
+  if(IsRealPoint(East(pos)))
+    {
+      ++State.numNeighboursEmpty[East(pos)];
+      --State.numNeighbours[stoneColor][East(pos)];
+      if(State.stones[East(pos)] != NONE)
+	++State.blockPointers[East(pos)]->liberties;
+    }
+  //Remove the stone from the board
+  State.stones[pos] = NONE;
+}
 int GoBoard::Pos( GoPoint p) const
 {
   int x = p.x;
@@ -350,25 +415,39 @@ int GoBoard::Pos( GoPoint p) const
 
 bool GoBoard::IsLegal(const GoPoint& p, int color)
 {
+  if(!IsRealPoint(Pos(p)))
+     return false;
+  LOG_DEBUG << "Testing to see if pos: "<<Pos(p)<<" matches ko point "<<State.koPoint;
+  if(Pos(p) == State.koPoint)
+    {
+      LOG_DEBUG << "Illegal move due to Ko-rule";
+    return false;
+    }
   if(IsSuicide(p))
+    {
+      LOG_DEBUG << "Illegal move due to suicide";
     return false;
-  if(State.stones[Pos(p)]==NONE)
-    return true;
-  else
-    return false;
+    }
+  return true;
 }
 
 bool GoBoard::IsSuicide(const GoPoint p) const
 {
-  int Nc = State.stones[North(p)];
-  int Sc = State.stones[South(p)];
-  int Wc = State.stones[West(p)];
-  int Ec = State.stones[East(p)];
-  if(Nc == NONE || Nc == p.color ||
-      Sc == NONE || Sc == p.color ||
-      Wc == NONE || Wc == p.color ||
-      Ec == NONE || Ec == p.color ) //Does not account for setting in your own eye.
+  int boardColor = p.color == S_BLACK? B_BLACK : B_WHITE; //Converts GoPoint-Stonecolor to board color. Should be put in function...
+  int pos = Pos(p);
+  if(State.numNeighboursEmpty[pos]>0)
     return false;
+
+  //Allow "temporary suicide" if it leads to capture.
+  if(Occupied(North(pos)) && State.stones[North(pos)] != boardColor && State.blockPointers[North(pos)]->liberties == 1)
+    return false;
+  if (Occupied(South(pos)) && State.stones[South(pos)] != boardColor && State.blockPointers[South(pos)]->liberties == 1)
+    return false;
+  if(Occupied(West(pos)) && State.stones[West(pos)] != boardColor && State.blockPointers[West(pos)]->liberties == 1) 
+    return false;
+  if(Occupied(East(pos)) && State.stones[East(pos)] != boardColor && State.blockPointers[East(pos)]->liberties == 1)
+    return false;
+  
   return true;
 }
 
@@ -438,17 +517,17 @@ void GoBoard::DisplayCurrentState() const
   for(int i = BOARD_MAX_SIZE-1; i>=0;i--)
     {
       if(i+1 >= 10)
-        LOG_OUT<<"\n "<<(i+1);
+	std::cout<<"\n "<<(i+1);
       else
-        LOG_OUT<<"\n  "<<(i+1);
+        std::cout<<"\n  "<<(i+1);
       for(int j = 0; j<BOARD_MAX_SIZE;j++)
         {
           if(State.stones[BOARD_MAX_SIZE*i+j] == NONE)
-            LOG_OUT<< " -";
+            std::cout<< " -";
           else if(State.stones[BOARD_MAX_SIZE*i+j] == B_BLACK)
-            LOG_OUT<< " O";
+            std::cout<< " O";
           else if(State.stones[BOARD_MAX_SIZE*i+j] == B_WHITE)
-            LOG_OUT<< " X";
+            std::cout<< " X";
           else
             {
               LOG_ERROR<< "Wrong domain in board representation "<< State.stones[BOARD_MAX_SIZE*i+j];
@@ -456,10 +535,10 @@ void GoBoard::DisplayCurrentState() const
             }
         }
     }
-  LOG_OUT<<"\n    ";
+  std::cout<<"\n    ";
   for(int k = 0; k<BOARD_MAX_SIZE; k++)
     {
-      LOG_OUT<<GTPEngine::ColumnIntToString(k)<<" ";
+      std::cout<<GTPEngine::ColumnIntToString(k)<<" ";
     }
-  LOG_OUT<<"\n\n\n\n\n";
+  std::cout<<"\n\n\n\n\n";
 }

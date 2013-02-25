@@ -7,7 +7,7 @@
 class GoBlock;
 struct GoState
 {
-	GoPoint koPoint;
+  int koPoint;
 	GoStoneColor toPlay;
 	// std::list<GoBlock*> blocks;
 	int bw_prisoners[2];

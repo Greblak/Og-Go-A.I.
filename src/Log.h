@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Config.h"
 #include <sstream>
+#include <fstream>
 
 
 #define LOG_VERBOSE Log(VERBOSE).Verbose(__FILE__,__LINE__)
@@ -14,6 +15,7 @@ class Log
 private:
   std::stringstream ss;
   int level;
+  std::ostream logfile;
 public:
   //None/ERROR by default, unless otherwise overwritten by program arguments
 
@@ -23,7 +25,13 @@ public:
   inline ~Log()
   {
     if(LogLevel)
-    std::cout << ss.str()<<std::endl;
+      { 
+	std::cout << ss.str()  <<std::endl;
+	logfile.open("Debug.log",std::ios:app);
+	logfile << ss.str() <<std::endl;
+	logfile.close();
+	       
+      }
   };
 
 

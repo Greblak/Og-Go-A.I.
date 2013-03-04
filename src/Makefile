@@ -7,8 +7,9 @@ all: default
 default: $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(EXEC)
 	chmod +x $(EXEC)
-%.o: %.cpp
-	$(CC) -c $(CC_FLAGS) $< -o $@
+-include $(OBJECTS:.o=.d)
+%.o: %.cpp 
+	$(CC) -c $(CC_FLAGS) $*.cpp -o $*.o
+	$(CC) -MM $(CC_FLAGS) $*.cpp -o $*.d
 clean:
-	
 	rm -f $(EXEC) $(OBJECTS)

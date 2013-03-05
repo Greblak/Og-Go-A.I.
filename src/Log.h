@@ -15,7 +15,7 @@ class Log
 private:
   std::stringstream ss;
   int level;
-  std::ostream logfile;
+  std::ofstream logfile;
 public:
   //None/ERROR by default, unless otherwise overwritten by program arguments
 
@@ -27,7 +27,7 @@ public:
     if(LogLevel)
       { 
 	std::cout << ss.str()  <<std::endl;
-	logfile.open("Debug.log",std::ios:app);
+	logfile.open("Debug.log",std::ios::app);
 	logfile << ss.str() <<std::endl;
 	logfile.close();
 	       

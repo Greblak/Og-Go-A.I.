@@ -21,6 +21,7 @@ public:
 	const int ColumnStringToInt(std::string str) const ;
 	static const char ColumnIntToString(int n) ;
 
+
 	const int RowStringToInt(std::string str) const ;
 	static const int RowIntToString(int n)  ;
 

@@ -1,6 +1,8 @@
 #include <sstream>
 #include "Log.h"
+#include "GoMove.h"
 #include "GoGame.h"
+#include "SGFEngine.h"
 #include <cstdlib>
 
 GoGame::GoGame(int boardSize)
@@ -17,6 +19,8 @@ void GoGame::Play(int color, int x, int y)
 {
 	GoPoint p = GoPoint(x,y,color);
 	Board->Play(p);
+	moves.push_back(new GoMove(p.color,p));
+	SGFEngine::generateFile(this);
 }
 
 GoPoint GoGame::GenerateMove(int color)

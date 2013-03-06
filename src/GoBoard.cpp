@@ -417,6 +417,8 @@ bool GoBoard::IsLegal(const GoPoint& p, int color)
 {
   if(!IsRealPoint(Pos(p)))
      return false;
+  if(Occupied(p))
+     return false;
   LOG_DEBUG << "Testing to see if pos: "<<Pos(p)<<" matches ko point "<<State.koPoint;
   if(Pos(p) == State.koPoint)
     {

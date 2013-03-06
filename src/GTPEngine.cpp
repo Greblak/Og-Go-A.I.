@@ -15,16 +15,21 @@ extern int LogLevel;
 extern bool doTests;
 GTPEngine::GTPEngine(void)
 {
+  LOG_DEBUG<< "Starting GTP Engine";
   game = new GoGame(BOARD_DEFAULT_SIZE);
   if(doTests)
     {
-//      Log::Deb("Setting up block join testbed. Play at C3",__FILE__,__LINE__);
-//      game->Play(S_WHITE,0,0);
-//      game->Play(S_WHITE,1,0);
-//      game->Play(S_WHITE,2,0);
-//      game->Play(S_WHITE,2,1);
-//      game->Play(S_WHITE,0,2);
-//      game->Play(S_WHITE,1,2);
+      std::string line = "test";
+      std::ifstream file;
+      file.open("test.gtp");
+      int i = 0;
+      while(!file.eof())
+        {
+          std::cout << line <<std::endl;
+          std::getline(file,line);
+          parse(line);
+          ++i;
+        }
     }
 }
 
@@ -33,10 +38,8 @@ GTPEngine::~GTPEngine()
 
 }
 
-void GTPEngine::parse()
+void GTPEngine::parse(std::string userInput)
 {
-  std::string userInput;
-  std::getline(std::cin, userInput);
 
   std::vector<std::string> args;
   boost::split(args, userInput,boost::is_any_of( " " ));

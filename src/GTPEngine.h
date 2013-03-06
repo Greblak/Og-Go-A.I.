@@ -16,7 +16,7 @@ public:
 	GTPEngine(void);
 	~GTPEngine();
 
-	void parse();
+	void parse(std::string input);
 
 	const int ColumnStringToInt(std::string str) const ;
 	static const char ColumnIntToString(int n) ;

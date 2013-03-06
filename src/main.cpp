@@ -52,13 +52,15 @@ int main(int argc, char *argv[])
     }
 
   LOG_VERBOSE << "Built " << __DATE__ << " - " << __TIME__;
-  LOG_OUT << "Starting GTP Engine";
+
   GTPEngine gtp = GTPEngine();
   while(true)
     {
       try
       {
-          gtp.parse();
+          std::string userInput;
+          std::getline(std::cin, userInput);
+          gtp.parse(userInput);
       }
       catch( const char * str )
       {

@@ -14,12 +14,12 @@ public:
 	GoGame(int boardSize);
 	~GoGame();
 
-	GoBoard* Board;
+	GoBoard* Board; ///< The active board used in this game.
 
-	GoPoint GenerateMove(int color);
-	void Play(int color, int x, int y);
+	GoPoint GenerateMove(int color); ///< Used to trigger the AI to return a single move to be played
+	void Play(int color, int x, int y); ///< Playes a move with the given parameters
 	
-	std::vector<GoMove*> moves;
+	std::vector<GoMove*> moves; ///< A list of moves made in this game. Used to reproduce in SGF files
 };
 
 #endif //#ifndef __GOGAME_H__

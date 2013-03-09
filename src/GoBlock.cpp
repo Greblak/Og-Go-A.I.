@@ -4,7 +4,7 @@
 #include <sstream>
 GoBlock::GoBlock()
 {
-
+  LOG_DEBUG << "Created block at "<<this;
 }
 
 GoBlock::~GoBlock()
@@ -20,10 +20,11 @@ GoBlock::~GoBlock()
         }
     }
   board = 0;
-  LOG_DEBUG << "Block deconstructor complete.";
+  LOG_DEBUG << "Block deconstructor complete. Destroyed:"<<this;
 }
 const int GoBlock::Liberties() const
 {
+  LOG_DEBUG << "Libs for block at "<< this<< " : "<<board->Liberties(anchor);
   return board->Liberties(anchor);
 }
 void GoBlock::ImportBlock(GoBlock* block)
@@ -45,6 +46,7 @@ void GoBlock::ImportBlock(GoBlock* block)
       LOG_DEBUG << "Current unique liberties" <<newLiberties<<std::endl;
       //Import all stones
       stones.push_back((*it));
+      board->State.blockPointers[(*it)] = this;
     }
   LOG_DEBUG << "Libs for this block: "<<liberties<< " + Unique libs for other block: "<<newLiberties;
 
@@ -57,6 +59,8 @@ void GoBlock::RemoveStones()
   for(std::list<int>::iterator it = stones.begin(); it!=stones.end(); it++)
     {
       LOG_DEBUG << "Deleting stone at position: "<<(*it);
+      if(board->State.blockPointers[(*it)] == this)
+        board->State.blockPointers[(*it)] == 0;
       board->RemoveStone(*it);
     }
   LOG_DEBUG << "All stones removed";

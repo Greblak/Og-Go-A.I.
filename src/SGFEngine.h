@@ -11,8 +11,12 @@
 class SGFEngine
 {
 public:
+  /*
+   * Generates an SGF-file based on the moves played in the given game
+   */
   static inline void generateFile(const GoGame* game)
   {
+
     std::ofstream file;
     file.open("SGF.sgf");
     //Write preamble

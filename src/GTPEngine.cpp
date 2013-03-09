@@ -22,11 +22,15 @@ GTPEngine::GTPEngine(void)
       std::string line = "test";
       std::ifstream file;
       file.open("test.gtp");
+      if(file.fail())
+        {
+          LOG_DEBUG << "Test file failed to open. Business as usual";
+          return;
+        }
       int i = 0;
-      while(!file.eof())
+      while(std::getline(file,line))
         {
           std::cout << line <<std::endl;
-          std::getline(file,line);
           parse(line);
           ++i;
         }

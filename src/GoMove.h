@@ -9,8 +9,8 @@ public:
 	GoMove(int color, GoPoint point);//, GoBlock* block);
 	virtual ~GoMove();
 
-	const int Color;
-	const GoPoint Point;
+	const int Color; ///< Color of the stone
+	const GoPoint Point; ///< Position of the stone
 };
 
 #endif //#ifndef __GOMOVE_H__

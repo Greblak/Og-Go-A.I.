@@ -95,9 +95,9 @@ void GoBoard::UpdateBlocks(const GoPoint p)
 
 const int GoBoard::FindUniqueLiberties(const int stone, const GoBlock* block) const
 {
-  int uniqueLiberties;
+  int uniqueLiberties = 0;
 
-  int lib;
+  int lib = 0;
   for(int i = 0; i < 4; i++)
     {
       if(i == 0)
@@ -190,7 +190,7 @@ void GoBoard::UpdateBlocks(int pos, int color)
       State.blockPointers[pos]->liberties += uniqueLiberties;
       LOG_DEBUG <<  " Stone liberties :"<<State.numNeighboursEmpty[pos] <<" Unique: "<<uniqueLiberties<< " New block liberty total: "<<State.blockPointers[pos]->liberties;
 
-      //TODO: Handle block joining
+
       //Detect neighboring blocks to perform join.
       //Has similar neighbor but not recently attached block
       GoBlock* copyBlock = NULL;
@@ -206,8 +206,7 @@ void GoBoard::UpdateBlocks(int pos, int color)
         {
           std::vector<int> commonLiberties;
           GoBlock* curBlock = State.blockPointers[pos];
-          curBlock->ImportBlock(copyBlock); //TODO: Not functioning properly.
-          //TODO Find common liberties and prevent multiple counting
+          curBlock->ImportBlock(copyBlock);
         }
 
     }
@@ -235,6 +234,7 @@ void GoBoard::KillSurroundingDeadBlocks(const int pos)
       if(blockPos == -1)
 	continue;
       GoBlock* p_block = State.blockPointers[blockPos];
+      LOG_DEBUG << "Trying to access block at " << p_block;
       if(p_block->Liberties() == 0)
 	{
 	  //Create ko-point if applicable(Single stone)

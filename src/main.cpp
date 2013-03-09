@@ -23,6 +23,8 @@ Version 0.4 - Begin work on move-deciding algorithms. Type yet undefined.
 #include "GTPEngine.h"
 #include "GoBoard.h"
 #include "Exception.h"
+#include <stdlib.h>
+#include <time.h>
 
 
 int LogLevel;
@@ -50,6 +52,8 @@ int main(int argc, char *argv[])
       if(strcmp(argv[i], "-t") == 0)
         doTests = true;
     }
+
+  srand(1);
 
   LOG_VERBOSE << "Built " << __DATE__ << " - " << __TIME__;
 

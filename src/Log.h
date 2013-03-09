@@ -51,7 +51,7 @@ public:
   inline std::stringstream& Verbose(std::string file, int line)
   {
     if(LogLevel >= VERBOSE)
-      ss<<"#"<<file<<":"<<line<<" - ";
+      ss<<"[VER]"<<file<<":"<<line<<" - ";
     return ss;
   }
 
@@ -61,7 +61,7 @@ public:
   inline std::stringstream& Deb(std::string file, int line)
   {
     if(LogLevel >= DEBUG)
-      ss<<"#"<<file<<":"<<line<<" - ";
+      ss<<"[DEB]"<<file<<":"<<line<<" - ";
     return ss;
   }
 

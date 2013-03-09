@@ -127,14 +127,14 @@ void GoBoard::UpdateBlocks(int pos, int color)
   if(North(pos) != -1 && IsLibertyOfBlock(pos,North(pos)))
     {
     State.blockPointers[North(pos)]->liberties--;
-    LOG_DEBUG << "Removed liberty for block at "<< North(pos);
+//    LOG_DEBUG << "Removed liberty for block at "<< North(pos);
     }
   if(South(pos) != -1 &&
       (State.blockPointers[South(pos)] != State.blockPointers[North(pos)]) //These are in place on west and east as well, to prevent removing too several liberties from the same group
       && IsLibertyOfBlock(pos,South(pos)))
     {
     State.blockPointers[South(pos)]->liberties--;
-    LOG_DEBUG << "Removed liberty for block at "<< North(pos);
+//    LOG_DEBUG << "Removed liberty for block at "<< North(pos);
     }
   if(West(pos) != -1
       && (State.blockPointers[West(pos)] != State.blockPointers[North(pos)] && State.blockPointers[West(pos)] != State.blockPointers[South(pos)])
@@ -185,6 +185,8 @@ void GoBoard::UpdateBlocks(int pos, int color)
           uniqueLiberties = FindUniqueLiberties(pos, State.blockPointers[East(pos)]);
           State.blockPointers[pos] = State.blockPointers[East(pos)];
         }
+      else
+        LOG_ERROR <<"Something went terribly wrong";
       LOG_DEBUG << "Old block("<<State.blockPointers[pos]->anchor<<") libcount: "<<State.blockPointers[pos]->liberties;
       //Subtract one since the new stone is always placed on a liberty for the block.
       State.blockPointers[pos]->liberties += uniqueLiberties;
@@ -210,7 +212,8 @@ void GoBoard::UpdateBlocks(int pos, int color)
         }
 
     }
-  LOG_DEBUG << "Stone added";
+  LOG_DEBUG << "Stone added at: "<<pos;
+  LOG_DEBUG << "Accessing "<<State.blockPointers[pos];
   State.blockPointers[pos]->stones.push_back(pos);
   KillSurroundingDeadBlocks(pos);
 
@@ -244,8 +247,8 @@ void GoBoard::KillSurroundingDeadBlocks(const int pos)
 	      LOG_DEBUG << "Ko-point is now on "<<State.koPoint;
 	    }
 
-	  p_block->RemoveStones();
-	  delete p_block;
+	  p_block->RemoveStones(); //Remove stones from board and update liberties.
+	  delete p_block; //Free block from memory
 	}
       i++;
     }
@@ -375,28 +378,28 @@ void GoBoard::RemoveStone(const int pos)
 {
   int stoneColor = State.stones[pos] == B_BLACK? S_BLACK : S_WHITE;
   //Handling opened liberties
-  if(IsRealPoint(North(pos)))
+  if(IsRealPoint(North(pos)) && North(pos) != -1)
     {
       ++State.numNeighboursEmpty[North(pos)];
       --State.numNeighbours[stoneColor][North(pos)];
       if(State.stones[North(pos)] != NONE)
 	++State.blockPointers[North(pos)]->liberties;
     }
-  if(IsRealPoint(South(pos)))
+  if(IsRealPoint(South(pos)) && South(pos) != -1)
     {
       ++State.numNeighboursEmpty[South(pos)];
       --State.numNeighbours[stoneColor][South(pos)];
 	if(State.stones[South(pos)] != NONE)
 	  ++State.blockPointers[South(pos)]->liberties;
     }
-  if(IsRealPoint(West(pos)))
+  if(IsRealPoint(West(pos)) && West(pos) != -1)
     {
       ++State.numNeighboursEmpty[West(pos)];
       --State.numNeighbours[stoneColor][West(pos)];
       if(State.stones[West(pos)] != NONE)
 	++State.blockPointers[West(pos)]->liberties;
     }
-  if(IsRealPoint(East(pos)))
+  if(IsRealPoint(East(pos)) && East(pos) != -1)
     {
       ++State.numNeighboursEmpty[East(pos)];
       --State.numNeighbours[stoneColor][East(pos)];
@@ -404,6 +407,7 @@ void GoBoard::RemoveStone(const int pos)
 	++State.blockPointers[East(pos)]->liberties;
     }
   //Remove the stone from the board
+  State.blockPointers[pos] = 0;
   State.stones[pos] = NONE;
 }
 int GoBoard::Pos( GoPoint p) const
@@ -500,7 +504,7 @@ int GoBoard::West(const int p) const
 
 int GoBoard::East(const int p) const
 {
-  if(p%18==0 && p != 0)
+  if((p+1)%19==0 && p != 0)
     return -1;
   return p+POS_WE;
 }

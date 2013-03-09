@@ -13,7 +13,9 @@ const int 	GTP_OFFSET_NUM = 48; //Makes row 1 0-indexed
  */
 class GTPEngine
 {
+private:
 	GoGame* game;
+	int commandNum;
 public:
 	GTPEngine(void);
 	~GTPEngine();

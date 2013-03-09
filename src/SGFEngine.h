@@ -19,6 +19,13 @@ public:
 
     std::ofstream file;
     file.open("SGF.sgf");
+    if(file.fail())
+      {
+        LOG_DEBUG << "SGF file not found. No SGF data generated";
+        return;
+      }
+    else
+      LOG_VERBOSE << "Generating SGF";
     //Write preamble
     file << "(" << std::endl;
     file << ";FF[4]GM[1]" << std::endl;
@@ -41,8 +48,8 @@ public:
 
         char col = (*it)->Color == S_BLACK ? 'B' : 'W';
         file << ";"<<col<<"["<<x<<y<<"]" <<std::endl;
-        char separator = it == game->moves.begin() ? ' ' : ';';
-        LOG_DEBUG <<"Output to SGF:" << separator <<col<<"["<<x<<y<<"]" <<std::endl;
+//        char separator = it == game->moves.begin() ? ' ' : ';';
+//        LOG_VERBOSE <<"Output to SGF:" << separator <<col<<"["<<x<<y<<"]" <<std::endl;
       }
 
     //End file

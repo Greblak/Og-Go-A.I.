@@ -13,7 +13,7 @@
 
 extern int LogLevel;
 extern bool doTests;
-GTPEngine::GTPEngine(void)
+GTPEngine::GTPEngine(void):commandNum(0)
 {
   LOG_DEBUG<< "Starting GTP Engine";
   game = new GoGame(BOARD_DEFAULT_SIZE);
@@ -44,9 +44,11 @@ GTPEngine::~GTPEngine()
 
 void GTPEngine::parse(std::string userInput)
 {
-
+  LOG_VERBOSE << "Parsing GTP Command # "<<++commandNum;
   std::vector<std::string> args;
   boost::split(args, userInput,boost::is_any_of( " " ));
+
+  std::vector<GoMove*> genmoves;
 
   if(args[0] == "name")
     LOG_OUT << "= "+PROGRAM_NAME;
@@ -79,6 +81,7 @@ void GTPEngine::parse(std::string userInput)
   else if(args[0] == "clear_board")
     {
       delete game;
+      srand(1); //Reset random number generator
       game = new GoGame(BOARD_DEFAULT_SIZE);
       LOG_OUT << "= 1";
     }
@@ -91,6 +94,16 @@ void GTPEngine::parse(std::string userInput)
   else if(args[0] == "genmove")
     {
       GoPoint pos = game->GenerateMove(ColorFromString(args[1]));
+//      for(std::vector<GoMove*>::iterator it = genmoves.begin(); it != genmoves.end(); ++it)
+//        {
+//          if(pos.x == (*it)->Point.x && pos.y == (*it)->Point.y)
+//            {
+//              LOG_ERROR<<"ERROR IN MOVE GENERATION. MOVE HAS BEEN PLAYED";
+//              throw "FUCK THIS I'm OUT";
+//            }
+//        }
+      LOG_VERBOSE << "Generated move at "<<pos.x<<","<<pos.y;
+      genmoves.push_back(new GoMove(ColorFromString(args[1]),pos));
       LOG_OUT <<"= " << ColumnIntToString(pos.x)<<RowIntToString(pos.y);
     }
   else if(args[0] == "showboard")

@@ -437,8 +437,20 @@ bool GoBoard::IsSuicide(const GoPoint p) const
 {
   int boardColor = p.color == S_BLACK? B_BLACK : B_WHITE; //Converts GoPoint-Stonecolor to board color. Should be put in function...
   int pos = Pos(p);
+
+  //Test for single stone
   if(State.numNeighboursEmpty[pos]>0)
     return false;
+
+  //Test if joins block of same color
+  if(Occupied(North(pos)) && State.stones[North(pos)] == boardColor && State.blockPointers[North(pos)]->Liberties()>1)
+      return false;
+  if(Occupied(South(pos)) && State.stones[South(pos)] == boardColor && State.blockPointers[South(pos)]->Liberties()>1)
+      return false;
+  if(Occupied(West(pos)) && State.stones[West(pos)] == boardColor && State.blockPointers[West(pos)]->Liberties()>1)
+      return false;
+  if(Occupied(East(pos)) && State.stones[East(pos)] == boardColor && State.blockPointers[East(pos)]->Liberties()>1)
+      return false;
 
   //Allow "temporary suicide" if it leads to capture.
   if(Occupied(North(pos)) && State.stones[North(pos)] != boardColor && State.blockPointers[North(pos)]->liberties == 1)

@@ -16,3 +16,22 @@
 #Project-specific binaries
 /bin/*
 /src/*.d
+/obj/*
+
+#documentation
+/doc/*
+
+#gtp and sgf files
+*.gtp
+*.sgf
+
+#Project and eclipse files
+.cproject
+.project
+.settings
+
+#log files
+*.log
+
+#bash script files
+*.sh

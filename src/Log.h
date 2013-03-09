@@ -29,13 +29,14 @@ public:
    */
   inline ~Log()
   {
-//    ss<<std::endl;
-//    if(LogLevel>=level)
-
-    if(level >ERROR)
-      std::cerr<< ss.str() << "\n";
-    else
-      std::cout << ss.str() << "\n\n";
+    //    ss<<std::endl;
+    if(LogLevel>=level)
+      {
+        if(level >ERROR)
+          std::cerr<< ss.str() << "\n";
+        else
+          std::cout << ss.str() << "\n\n";
+      }
 
 
     logfile.open("Debug.log",std::ios::app);

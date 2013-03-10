@@ -53,7 +53,8 @@ int main(int argc, char *argv[])
         doTests = true;
     }
 
-  srand(1);
+  //srand(1);
+  srand (time(NULL));
 
   LOG_VERBOSE << "Built " << __DATE__ << " - " << __TIME__;
 

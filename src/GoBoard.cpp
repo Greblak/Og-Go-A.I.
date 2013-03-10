@@ -657,3 +657,47 @@ void GoBoard::DisplayCurrentState() const
     }
   std::cerr<<"\n\n\n\n\n";
 }
+
+const bool GoBoard::IsTrueEye(const int point, const int boardColor)
+{
+  LOG_DEBUG << "Checking if "<<point <<" is a true eye";
+  if(
+                (North(point) == -1 || (State.stones[North(point)] == boardColor))
+                && (South(point) == -1 || (State.stones[South(point)] == boardColor))
+                && (West(point) == -1 || (State.stones[West(point)] == boardColor))
+                && (East(point) == -1 || (State.stones[East(point)] == boardColor))
+            )//Results in potential eye at point. May still be false
+              {
+                //Get diagonal colors
+                int NW = West(point) != -1 && North(point) != -1 ? State.stones[North(West(point))] : -1;
+                int NE = East(point) != -1 && North(point) != -1 ? State.stones[North(East(point))] : -1;
+                int SW = West(point) != -1 && South(point) != -1 ? State.stones[South(West(point))] : -1;
+                int SE = East(point) != -1 && South(point) != -1 ? State.stones[South(East(point))] : -1;
+
+                LOG_DEBUG << NW << NE << SW <<SE<<State.stones[point];
+
+                int numValid = 0;
+                int numSameCol = 0;
+                if(NW != -1)
+                  ++numValid;
+                if(NE != -1)
+                  ++numValid;
+                if(SW != -1)
+                  ++numValid;
+                if(SE != -1)
+                  ++numValid;
+
+                if(NW == boardColor)
+                  ++numSameCol;
+                if(NE == boardColor)
+                  ++numSameCol;
+                if(SW == boardColor)
+                  ++numSameCol;
+                if(SE == boardColor)
+                  ++numSameCol;
+
+                if((float)numSameCol / (float)numValid > 0.5)
+                  return true;
+              }
+  return false;
+}

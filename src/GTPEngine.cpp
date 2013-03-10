@@ -81,7 +81,8 @@ void GTPEngine::parse(std::string userInput)
   else if(args[0] == "clear_board")
     {
       delete game;
-      srand(1); //Reset random number generator
+      //srand(1); //Reset random number generator
+      srand (time(NULL));
       game = new GoGame(BOARD_DEFAULT_SIZE);
       LOG_OUT << "= 1";
     }
@@ -129,10 +130,20 @@ void GTPEngine::parse(std::string userInput)
           LOG_DEBUG << "= "<<game->Board->State.numNeighboursEmpty[game->Board->Pos(p)]<<"\n\n";
         }
       else if(args[1] == "libblock")
-        {
+              {
           GoPoint p = GoPoint(ColumnStringToInt(args[2].substr(0,1)),RowStringToInt(args[2].substr(1,2)),B_WHITE);
-          LOG_DEBUG << "= "<<game->Board->State.blockPointers[game->Board->Pos(p)]->Liberties()<<"\n\n";
-        }
+                LOG_DEBUG << "= "<<game->Board->State.blockPointers[game->Board->Pos(p)]->Liberties()<<"\n\n";
+              }
+
+      else if(args[1] == "eye")
+              {
+          GoPoint p = GoPoint(ColumnStringToInt(args[2].substr(0,1)),RowStringToInt(args[2].substr(1,2)),B_WHITE);
+          int boardColor = ColorFromString(args[3]) +1;
+                if(game->Board->IsTrueEye(game->Board->Pos(p), boardColor))
+                  LOG_DEBUG << "= "<<args[2]<<" is a true eye\n\n";
+                else
+                  LOG_DEBUG << "= EEEEEEERRRR";
+              }
       LOG_OUT << "= 1";
     }
 #endif //IFDEF DEBUG_MODE

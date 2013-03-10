@@ -58,7 +58,7 @@ void GTPEngine::parse(std::string userInput)
     LOG_OUT << "= "+PROGRAM_GTP_VERSION;
   else if(args[0] == "list_commands")
     {
-      LOG_OUT << "= name\nversion\nprotocol_version\nlist_commands\nboardsize\ngenmove\nplay\nclear_board\nshowboard";
+      LOG_OUT << "= name\nversion\nprotocol_version\nlist_commands\nboardsize\ngenmove\nplay\nclear_board\nshowboard\nquit";
     }
   else if(args[0] == "boardsize")
     {
@@ -87,21 +87,27 @@ void GTPEngine::parse(std::string userInput)
     }
   else if(args[0] == "play" || (LogLevel >= DEBUG && args[0] == "p"))
     {
-      game->Play(ColorFromString(args[1]), ColumnStringToInt(args[2].substr(0,1)),
-          RowStringToInt(args[2].substr(1,2)));
+      if(args[2] != "PASS")
+        game->Play(ColorFromString(args[1]), ColumnStringToInt(args[2].substr(0,1)),
+            RowStringToInt(args[2].substr(1,2)));
       LOG_OUT << "= 1";
     }
   else if(args[0] == "genmove")
     {
       GoPoint pos = game->GenerateMove(ColorFromString(args[1]));
-//      for(std::vector<GoMove*>::iterator it = genmoves.begin(); it != genmoves.end(); ++it)
-//        {
-//          if(pos.x == (*it)->Point.x && pos.y == (*it)->Point.y)
-//            {
-//              LOG_ERROR<<"ERROR IN MOVE GENERATION. MOVE HAS BEEN PLAYED";
-//              throw "FUCK THIS I'm OUT";
-//            }
-//        }
+      if(pos.x == -1 && pos.y == -1) // Play pass
+        {
+          LOG_OUT << "= PASS";
+          return;
+        }
+      for(std::vector<GoMove*>::iterator it = genmoves.begin(); it != genmoves.end(); ++it)
+        {
+          if(pos.x == (*it)->Point.x && pos.y == (*it)->Point.y)
+            {
+              LOG_ERROR<<"ERROR IN MOVE GENERATION. MOVE HAS BEEN PLAYED";
+              throw "FUCK THIS I'm OUT";
+            }
+        }
       LOG_VERBOSE << "Generated move at "<<pos.x<<","<<pos.y;
       genmoves.push_back(new GoMove(ColorFromString(args[1]),pos));
       LOG_OUT <<"= " << ColumnIntToString(pos.x)<<RowIntToString(pos.y);
@@ -109,6 +115,10 @@ void GTPEngine::parse(std::string userInput)
   else if(args[0] == "showboard")
     {
       game->Board->DisplayCurrentState();
+    }
+  else if(args[0] == "quit")
+    {
+      exit(EXIT_SUCCESS);
     }
 #ifdef DEBUG_MODE
   else if(args[0] == "d")
@@ -118,15 +128,18 @@ void GTPEngine::parse(std::string userInput)
           GoPoint p = GoPoint(ColumnStringToInt(args[2].substr(0,1)),RowStringToInt(args[2].substr(1,2)),B_WHITE);
           LOG_DEBUG << "= "<<game->Board->State.numNeighboursEmpty[game->Board->Pos(p)]<<"\n\n";
         }
-      if(args[1] == "libblock")
+      else if(args[1] == "libblock")
         {
           GoPoint p = GoPoint(ColumnStringToInt(args[2].substr(0,1)),RowStringToInt(args[2].substr(1,2)),B_WHITE);
           LOG_DEBUG << "= "<<game->Board->State.blockPointers[game->Board->Pos(p)]->Liberties()<<"\n\n";
         }
+      LOG_OUT << "= 1";
     }
 #endif //IFDEF DEBUG_MODE
   else
     throw Exception("Unknown command");
+
+  //  game->Board->DisplayCurrentState();
 }
 
 const int GTPEngine::ColumnStringToInt(std::string str) const

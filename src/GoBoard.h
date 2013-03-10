@@ -73,7 +73,14 @@ public:
 		
 private:
 	int BoardSize; ///< Boardsize (19x19 will be stored as 19 here)
+	int BOARD_TOP_LEFT;
+	int BOARD_TOP_RIGHT;
+	int BOARD_BOTTOM_LEFT;
+	int BOARD_BOTTOM_RIGHT;
 	
+	int POS_WE;
+	int POS_NS;
+
 };
 
 

@@ -33,9 +33,6 @@ Stones are represented by a 1D array similar to the one used in Fuego 1.1
 */
 
 
-const int POS_WE = 1;
-const int POS_NS = BOARD_MAX_SIZE;
-
 enum GoStoneColor
 {
 	S_BLACK = 0,

@@ -38,11 +38,15 @@ Arguments taken:
 	-d debug
  */
 
+int RAND_SEED = 1;
+bool keepRand;
 
 int main(int argc, char *argv[])
 {
   LogLevel = ERROR;
   doTests = false;
+  RAND_SEED = time(NULL);
+  srand (RAND_SEED);
   for (int i = 1; i < argc; i++)
     {
       if(strcmp(argv[i], "-v") == 0)
@@ -50,12 +54,13 @@ int main(int argc, char *argv[])
       if(strcmp(argv[i], "-d") == 0)
         LogLevel = DEBUG;
       if(strcmp(argv[i], "-t") == 0)
-        doTests = true;
+              doTests = true;
+      if(strcmp(argv[i], "-r") == 0)
+        {
+              RAND_SEED = atoi(argv[i+1]);
+              keepRand = true;
+        }
     }
-
-  //srand(1);
-  srand (time(NULL));
-
   LOG_VERBOSE << "Built " << __DATE__ << " - " << __TIME__;
 
   GTPEngine gtp = GTPEngine();

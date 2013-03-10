@@ -10,15 +10,25 @@
 
 #include <iostream>
 
+
 GoBoard::GoBoard(int size)
 {
+  LOG_VERBOSE <<"Initialising new board";
   if(size > BOARD_MAX_SIZE || size < BOARD_MINIMUM_SIZE)
     throw "Invalid boardsize.";
   BoardSize = size;
+  LOG_VERBOSE << "Board set to size "<<BoardSize;
   State.koPoint = NO_KO_POINT;
-  LOG_DEBUG<< "KOPOINT SET TO "<<State.koPoint;
-  //Initializing board
-  for(int i = 0; i<(BOARD_MAX_SIZE*BOARD_MAX_SIZE); i++)
+
+  BOARD_TOP_LEFT = size*size - size;
+  BOARD_TOP_RIGHT = size*size - 1;
+  BOARD_BOTTOM_LEFT = 0;
+  BOARD_BOTTOM_RIGHT = size -1;
+
+  POS_WE = 1;
+  POS_NS = size;
+
+  for(int i = 0; i<(Size()*Size()); i++)
     {
       State.stones[i] = NONE;
 
@@ -39,6 +49,7 @@ GoBoard::GoBoard(int size)
           State.numNeighboursEmpty[i] = 4;
         }
     }
+  LOG_VERBOSE <<"Board initialised. Let's play!";
 }
 
 GoBoard::~GoBoard(void)
@@ -48,13 +59,13 @@ GoBoard::~GoBoard(void)
 
 const bool GoBoard::IsBorder(int pos) const
 {
-  if(pos%BOARD_MAX_SIZE==0)
+  if(pos%Size()==0) // Left side
     return true;
-  if(pos%BOARD_MAX_SIZE==18)
+  if(pos%Size()==Size()-1) //Right side
     return true;
-  if(pos>= 0 && pos <=18)
+  if(pos>= 0 && pos <=Size()-1) //Bottom side
     return true;
-  if(pos<= BOARD_MAX_SIZE*BOARD_MAX_SIZE && pos >= BOARD_MAX_SIZE*BOARD_MAX_SIZE-19)
+  if(pos<= BOARD_TOP_RIGHT && pos >= BOARD_TOP_LEFT)
     return true;
   return false;
 }
@@ -78,7 +89,7 @@ bool GoBoard::IsRealPoint(GoPoint p) const
 
 bool GoBoard::IsRealPoint(int p) const
 {
-  if(p <= BOARD_MAX_SIZE*BOARD_MAX_SIZE && p >= 0)
+  if(p <= Size()*Size() && p >= 0)
     return true;
   else
     return false;
@@ -196,7 +207,6 @@ void GoBoard::UpdateBlocks(int pos, int color)
 
       //Detect neighboring blocks to perform join.
       //Has similar neighbor but not recently attached block
-      GoBlock* copyBlock = NULL;
       if(State.stones[North(pos)] == boardColor && State.blockPointers[North(pos)] != State.blockPointers[pos])
         State.blockPointers[pos]->ImportBlock(State.blockPointers[North(pos)]);
       if(State.stones[South(pos)] == boardColor && State.blockPointers[South(pos)] != State.blockPointers[pos])
@@ -313,7 +323,7 @@ const int GoBoard::FindCommonLiberties(const int point, const int anchor) const
 
 const bool GoBoard::IsCorner(int pos) const
 {
-  if(pos == 0 || pos == 18 || pos == BOARD_MAX_SIZE*BOARD_MAX_SIZE-1 || pos == BOARD_MAX_SIZE*BOARD_MAX_SIZE-19)
+  if(pos == 0 || pos == Size()-1|| pos == Size()*Size()-1 || pos == Size()*Size()-Size())
     return true;
   else
     return false;
@@ -589,14 +599,14 @@ int GoBoard::South(const int p) const
 
 int GoBoard::West(const int p) const
 {
-  if(p%19==0)
+  if(p%Size()==0)
     return -1;
   return p-POS_WE;
 }
 
 int GoBoard::East(const int p) const
 {
-  if((p+1)%19==0 && p != 0)
+  if((p+1)%Size()==0 && p != 0)
     return -1;
   return p+POS_WE;
 }
@@ -625,33 +635,33 @@ void GoBoard::DisplayCurrentState() const
 {
   LOG_OUT << "=1 \n Showing current gamestate\n";
   std::cerr<<"\n    ";
-  for(int k = 0; k<BOARD_MAX_SIZE; k++)
+  for(int k = 0; k<Size(); k++)
     {
       std::cerr<<GTPEngine::ColumnIntToString(k)<<" ";
     }
-  for(int i = BOARD_MAX_SIZE-1; i>=0;i--)
+  for(int i = Size()-1; i>=0;i--)
     {
       if(i+1 >= 10)
         std::cerr<<"\n "<<(i+1);
       else
         std::cerr<<"\n  "<<(i+1);
-      for(int j = 0; j<BOARD_MAX_SIZE;j++)
+      for(int j = 0; j<Size();j++)
         {
-          if(State.stones[BOARD_MAX_SIZE*i+j] == NONE)
+          if(State.stones[Size()*i+j] == NONE)
             std::cerr<< " -";
-          else if(State.stones[BOARD_MAX_SIZE*i+j] == B_BLACK)
+          else if(State.stones[Size()*i+j] == B_BLACK)
             std::cerr<< " O";
-          else if(State.stones[BOARD_MAX_SIZE*i+j] == B_WHITE)
+          else if(State.stones[Size()*i+j] == B_WHITE)
             std::cerr<< " X";
           else
             {
-              LOG_ERROR<< "Wrong domain in board representation "<< State.stones[BOARD_MAX_SIZE*i+j];
+              LOG_ERROR<< "Wrong domain in board representation "<< State.stones[Size()*i+j];
               throw "Domain error in board representation. See log file for details";
             }
         }
     }
   std::cerr<<"\n    ";
-  for(int k = 0; k<BOARD_MAX_SIZE; k++)
+  for(int k = 0; k<Size(); k++)
     {
       std::cerr<<GTPEngine::ColumnIntToString(k)<<" ";
     }

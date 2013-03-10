@@ -16,7 +16,7 @@ public:
    */
   static inline void generateFile(const GoGame* game)
   {
-
+    LOG_VERBOSE << "Attempting to generate SGF file";
     std::ofstream file;
     file.open("SGF.sgf");
     if(file.fail())
@@ -48,8 +48,8 @@ public:
 
         char col = (*it)->Color == S_BLACK ? 'B' : 'W';
         file << ";"<<col<<"["<<x<<y<<"]" <<std::endl;
-//        char separator = it == game->moves.begin() ? ' ' : ';';
-//        LOG_VERBOSE <<"Output to SGF:" << separator <<col<<"["<<x<<y<<"]" <<std::endl;
+        char separator = it == game->moves.begin() ? ' ' : ';';
+        LOG_VERBOSE <<"Output to SGF:" << separator <<col<<"["<<x<<y<<"]" <<std::endl;
       }
 
     //End file

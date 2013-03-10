@@ -22,7 +22,7 @@ void GoGame::Play(int color, int x, int y)
   GoPoint p = GoPoint(x,y,color);
   Board->Play(p);
   moves.push_back(new GoMove(p.color,p));
-  //  SGFEngine::generateFile(this);
+  SGFEngine::generateFile(this);
 }
 
 GoPoint GoGame::GenerateMove(int color)

@@ -48,6 +48,7 @@ public:
 		const int FindUniqueLiberties(const int stone, const GoBlock* block) const; ///< Counts unique liberties for stone compared to block
 		void UpdateBlocks(const GoPoint p); ///< Update block liberties, stones and do cleanup of dead blocks
 		void KillSurroundingDeadBlocks(const int p); ///< Checks all blocks surrounding p, remove them if liberties == 0
+		const bool IsInSameBlock(const int pos1,const int pos2) const; //Compares positions to see if they share block
 
 		const bool CapturedStones() const; ///< Returns captured stones for this round
 		const std::list<GoPoint> GetCapturedStones() const; ///< Returns a list of captured stones

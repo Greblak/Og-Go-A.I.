@@ -39,7 +39,7 @@ Arguments taken:
  */
 
 int RAND_SEED = 1;
-bool keepRand;
+bool keepRand = false;
 
 int main(int argc, char *argv[])
 {

@@ -5,6 +5,8 @@
 #include "SGFEngine.h"
 #include <cstdlib>
 #include "Exception.h"
+#include "SimpleRandomAI.h"
+#include "MonteCarlo.h"
 
 GoGame::GoGame(int boardSize)
 {
@@ -27,27 +29,9 @@ void GoGame::Play(int color, int x, int y)
 
 GoPoint GoGame::GenerateMove(int color)
 {
-  GoPoint point = GoPoint();
-  point.color = color;
-  int counter = 0;
-  do
-    {
-      point.x = rand()%Board->Size();
-      point.y = rand()%Board->Size();
-      ++counter;
-      if(Board->IsLegal(point, point.color) && !Board->IsTrueEye(Board->Pos(point), point.color+1)) //Legal move. Do more checks
-        {
-            break;
-        }
-    }
-  while(counter < 1000);
-  if(counter == 1000)
-    {
-      LOG_DEBUG << "No valid moves left";
-      return GoPoint(-1,-1,NONE);
-    }
-
-  Play(point.color, point.x, point.y);
-
+  MonteCarlo ai;
+  GoPoint point = ai.generateMove(color,this);
+  if(point.x != -1 && point.y != -1 && point.color == NONE) //PASS
+    Play(point.color, point.x, point.y);
   return point;
 }

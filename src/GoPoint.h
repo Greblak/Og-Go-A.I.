@@ -31,8 +31,7 @@ Stones are represented by a 1D array similar to the one used in Fuego 1.1
                 p - POS_NS
 
 */
-
-
+#define POINT_PASS GoPoint(-1,-1,NONE)
 enum GoStoneColor
 {
 	S_BLACK = 0,

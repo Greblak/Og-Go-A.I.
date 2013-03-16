@@ -17,6 +17,7 @@ public:
   virtual
   ~PlayPolicy();
 
+  const std::vector<int> FindPossibleMoves(GoBoard* board);
   const bool MatchAny(GoBoard* board, const int pos, const int color);
   const bool TestAllHane(GoBoard* board, const int pos, const int color, const int dirUp);
 

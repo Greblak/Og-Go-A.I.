@@ -14,7 +14,7 @@ class UpperConfidence
 public:
   UpperConfidence(int searchWidth, int searchDepth);
   GoPoint generateMove(int color, GoGame* game);
-  const float simulateMove(const GoPoint& move);
+  const float simulateMove(int move);
   virtual
   ~UpperConfidence();
 

@@ -94,7 +94,7 @@ bool GoBoard::IsRealPoint(GoPoint p) const
 
 bool GoBoard::IsRealPoint(int p) const
 {
-  if(p <= Size()*Size() && p >= 0)
+  if(p < Size()*Size() && p >= 0)
     return true;
   else
     return false;
@@ -388,18 +388,23 @@ const int GoBoard::Size() const
   return BoardSize;
 }
 
+const GoMove* GoBoard::Play(int p, int color)
+{
+  if(!IsLegal(p, color))
+    LOG_DEBUG<<"Illegal move at "<<ReadablePosition(p);//throw "Illegal move at ";
+  LOG_DEBUG << "\n\n\n";
+  LOG_DEBUG << "Playing color "<<color<<" at "<<ReadablePosition(p);
+  AddStone(p,color);
+  LOG_DEBUG <<"Stone added";
+  nextPlayer = color==S_WHITE ? S_BLACK : S_WHITE; //Inverse color.
+
+  moves.push_back(new GoMove(color,ReversePos(p,color)));
+  return 0;
+}
+
 const GoMove* GoBoard::Play(GoPoint p, int color)
 {
-  if(!IsLegal(p, p.color))
-    LOG_DEBUG<<"Illegal move at "<<p.x<<","<<p.y;//throw "Illegal move at ";
-  LOG_DEBUG << "\n\n\n";
-  LOG_DEBUG << "Playing color "<<p.color<<" at "<<p.x<<","<<p.y;
-  AddStone(Pos(p),p.color);
-  LOG_DEBUG <<"Stone added";
-  nextPlayer = p.color==S_WHITE ? S_BLACK : S_WHITE; //Inverse color.
-
-  moves.push_back(new GoMove(p.color,p));
-  return 0;
+  return Play(Pos(p),color);
 }
 
 const GoMove* GoBoard::Play(GoPoint p)
@@ -407,6 +412,14 @@ const GoMove* GoBoard::Play(GoPoint p)
   return Play(p,p.color);
 }
 
+const GoPoint GoBoard::ReversePos(const int pos, const int color)
+{
+
+  int x = pos%Size();
+  int y =floor((float)pos/Size());
+
+  return GoPoint(x,y,color);
+}
 void GoBoard::AddStone(int point, int color)
 {
   int boardColor = color == S_BLACK? B_BLACK : B_WHITE;
@@ -545,17 +558,22 @@ int GoBoard::Pos( GoPoint p) const
 
 bool GoBoard::IsLegal(const GoPoint& p, int color)
 {
-  if(!IsRealPoint(Pos(p)))
+  return IsLegal(Pos(p),color);
+}
+
+bool GoBoard::IsLegal(const int p, int color)
+{
+  if(!IsRealPoint(p))
     return false;
   if(Occupied(p))
     return false;
-  LOG_DEBUG << "Testing to see if pos: "<<Pos(p)<<" matches ko point "<<State.koPoint;
-  if(Pos(p) == State.koPoint)
+  LOG_DEBUG << "Testing to see if pos: "<<p<<" matches ko point "<<State.koPoint;
+  if(p == State.koPoint)
     {
       LOG_DEBUG << "Illegal move due to Ko-rule";
       return false;
     }
-  if(IsSuicide(p))
+  if(IsSuicide(p,color))
     {
       LOG_DEBUG << "Illegal move due to suicide";
       return false;
@@ -565,8 +583,11 @@ bool GoBoard::IsLegal(const GoPoint& p, int color)
 
 bool GoBoard::IsSuicide(const GoPoint p) const
 {
-  int boardColor = p.color == S_BLACK? B_BLACK : B_WHITE; //Converts GoPoint-Stonecolor to board color. Should be put in function...
-  int pos = Pos(p);
+  return IsSuicide(Pos(p), p.color);
+}
+bool GoBoard::IsSuicide(const int pos, const int color) const
+{
+  int boardColor = color == S_BLACK? B_BLACK : B_WHITE; //Converts GoPoint-Stonecolor to board color. Should be put in function...
   LOG_DEBUG << "Testing if "<<pos<< " is suicide";
 
   //Test for single stone
@@ -857,12 +878,12 @@ const std::string GoBoard::ReadablePosition(const GoPoint& pos) const
 const std::string GoBoard::ReadablePosition(const int pos) const
 {
   std::stringstream ss;
-  std::cerr << pos<<std::endl;
+//  std::cerr << pos<<std::endl;
   char alpha = pos%Size() + 65;
   alpha = alpha >= 'I' ? ++alpha : alpha;
-  std::cerr << alpha<<std::endl;
-  int num =(float)pos/Size() + 1;
-  std::cerr << num << std::endl;
+//  std::cerr << alpha<<std::endl;
+  int num =floor((float)pos/Size()) + 1;
+//  std::cerr << num << std::endl;
   ss << alpha <<num;
   return ss.str();
 }

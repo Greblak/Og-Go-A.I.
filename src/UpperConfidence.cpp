@@ -8,6 +8,7 @@
 #include "UpperConfidence.h"
 #include "Log.h"
 #include "GoBoard.h"
+#include "PlayPolicy.h"
 
 UpperConfidence::UpperConfidence(int searchWidth, int searchDepth):searchDepth(searchDepth),searchWidth(searchWidth),expRatio(1.5)
 {
@@ -22,24 +23,22 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
   this->color = color;
   this->game = game;
   LOG_VERBOSE << "Generating UCB move for "<<color;
-  GoPoint moves[searchWidth];
-  float expected[searchWidth];
-  int numPlayed[searchWidth];
+  //Generate possible moves
+    LOG_VERBOSE << "Generating move list";
+    std::vector<int> moves = PlayPolicy().FindPossibleMoves(game->Board);
+    LOG_OUT << "Found "<<moves.size()<< " possible moves";
+    if(moves.size() == 0)
+      return POINT_PASS;
+  float expected[moves.size()];
+  int numPlayed[moves.size()];
   int totalNumPlayed = 0;
 
-  //Generate possible moves
-  LOG_VERBOSE << "Generating move list";
-  for(int j = 0; j<searchWidth; ++j)
-    {
-      moves[j] = SimpleRandomAI().generateMove(color,game);
-      expected[j] = 0;
-      numPlayed[j] = 0;
-    }
+
 
   int initialPlayNum = 1;
   LOG_VERBOSE << "Play all 1 time";
   //Play all moves "once"
-  for(int j = 0; j<searchWidth; ++j)
+  for(int j = 0; j<moves.size(); ++j)
     {
       for(int i = 0; i<initialPlayNum; ++i)
         {
@@ -63,7 +62,7 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
   for (int j = 0; j<searchDepth; ++j)
     {
       //Maximise for all following plays
-      for(int i = 0; i<searchWidth; ++i)
+      for(size_t i = 0; i<moves.size(); ++i)
         {
           float ucbVal = expected[i] + sqrt( expRatio * log(totalNumPlayed) / numPlayed[i]);
           //          std::cerr <<i<< " " <<expected[i]<< " "<< sqrt( expRatio * log(totalNumPlayed) / numPlayed[i]) << std::endl;
@@ -95,7 +94,7 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
   //Select best move after search completion
   int bestMove = -1;
   float bestExpected = 0;
-  for(int i = 0; i<searchWidth; ++i)
+  for(size_t i = 0; i<moves.size(); ++i)
     {
       if(expected[i]>bestExpected)
         {
@@ -104,15 +103,15 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
         }
     }
 
-  LOG_DEBUG<<"Best move ("<<moves[bestMove].x<<","<<moves[bestMove].y<<") : "<<bestExpected<<std::endl;
-  return moves[bestMove];
+  LOG_DEBUG<<"Best move ("<<game->Board->ReadablePosition(moves[bestMove])<<") : "<<bestExpected<<std::endl;
+  return game->Board->ReversePos(moves[bestMove],color);
 }
 
-const float UpperConfidence::simulateMove(const GoPoint& move)
+const float UpperConfidence::simulateMove(int move)
 {
   float expected = 0;
   GoBoard* nboard =game->Board->copyBoard();
-  nboard->Play(move);
+  nboard->Play(move, game->Board->NextPlayer());
   SimpleRandomAI().simulateGame(nboard);
   float score = nboard ->GetScore();
   if(color == S_BLACK && score>0)

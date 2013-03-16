@@ -41,10 +41,12 @@ public:
 		int Pos(const GoPoint p) const; ///< Returns the numerical position in the 1D array of point p
 
 		bool IsSuicide(const GoPoint p) const; ///< Checks if playing on point p is a suicide
+		bool IsSuicide(const int p, const int color) const; ///< Checks if playing on point p is a suicide
 		bool IsRealPoint(const GoPoint p) const; ///< Checks point validity
 		bool IsRealPoint(const int p) const; ///< Checks point validity
 
 		bool IsLegal(const GoPoint& p, int color); ///< Checks if playing p is legal for color
+		bool IsLegal(const int p, int color); ///< Checks if playing p is legal for color
 
 		const bool IsLibertyOfBlock(const int point, const int anchor) const; ///< Checks if a given point is a liberty for the block the anchor point belongs to.
 		const int FindCommonLiberties(const int point, const int anchor) const; ///<Used when joining a single stone to a block
@@ -62,6 +64,7 @@ public:
 		const int Liberties(int pos) const; ///< Finds number of liberties for all stones in the same group as p
 		bool InAtari(GoPoint p) const; ///< Checks if point p is in atari(1 liberty)
 
+		const GoMove* Play(int p, int color); ///< Attempt to play p with given color
 		const GoMove* Play(GoPoint p, int color); ///< Attempt to play p with given color
 		const GoMove* Play(GoPoint p); ///< Attempt to play p. Color is stored in p.
 
@@ -73,6 +76,7 @@ public:
 		const float GetScore() const; ///< Returns score. Positive score = black win. Negative score = white win
 		const float GetScoreGnuGo() const;
 		const float GetScoreInternal() const;
+		const GoPoint ReversePos(const int pos, const int color);
 		const std::string ReadablePosition(const int pos) const;
 		const std::string ReadablePosition(const GoPoint& pos) const;
 

@@ -4,9 +4,10 @@
  *  Created on: Mar 16, 2013
  *      Author: rune
  */
-
+#include <vector>
 #include "PlayPolicy.h"
 #include "GoBoard.h"
+#include "Log.h"
 
 PlayPolicy::PlayPolicy()
 {
@@ -18,7 +19,20 @@ PlayPolicy::~PlayPolicy()
 {
   // TODO Auto-generated destructor stub
 }
+const std::vector<int> PlayPolicy::FindPossibleMoves(GoBoard* board)
+{
+  std::vector<int> moves;
+  for(int i = 0; i<board->Size()*board->Size(); ++i)
+    {
+      if(board->IsEmpty(i) && board->IsLegal(i,board->NextPlayer()) && MatchAny(board,i,board->NextPlayer()) )
+        {
+          moves.push_back(i);
+          LOG_OUT<<board->ReadablePosition(i);
+        }
 
+    }
+  return moves;
+}
 const bool PlayPolicy::MatchAny(GoBoard* board, const int pos, const int color)
 {
   int direction = board->POS_NS; //Init default value, to be safe :)
@@ -109,13 +123,15 @@ const bool PlayPolicy::TestEmpty(GoBoard* board, const int pos)
   int dirUp = board->POS_NS;
   int dirRight = getRightDirection(dirUp);
   return (
-      board->IsEmpty(pos+dirRight)
-      && board->IsEmpty(pos-dirRight)
-      && board->IsEmpty(pos+dirUp)
-      && board->IsEmpty(pos+dirUp-dirRight)
-      && board->IsEmpty(pos+dirUp+dirRight)
-      && board->IsEmpty(pos-dirUp+dirRight)
-      && board->IsEmpty(pos-dirUp-dirRight));
+      board->IsEmpty(pos+dirRight) && board->East(pos) != -1 //E
+      && board->IsEmpty(pos-dirRight) && board->West(pos) != -1 //W
+      && board->IsEmpty(pos+dirUp) && board->North(pos) != -1 //N
+      && board->IsEmpty(pos-dirUp) && board->South(pos) != -1 //S
+
+      && board->IsEmpty(pos+dirUp-dirRight) //NW
+      && board->IsEmpty(pos+dirUp+dirRight) //NE
+      && board->IsEmpty(pos-dirUp+dirRight) //SE
+      && board->IsEmpty(pos-dirUp-dirRight)); //SW
   return false;
 }
 

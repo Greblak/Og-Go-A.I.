@@ -16,6 +16,11 @@ public:
    */
   static inline void generateFile(const GoGame* game)
   {
+    generateFile(game->Board);
+  }
+
+  static inline void generateFile(const GoBoard* Board)
+  {
     LOG_VERBOSE << "Attempting to generate SGF file";
     std::ofstream file;
     file.open("SGF.sgf");
@@ -33,14 +38,14 @@ public:
     file << "PW[Player 2]" << std::endl;
     file << "RU[Japanese]" << std::endl;
     file << "KM[0.5]" << std::endl;
-    file << "SZ["<<game->Board->Size()<<"]" << std::endl;
+    file << "SZ["<<Board->Size()<<"]" << std::endl;
     //End of premable. LET'S PLAY!
 
-    for (GoMoveIterator it = game->moves.begin(); it != game->moves.end(); ++it)
+    for (GoMoveIterator it = Board->moves.begin(); it != Board->moves.end(); ++it)
       {
         char x = GTPEngine::ColumnIntToString((*it)->Point.x);
         x = tolower(x);
-        int i_y = game->Board->Size() - ((*it)->Point.y) - 1; //Reverses due to odd notation in SGF
+        int i_y = Board->Size() - ((*it)->Point.y) - 1; //Reverses due to odd notation in SGF
         char y = GTPEngine::ColumnIntToString(i_y);
         y = tolower(y);
         y = y > 'i' ? y-1 : y;
@@ -48,7 +53,7 @@ public:
 
         char col = (*it)->Color == S_BLACK ? 'B' : 'W';
         file << ";"<<col<<"["<<x<<y<<"]" <<std::endl;
-        char separator = it == game->moves.begin() ? ' ' : ';';
+        char separator = it == Board->moves.begin() ? ' ' : ';';
         LOG_VERBOSE <<"Output to SGF:" << separator <<col<<"["<<x<<y<<"]" <<std::endl;
       }
 

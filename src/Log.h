@@ -15,7 +15,7 @@ class Log
 private:
   std::stringstream ss;
   int level; ///< ERROR by default, unless otherwise set by execution flags
-  std::ofstream logfile; ///< File to use for output
+//  std::ofstream logfile; ///< File to use for output
 public:
 
 
@@ -38,10 +38,11 @@ public:
           std::cout << ss.str() << "\n\n";
       }
 
-
+/*
     logfile.open("Debug.log",std::ios::app);
     logfile << "["<<level<<"] " << ss.str() << std::endl;
     logfile.close();
+    */
   };
 
 

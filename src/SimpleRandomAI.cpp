@@ -23,15 +23,20 @@ SimpleRandomAI::~SimpleRandomAI()
 
 GoPoint SimpleRandomAI::generateMove(const int color, GoGame* Game)
 {
+  return generateMove(color, Game->Board);
+}
+
+GoPoint SimpleRandomAI::generateMove(const int color, GoBoard* Board)
+{
   GoPoint point = GoPoint();
   point.color = color;
   int counter = 0;
   do
     {
-      point.x = rand()%Game->Board->Size();
-      point.y = rand()%Game->Board->Size();
+      point.x = rand()%Board->Size();
+      point.y = rand()%Board->Size();
       ++counter;
-      if(Game->Board->IsLegal(point, point.color) && !Game->Board->IsTrueEye(Game->Board->Pos(point), point.color+1)) //Legal move. Do more checks
+      if(Board->IsLegal(point, point.color) && !Board->IsTrueEye(Board->Pos(point), point.color+1)) //Legal move. Do more checks
         {
           break;
         }
@@ -42,6 +47,23 @@ GoPoint SimpleRandomAI::generateMove(const int color, GoGame* Game)
       LOG_DEBUG << "No valid moves left";
       return POINT_PASS;
     }
-
   return point;
+}
+
+int SimpleRandomAI::simulateGame(GoBoard* board)
+{
+  int twoPasses = 0;
+  while(twoPasses < 2)
+    {
+      GoPoint p =generateMove(board->NextPlayer(),board);
+      if(p.IsPass())
+        {
+          ++twoPasses;
+          continue;
+        }
+      twoPasses = 0;
+
+      board->Play(p);
+    }
+  return 0; //TODO Deprecated. Should be void
 }

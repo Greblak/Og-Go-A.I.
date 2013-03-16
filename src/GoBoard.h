@@ -6,7 +6,9 @@
 #include "Config.h"
 #include "GoState.h"
 #include "GoBlock.h"
+#include "GoMove.h"
 #include <list>
+#include <vector>
 
 typedef std::list<GoBlock*> BlockList;
 typedef std::list<GoBlock*>::iterator BlockListIterator;
@@ -25,7 +27,7 @@ public:
 		const bool IsCorner(int pos) const; ///< Checks if pos is a corner position on the board. Used to count liberties
 		bool IsColor(GoPoint p, int c) const; ///< Checks a point for a given color
 		static const int CurrentPlayer(); ///< Returns the current player color
-		int NextPlayer() const; ///< Inverted CurrentPlayer
+		const int NextPlayer() const; ///< Inverted CurrentPlayer
 
 		int North(const GoPoint p) const; ///< Returns the position north of p
 		int South(const GoPoint p) const; ///< Returns the position south of p
@@ -67,12 +69,20 @@ public:
 		void UpdateBlocks(int point, int color); ///< Update blocks based on placing a stone with the given parameters
 
 		void DisplayCurrentState() const; ///< Used by GTP showboard command to output the current state to console
+		const float GetScore() const; ///< Returns score. Positive score = black win. Negative score = white win
+		const float GetScoreGnuGo() const;
+		const float GetScoreInternal() const;
+		const std::string ReadablePosition(const int pos) const;
+		const std::string ReadablePosition(const GoPoint& pos) const;
 
 		GoState State; ///< Struct containing the most basic board information
 		BlockList blocks; ///< List of active blocks on the board
+		std::vector<GoMove*> moves; ///< A list of moves made in this game. Used to reproduce in SGF files and copy game instances
+		float komi;
 		
 private:
 	int BoardSize; ///< Boardsize (19x19 will be stored as 19 here)
+
 	int BOARD_TOP_LEFT;
 	int BOARD_TOP_RIGHT;
 	int BOARD_BOTTOM_LEFT;
@@ -80,6 +90,7 @@ private:
 	
 	int POS_WE;
 	int POS_NS;
+	int nextPlayer;
 
 };
 

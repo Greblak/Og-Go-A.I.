@@ -36,14 +36,15 @@ void GoBlock::ImportBlock(GoBlock* block)
   for(std::list<int>::iterator it = block->stones.begin(); it != block->stones.end(); it++)
     {
       LOG_DEBUG << "Checking uncommon liberties for stone at "<<(*it)<<std::endl<<"Numblibs for stone: "<<board->State.numNeighboursEmpty[(*it)];
-      if(board->State.stones[board->North(*it)] == NONE && !board->IsLibertyOfBlock(board->North(*it),anchor))
-        ++newLiberties;
-      if(board->State.stones[board->South(*it)] == NONE && !board->IsLibertyOfBlock(board->South(*it),anchor))
-        ++newLiberties;
-      if(board->State.stones[board->East(*it)] == NONE && !board->IsLibertyOfBlock(board->East(*it),anchor))
-        ++newLiberties;
-      if(board->State.stones[board->West(*it)] == NONE && !board->IsLibertyOfBlock(board->West(*it),anchor))
-        ++newLiberties;
+//      if(board->North(*it) != -1 && board->State.stones[board->North(*it)] == NONE && !board->IsLibertyOfBlock(board->North(*it),anchor))
+//        ++newLiberties;
+//      if(board->South(*it) != -1 && board->State.stones[board->South(*it)] == NONE && !board->IsLibertyOfBlock(board->South(*it),anchor))
+//        ++newLiberties;
+//      if(board->West(*it) != -1 && board->State.stones[board->East(*it)] == NONE && !board->IsLibertyOfBlock(board->East(*it),anchor))
+//        ++newLiberties;
+//      if(board->East(*it) != -1 && board->State.stones[board->West(*it)] == NONE && !board->IsLibertyOfBlock(board->West(*it),anchor))
+//        ++newLiberties;
+      newLiberties += board->FindUniqueLiberties(*it, board->State.blockPointers[anchor]);
       LOG_DEBUG << "Current unique liberties" <<newLiberties<<std::endl;
       //Import all stones
       stones.push_back((*it));

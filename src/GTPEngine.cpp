@@ -112,6 +112,7 @@ void GTPEngine::parse(std::string userInput)
             }
         }
       LOG_VERBOSE << "Generated move at "<<pos.x<<","<<pos.y;
+      game->Play(pos.color, pos.x,pos.y);
       genmoves.push_back(new GoMove(ColorFromString(args[1]),pos));
       LOG_OUT <<"= " << ColumnIntToString(pos.x)<<RowIntToString(pos.y);
     }
@@ -122,18 +123,16 @@ void GTPEngine::parse(std::string userInput)
 
   else if(args[0] == "final_score")
     {
-      int i = system("gnugo --score estimate --quiet -l SGF.sgf > score.s");
-      std::ifstream t;
-      t.open("score.s");
-      if(t.fail())
-        throw Exception("Unable to score game");
-      std::string line;
-      std::getline(t, line);
-      t.close();
-      std::vector<std::string> a;
-      boost::split(a, line,boost::is_any_of( " " ));
-      char color = a[0] == "White" ? 'W':'B';
-      float score = atoi(a[3].c_str());
+
+      float score = game->Board->GetScore();
+      char color;
+      if(score > 0)
+        color = 'B';
+      else
+        {
+          color = 'W';
+          score*=-1;
+        }
       LOG_OUT << "= "<<color<<"+"<<score;
 
 

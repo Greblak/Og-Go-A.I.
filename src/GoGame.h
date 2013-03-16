@@ -19,7 +19,7 @@ public:
 	GoPoint GenerateMove(int color); ///< Used to trigger the AI to return a single move to be played
 	void Play(int color, int x, int y); ///< Playes a move with the given parameters
 	
-	std::vector<GoMove*> moves; ///< A list of moves made in this game. Used to reproduce in SGF files and copy game instances
+//	std::vector<GoMove*> moves; ///< A list of moves made in this game. Used to reproduce in SGF files and copy game instances
 };
 
 #endif //#ifndef __GOGAME_H__

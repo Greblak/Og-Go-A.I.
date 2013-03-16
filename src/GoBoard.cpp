@@ -1,3 +1,4 @@
+#include <boost/algorithm/string.hpp>
 #include "Log.h"
 #include "Config.h"
 #include "GoBoard.h"
@@ -7,12 +8,17 @@
 #include <sstream>
 #include <vector>
 #include "GTPEngine.h"
-
+#include "Exception.h"
+#include "SGFEngine.h"
+#include <time.h>
+#include <ctime>
+#include <math.h>
 #include <iostream>
 
 
 GoBoard::GoBoard(int size)
 {
+  komi = 0.5;
   LOG_VERBOSE <<"Initialising new board";
   if(size > BOARD_MAX_SIZE || size < BOARD_MINIMUM_SIZE)
     throw "Invalid boardsize.";
@@ -49,6 +55,8 @@ GoBoard::GoBoard(int size)
           State.numNeighboursEmpty[i] = 4;
         }
     }
+  State.bw_prisoners[S_BLACK] = 0;
+  State.bw_prisoners[S_WHITE] = 0;
   LOG_VERBOSE <<"Board initialised. Let's play!";
 }
 
@@ -107,28 +115,50 @@ void GoBoard::UpdateBlocks(const GoPoint p)
 
 const int GoBoard::FindUniqueLiberties(const int stone, const GoBlock* block) const
 {
+  LOG_DEBUG<<"Testing "<<stone<<" against "<<block->anchor;
   int uniqueLiberties = 0;
 
-  int lib = 0;
-  for(int i = 0; i < 4; i++)
+  if(North(stone) != -1 && State.stones[North(stone)] == NONE && !IsLibertyOfBlock(North(stone),block->anchor))
     {
-      if(i == 0)
-        lib = North(stone);
-      else if(i == 1)
-        lib = South(stone);
-      else if(i == 2)
-        lib = West(stone);
-      else if(i == 3)
-        lib = East(stone);
-      if(State.stones[lib] == NONE)
-        {
-          if(State.blockPointers[North(lib)] != block &&
-              State.blockPointers[South(lib)] != block &&
-              State.blockPointers[West(lib)] != block &&
-              State.blockPointers[East(lib)] != block)
-            ++uniqueLiberties;
+          ++uniqueLiberties;
+          LOG_DEBUG << "ULN: "<<uniqueLiberties;
         }
-    }
+  if(South(stone) != -1 && State.stones[South(stone)] == NONE && !IsLibertyOfBlock(South(stone),block->anchor))
+    {
+          ++uniqueLiberties;
+          LOG_DEBUG << "ULS: "<<uniqueLiberties;
+        }
+  if(West(stone) != -1 && State.stones[West(stone)] == NONE && !IsLibertyOfBlock(West(stone),block->anchor))
+    {
+          ++uniqueLiberties;
+          LOG_DEBUG << "ULW: "<<uniqueLiberties;
+        }
+  if(East(stone) != -1 && State.stones[East(stone)] == NONE && !IsLibertyOfBlock(East(stone),block->anchor))
+    {
+          ++uniqueLiberties;
+          LOG_DEBUG << "ULE: "<<uniqueLiberties;
+        }
+
+//  int lib = 0;
+//  for(int i = 0; i < 4; i++)
+//    {
+//      if(i == 0)
+//        lib = North(stone);
+//      else if(i == 1)
+//        lib = South(stone);
+//      else if(i == 2)
+//        lib = West(stone);
+//      else if(i == 3)
+//        lib = East(stone);
+//      if(State.stones[lib] == NONE)
+//        {
+//          if(State.blockPointers[North(lib)] != block &&
+//              State.blockPointers[South(lib)] != block &&
+//              State.blockPointers[West(lib)] != block &&
+//              State.blockPointers[East(lib)] != block)
+//            ++uniqueLiberties;
+//        }
+//    }
   return uniqueLiberties;
 }
 
@@ -178,24 +208,28 @@ void GoBoard::UpdateBlocks(int pos, int color)
           //          commonLiberties = FindCommonLiberties(pos,South(pos));
           uniqueLiberties = FindUniqueLiberties(pos, State.blockPointers[South(pos)]);
           State.blockPointers[pos] = State.blockPointers[South(pos)];
+          LOG_DEBUG << "ULS: "<<uniqueLiberties;
         }
       else if (North(pos) != -1 && State.stones[North(pos)] == boardColor)
         {
           //          commonLiberties = FindCommonLiberties(pos,North(pos));
           uniqueLiberties = FindUniqueLiberties(pos, State.blockPointers[North(pos)]);
           State.blockPointers[pos] = State.blockPointers[North(pos)];
+          LOG_DEBUG << "ULN: "<<uniqueLiberties;
         }
       else if (West(pos) != -1 && State.stones[West(pos)] == boardColor)
         {
           //          commonLiberties = FindCommonLiberties(pos,West(pos));
           uniqueLiberties = FindUniqueLiberties(pos, State.blockPointers[West(pos)]);
           State.blockPointers[pos] = State.blockPointers[West(pos)];
+          LOG_DEBUG << "ULW: "<<uniqueLiberties;
         }
       else if (East(pos) != -1 && State.stones[East(pos)] == boardColor)
         {
           //          commonLiberties = FindCommonLiberties(pos,East(pos));
           uniqueLiberties = FindUniqueLiberties(pos, State.blockPointers[East(pos)]);
           State.blockPointers[pos] = State.blockPointers[East(pos)];
+          LOG_DEBUG << "ULE: "<<uniqueLiberties;
         }
       else
         LOG_ERROR <<"Something went terribly wrong";
@@ -347,12 +381,14 @@ const int GoBoard::Size() const
 const GoMove* GoBoard::Play(GoPoint p, int color)
 {
   if(!IsLegal(p, p.color))
-    throw "Illegal move";
+    LOG_DEBUG<<"Illegal move at "<<p.x<<","<<p.y;//throw "Illegal move at ";
   LOG_DEBUG << "\n\n\n";
   LOG_DEBUG << "Playing color "<<p.color<<" at "<<p.x<<","<<p.y;
   AddStone(Pos(p),p.color);
   LOG_DEBUG <<"Stone added";
+  nextPlayer = p.color==S_WHITE ? S_BLACK : S_WHITE; //Inverse color.
 
+  moves.push_back(new GoMove(p.color,p));
   return 0;
 }
 
@@ -464,6 +500,11 @@ void GoBoard::RemoveStone(const int pos)
           LOG_DEBUG << "Block at : "<<East(pos)<<" has been updated with new libs: "<<State.blockPointers[East(pos)]->Liberties();
         }
     }
+  int opponentColor = stoneColor == S_BLACK ? S_WHITE : S_BLACK;
+
+//  std::cerr<<opponentColor<<" now has "<<State.bw_prisoners[opponentColor]<<" prisoners";
+//  ++State.bw_prisoners[opponentColor];
+//  std::cerr<<opponentColor<<" now has "<<State.bw_prisoners[opponentColor]<<" prisoners";
   //Remove the stone from the board
   LOG_DEBUG << "Removing last references of stone at "<<pos;
   State.blockPointers[pos] = 0;
@@ -720,4 +761,98 @@ const bool GoBoard::IsTrueEye(const int point, const int boardColor)
         return true;
     }
   return false;
+}
+
+const int GoBoard::NextPlayer() const
+{
+  return nextPlayer;
+}
+
+const float GoBoard::GetScore() const
+{
+//  return GetScoreGnuGo();
+  return GetScoreInternal();
+}
+
+const float GoBoard::GetScoreInternal() const
+{
+  float score = -komi; //Positive score = black win
+//  std::cerr << "Post komi"<<score<<std::endl;
+  //Count captures
+
+  score += State.bw_prisoners[S_BLACK] - State.bw_prisoners[S_WHITE];
+//  std::cerr << "Caps "<<State.bw_prisoners[S_BLACK]<<" "<<State.bw_prisoners[S_WHITE]<< " " << score+komi << std::endl;
+//  std::cerr << "Post caps"<<score<<std::endl;
+  int bstones = 0;
+  int wstones = 0;
+  int bterr = 0;
+  int wterr = 0;
+  for(int i = 0; i<Size()*Size(); ++i)
+    {
+      //Count stones
+      if(State.stones[i] == B_BLACK)
+        ++bstones;
+      else if(State.stones[i] == B_WHITE)
+        ++wstones;
+      else if(State.stones[i] == NONE) //Count empty points
+        {
+          if(State.stones[North(i)] == B_BLACK
+              || State.stones[South(i)] == B_BLACK
+              || State.stones[West(i)] == B_BLACK
+              || State.stones[East(i)] == B_BLACK
+          )
+            ++bterr;
+          else
+            ++wterr;
+        }
+    }
+//  std::cerr << bstones << " " <<wstones<< " "<<bterr<< " "<<wterr;
+  score += bstones + bterr - wstones - wterr;
+//  std::cerr << "Finished score"<<score<<std::endl;
+  return score;
+}
+
+const float GoBoard::GetScoreGnuGo() const
+{
+  SGFEngine().generateFile(this);
+
+  system("gnugo --score estimate --komi 0.5 --quiet -l SGF.sgf > score.s");
+  std::ifstream t;
+  t.open("score.s");
+  if(t.fail())
+    throw Exception("Unable to score game");
+  std::string line;
+  std::getline(t, line);
+  t.close();
+  std::vector<std::string> a;
+  boost::split(a, line,boost::is_any_of( " " ));
+  char color = a[0] == "White" ? 'W':'B';
+  float score = atoi(a[3].c_str());
+
+  switch(color)
+  {
+  case 'W':
+    return score;
+    break;
+  case 'B':
+    return score*-1;
+    break;
+  }
+  throw ("Unable to score");
+}
+const std::string GoBoard::ReadablePosition(const GoPoint& pos) const
+{
+  return ReadablePosition(Pos(pos));
+}
+const std::string GoBoard::ReadablePosition(const int pos) const
+{
+  std::stringstream ss;
+  std::cerr << pos<<std::endl;
+  char alpha = pos%Size() + 65;
+  alpha = alpha >= 'I' ? ++alpha : alpha;
+  std::cerr << alpha<<std::endl;
+  int num =(float)pos/Size() + 1;
+  std::cerr << num << std::endl;
+  ss << alpha <<num;
+  return ss.str();
 }

@@ -7,47 +7,83 @@
 #include <time.h>
 #include "MonteCarlo.h"
 #include "Log.h"
+#include "Exception.h"
 
-
-MonteCarlo::MonteCarlo()
+MonteCarlo::MonteCarlo(int searchWidth, int searchDepth):searchDepth(searchDepth),searchWidth(searchWidth)
 {
   LOG_VERBOSE << "Initialised MC";
-  // TODO Auto-generated constructor stub
-
 }
 
 MonteCarlo::~MonteCarlo()
 {
-  // TODO Auto-generated destructor stub
 }
 
 GoPoint MonteCarlo::generateMove(int color, GoGame* game)
 {
-  LOG_VERBOSE << "Generating MC move";
-  GoPoint point;
+  LOG_VERBOSE << "Generating MC move for "<<color;
+  GoPoint bestMove = GoPoint(-1,-1,color);
+  float bestWinRate = 0;
+  for(int j = 0; j<searchWidth; ++j)
+    {
+      GoPoint toPlay = SimpleRandomAI().generateMove(color,game);
+//           std::cerr<< "Testing move x:"<<toPlay.x<<" y:"<<toPlay.y;
+      int wins = 0;
 
-  GoBoard* rootBoard = game->Board;
-  point = SimpleRandomAI().generateMove(color,game);
-  GoBoard* nboard = copyBoard(game->Board, game->moves);
-  delete nboard;
+      for (int i = 0; i<searchDepth; ++i)
+        {
+//          std::cerr<<"Testing1"<<std::endl;
+          GoBoard* nboard = copyBoard(game->Board);
+//          std::cerr<<"Testing2"<<std::endl;
+          nboard->Play(toPlay);
+//          std::cerr<<"Testing3"<<std::endl;
+          try
+          {
 
+              SimpleRandomAI().simulateGame(nboard);
+//              std::cerr<<"Testing4"<<std::endl;
+              float score = nboard ->GetScore();
+              if(color == S_BLACK && score>0)
+                ++wins;
+              else if(color == S_WHITE && score<0)
+                ++wins;
 
+//              std::cerr<<score<<std::endl;
+          }catch(Exception& e)
+          {
+              LOG_DEBUG <<e.getMessage();
+          }
+//          nboard->DisplayCurrentState();
+          delete nboard;
 
-  return point;
+        } //Invert if black
+      double winRate = (double)wins*1.0/(double)searchDepth;
+      std::cerr<<"Winrate "<<game->Board->ReadablePosition(toPlay)<<"("<<toPlay.x<<","<<toPlay.y<<") : "<<winRate<<std::endl;
+      if(winRate > bestWinRate)
+        {
+
+          bestWinRate = winRate;
+          bestMove.x = toPlay.x;
+          bestMove.y = toPlay.y;
+
+        }
+//      std::cerr<<"Time used to simulate games for one move:("<<toPlay.x<<","<<toPlay.y<<") "<<(float)(clock() - time)/CLOCKS_PER_SEC<<std::endl;
+    }
+  if(bestWinRate<0.4)
+    {
+      LOG_ERROR<<"Resign! The only winning move is not to play "<<std::endl;
+    }
+  std::cerr<<"Best move ("<<bestMove.x<<","<<bestMove.y<<") : "<<bestWinRate<<std::endl;
+  return bestMove;
 }
 
-GoBoard* MonteCarlo::copyBoard(GoBoard* old, std::vector<GoMove*>& moves)
+GoBoard* MonteCarlo::copyBoard(GoBoard* old)
 {
-  LOG_VERBOSE << "Copying board";
-  clock_t t = clock();
   GoBoard* nBoard = new GoBoard(old->Size());
 
-  for(std::vector<GoMove*>::const_iterator it; it != moves.end(); ++it)
+  for(std::vector<GoMove*>::iterator it=old->moves.begin(); it != old->moves.end(); ++it)
     {
       nBoard->Play((*it)->Point);
     }
-  t = clock() - t;
-  LOG_VERBOSE << "Board copy ready. Completed in : "<<((float)t*(float)1000/CLOCKS_PER_SEC);
   return nBoard;
 }
 

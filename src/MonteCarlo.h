@@ -16,12 +16,16 @@
 class MonteCarlo : public SimpleRandomAI
 {
 public:
-  MonteCarlo();
+  MonteCarlo(int searchWidth, int searchDepth);
   virtual
   ~MonteCarlo();
 
   GoPoint generateMove(int color, GoGame* game);
-  GoBoard* copyBoard(GoBoard* old, std::vector<GoMove*>& moves);
+  GoBoard* copyBoard(GoBoard* old);
+
+private:
+  const int searchDepth;
+  const int searchWidth;
 };
 
 #endif /* MONTECARLO_H_ */

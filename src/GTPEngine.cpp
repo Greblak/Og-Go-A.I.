@@ -12,6 +12,7 @@
 #include "Config.h"
 #include "GoGame.h"
 #include "Exception.h"
+#include "Tests.h"
 
 extern int LogLevel;
 extern bool doTests;
@@ -23,6 +24,7 @@ GTPEngine::GTPEngine(void):commandNum(0)
   game = new GoGame(BOARD_DEFAULT_SIZE);
   if(doTests)
     {
+      TEST_PlayPolicy();
       std::string line = "test";
       std::ifstream file;
       file.open("test.gtp");

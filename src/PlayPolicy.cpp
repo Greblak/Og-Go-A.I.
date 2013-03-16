@@ -39,6 +39,8 @@ const bool PlayPolicy::MatchAny(GoBoard* board, const int pos, const int color)
       if(TestAllHane(board,pos,color,direction)) // && TestAllCut
         return true;
     }
+  if(TestEmpty(board,pos)) //Since
+    return true;
   return false;
 }
 const bool PlayPolicy::TestAllHane(GoBoard* board, const int pos, const int color, const int dirUp)
@@ -98,6 +100,22 @@ const bool PlayPolicy::TestHane4(GoBoard* board, const int pos, const int color,
       && board->IsEmpty(pos-dirRight)
       && board->IsEmpty(pos+dirRight)
       && board->IsEmpty(pos-dirUp));
+  return false;
+}
+
+const bool PlayPolicy::TestEmpty(GoBoard* board, const int pos)
+{
+  this->board = board;
+  int dirUp = board->POS_NS;
+  int dirRight = getRightDirection(dirUp);
+  return (
+      board->IsEmpty(pos+dirRight)
+      && board->IsEmpty(pos-dirRight)
+      && board->IsEmpty(pos+dirUp)
+      && board->IsEmpty(pos+dirUp-dirRight)
+      && board->IsEmpty(pos+dirUp+dirRight)
+      && board->IsEmpty(pos-dirUp+dirRight)
+      && board->IsEmpty(pos-dirUp-dirRight));
   return false;
 }
 

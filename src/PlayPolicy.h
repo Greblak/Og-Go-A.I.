@@ -26,6 +26,8 @@ public:
   const bool TestHane3(GoBoard* board, const int pos, const int color, const int dirUp);
   const bool TestHane4(GoBoard* board, const int pos, const int color, const int dirUp);
 
+  const bool TestEmpty(GoBoard* board, const int pos);
+
 private:
   GoBoard* board;
   const int getRightDirection(const int dirNorth) const;

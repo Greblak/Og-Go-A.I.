@@ -234,6 +234,7 @@ void GoBoard::KillSurroundingDeadBlocks(const int pos)
 {
   //Reset kopoint
   State.koPoint = NO_KO_POINT;
+  bool singleStoneKilledBefore = false;
   LOG_DEBUG << "Searching for dead blocks around "<<pos;
   for(int i = 0; i<4; i++)
     {
@@ -258,8 +259,17 @@ void GoBoard::KillSurroundingDeadBlocks(const int pos)
           //Create ko-point if applicable(Single stone)
           if(p_block->stones.size()==1)
             {
-              State.koPoint = blockPos;
-              LOG_DEBUG << "Ko-point is now on "<<State.koPoint;
+              if(!singleStoneKilledBefore)
+                {
+                  State.koPoint = blockPos;
+                  LOG_DEBUG << "Ko-point is now on "<<State.koPoint;
+                  singleStoneKilledBefore = true;
+                }
+              else
+                {
+                  State.koPoint = NO_KO_POINT;
+                  LOG_DEBUG << "Multiple single stones killed in same move. No more ko for you!";
+                }
             }
 
           p_block->RemoveStones(); //Remove stones from board and update liberties.
@@ -450,8 +460,8 @@ void GoBoard::RemoveStone(const int pos)
           && !IsInSameBlock(East(pos),West(pos)))
 
         {
-        ++State.blockPointers[East(pos)]->liberties;
-      LOG_DEBUG << "Block at : "<<East(pos)<<" has been updated with new libs: "<<State.blockPointers[East(pos)]->Liberties();
+          ++State.blockPointers[East(pos)]->liberties;
+          LOG_DEBUG << "Block at : "<<East(pos)<<" has been updated with new libs: "<<State.blockPointers[East(pos)]->Liberties();
         }
     }
   //Remove the stone from the board
@@ -469,7 +479,7 @@ const bool GoBoard::IsInSameBlock(const int pos1,const int pos2) const
   if(State.blockPointers[pos1] == State.blockPointers[pos2])
     {
       LOG_DEBUG <<"Pointers match!";
-    return true;
+      return true;
     }
   else
     LOG_DEBUG <<"Pointers don't match!";
@@ -672,42 +682,42 @@ const bool GoBoard::IsTrueEye(const int point, const int boardColor)
 {
   LOG_DEBUG << "Checking if "<<point <<" is a true eye";
   if(
-                (North(point) == -1 || (State.stones[North(point)] == boardColor))
-                && (South(point) == -1 || (State.stones[South(point)] == boardColor))
-                && (West(point) == -1 || (State.stones[West(point)] == boardColor))
-                && (East(point) == -1 || (State.stones[East(point)] == boardColor))
-            )//Results in potential eye at point. May still be false
-              {
-                //Get diagonal colors
-                int NW = West(point) != -1 && North(point) != -1 ? State.stones[North(West(point))] : -1;
-                int NE = East(point) != -1 && North(point) != -1 ? State.stones[North(East(point))] : -1;
-                int SW = West(point) != -1 && South(point) != -1 ? State.stones[South(West(point))] : -1;
-                int SE = East(point) != -1 && South(point) != -1 ? State.stones[South(East(point))] : -1;
+      (North(point) == -1 || (State.stones[North(point)] == boardColor))
+      && (South(point) == -1 || (State.stones[South(point)] == boardColor))
+      && (West(point) == -1 || (State.stones[West(point)] == boardColor))
+      && (East(point) == -1 || (State.stones[East(point)] == boardColor))
+  )//Results in potential eye at point. May still be false
+    {
+      //Get diagonal colors
+      int NW = West(point) != -1 && North(point) != -1 ? State.stones[North(West(point))] : -1;
+      int NE = East(point) != -1 && North(point) != -1 ? State.stones[North(East(point))] : -1;
+      int SW = West(point) != -1 && South(point) != -1 ? State.stones[South(West(point))] : -1;
+      int SE = East(point) != -1 && South(point) != -1 ? State.stones[South(East(point))] : -1;
 
-                LOG_DEBUG << NW << NE << SW <<SE<<State.stones[point];
+      LOG_DEBUG << NW << NE << SW <<SE<<State.stones[point];
 
-                int numValid = 0;
-                int numSameCol = 0;
-                if(NW != -1)
-                  ++numValid;
-                if(NE != -1)
-                  ++numValid;
-                if(SW != -1)
-                  ++numValid;
-                if(SE != -1)
-                  ++numValid;
+      int numValid = 0;
+      int numSameCol = 0;
+      if(NW != -1)
+        ++numValid;
+      if(NE != -1)
+        ++numValid;
+      if(SW != -1)
+        ++numValid;
+      if(SE != -1)
+        ++numValid;
 
-                if(NW == boardColor)
-                  ++numSameCol;
-                if(NE == boardColor)
-                  ++numSameCol;
-                if(SW == boardColor)
-                  ++numSameCol;
-                if(SE == boardColor)
-                  ++numSameCol;
+      if(NW == boardColor)
+        ++numSameCol;
+      if(NE == boardColor)
+        ++numSameCol;
+      if(SW == boardColor)
+        ++numSameCol;
+      if(SE == boardColor)
+        ++numSameCol;
 
-                if((float)numSameCol / (float)numValid > 0.5)
-                  return true;
-              }
+      if((float)numSameCol / (float)numValid > 0.5)
+        return true;
+    }
   return false;
 }

@@ -21,7 +21,6 @@ public:
   ~MonteCarlo();
 
   GoPoint generateMove(int color, GoGame* game);
-  GoBoard* copyBoard(GoBoard* old);
 
 private:
   const int searchDepth;

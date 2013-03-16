@@ -856,3 +856,14 @@ const std::string GoBoard::ReadablePosition(const int pos) const
   ss << alpha <<num;
   return ss.str();
 }
+
+GoBoard* GoBoard::copyBoard() const
+{
+  GoBoard* nBoard = new GoBoard(Size());
+
+    for(std::vector<GoMove*>::const_iterator it=moves.begin(); it != moves.end(); ++it)
+      {
+        nBoard->Play((*it)->Point);
+      }
+    return nBoard;
+}

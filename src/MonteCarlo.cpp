@@ -32,7 +32,7 @@ GoPoint MonteCarlo::generateMove(int color, GoGame* game)
       for (int i = 0; i<searchDepth; ++i)
         {
 //          std::cerr<<"Testing1"<<std::endl;
-          GoBoard* nboard = copyBoard(game->Board);
+          GoBoard* nboard = game->Board->copyBoard();
 //          std::cerr<<"Testing2"<<std::endl;
           nboard->Play(toPlay);
 //          std::cerr<<"Testing3"<<std::endl;
@@ -74,16 +74,5 @@ GoPoint MonteCarlo::generateMove(int color, GoGame* game)
     }
   std::cerr<<"Best move ("<<bestMove.x<<","<<bestMove.y<<") : "<<bestWinRate<<std::endl;
   return bestMove;
-}
-
-GoBoard* MonteCarlo::copyBoard(GoBoard* old)
-{
-  GoBoard* nBoard = new GoBoard(old->Size());
-
-  for(std::vector<GoMove*>::iterator it=old->moves.begin(); it != old->moves.end(); ++it)
-    {
-      nBoard->Play((*it)->Point);
-    }
-  return nBoard;
 }
 

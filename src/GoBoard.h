@@ -75,6 +75,8 @@ public:
 		const std::string ReadablePosition(const int pos) const;
 		const std::string ReadablePosition(const GoPoint& pos) const;
 
+		GoBoard* copyBoard() const;
+
 		GoState State; ///< Struct containing the most basic board information
 		BlockList blocks; ///< List of active blocks on the board
 		std::vector<GoMove*> moves; ///< A list of moves made in this game. Used to reproduce in SGF files and copy game instances

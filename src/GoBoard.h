@@ -22,10 +22,11 @@ public:
 		const int Size() const; ///< Returns board size. Ex: 19x19 board will return 19
 		const bool Occupied(const GoPoint p) const; ///< Returns true if p is occupied on the board
 		const bool Occupied(const int p) const; ///< Returns true if p is occupied on the board
+		const bool IsEmpty(const int pos) const; ///< Returns !Occupied(p)
 		const bool IsEmpty(GoPoint p) const; ///< Returns !Occupied(p)
 		const bool IsBorder(int pos) const; ///< Checks if pos is a border position on the board. Used to count liberties
 		const bool IsCorner(int pos) const; ///< Checks if pos is a corner position on the board. Used to count liberties
-		bool IsColor(GoPoint p, int c) const; ///< Checks a point for a given color
+		const bool IsColor(int pos, int color) const; ///< Checks a point for a given color
 		static const int CurrentPlayer(); ///< Returns the current player color
 		const int NextPlayer() const; ///< Inverted CurrentPlayer
 
@@ -81,6 +82,8 @@ public:
 		BlockList blocks; ///< List of active blocks on the board
 		std::vector<GoMove*> moves; ///< A list of moves made in this game. Used to reproduce in SGF files and copy game instances
 		float komi;
+		const int POS_WE;
+		const int POS_NS;
 		
 private:
 	int BoardSize; ///< Boardsize (19x19 will be stored as 19 here)
@@ -90,8 +93,7 @@ private:
 	int BOARD_BOTTOM_LEFT;
 	int BOARD_BOTTOM_RIGHT;
 	
-	int POS_WE;
-	int POS_NS;
+
 	int nextPlayer;
 
 };

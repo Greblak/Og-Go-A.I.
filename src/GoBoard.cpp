@@ -16,7 +16,7 @@
 #include <iostream>
 
 
-GoBoard::GoBoard(int size)
+GoBoard::GoBoard(int size):POS_WE(1),POS_NS(size)
 {
   komi = 0.5;
   LOG_VERBOSE <<"Initialising new board";
@@ -30,9 +30,6 @@ GoBoard::GoBoard(int size)
   BOARD_TOP_RIGHT = size*size - 1;
   BOARD_BOTTOM_LEFT = 0;
   BOARD_BOTTOM_RIGHT = size -1;
-
-  POS_WE = 1;
-  POS_NS = size;
 
   for(int i = 0; i<(Size()*Size()); i++)
     {
@@ -105,6 +102,19 @@ bool GoBoard::IsRealPoint(int p) const
 const bool GoBoard::IsEmpty(GoPoint p) const
 {
   return !Occupied(p);
+}
+
+const bool GoBoard::IsEmpty(const int p) const
+{
+  return !Occupied(p);
+}
+
+const bool GoBoard::IsColor(int pos, int color) const
+{
+  color = color == S_BLACK? B_BLACK : B_WHITE;
+  if(State.stones[pos] == color)
+    return true;
+  return false;
 }
 
 void GoBoard::UpdateBlocks(const GoPoint p)

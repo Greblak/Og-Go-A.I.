@@ -26,13 +26,14 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
   LOG_VERBOSE << "Generating UCB move for "<<color;
   //Generate possible moves
   LOG_VERBOSE << "Generating move list";
-  std::vector<int> moves = PlayPolicy().FindPossibleMoves(game->Board);
-  LOG_DEBUG << "Found "<<moves.size()<< " possible moves";
+  std::vector<int> moves = PlayPolicy().FindPossibleLocalMoves(game->Board);
+  LOG_DEBUG << "Found "<<moves.size()<< " possible local moves";
   //Add other moves not covered by plays
-//  for(int i = 0; i<15;++i)
-//    moves.push_back(game->Board->Pos(SimpleRandomAI().generateMove(color,game)));
-  if(moves.size() == 0)
-    return POINT_PASS;
+  if(moves.size()==0)
+    {
+      for(int i = 0; i<20;++i)
+        moves.push_back(game->Board->Pos(SimpleRandomAI().generateMove(color,game)));
+    }
   float expected[moves.size()];
   int numPlayed[moves.size()];
   int totalNumPlayed = 0;

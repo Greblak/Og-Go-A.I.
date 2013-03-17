@@ -19,16 +19,29 @@ PlayPolicy::~PlayPolicy()
 {
   // TODO Auto-generated destructor stub
 }
-const std::vector<int> PlayPolicy::FindPossibleMoves(GoBoard* board)
+const std::vector<int> PlayPolicy::FindPossibleLocalMoves(GoBoard* board)
 {
   std::vector<int> moves;
-  for(int i = 0; i<board->Size()*board->Size(); ++i)
-    {
-      if(board->IsEmpty(i) && board->IsLegal(i,board->NextPlayer()) && MatchAny(board,i,board->NextPlayer()) )
-        {
-          moves.push_back(i);
-        }
+  if(board->moves.size() == 0) //No previous moves. No possible local answers
+    return moves;
+  int lastPlayed = board->Pos((*board->moves.end())->Point);
+  std::vector<int> allLocalMoves;
+  allLocalMoves.push_back(lastPlayed+board->POS_NS);
+  allLocalMoves.push_back(lastPlayed+board->POS_NS+board->POS_WE);
+  allLocalMoves.push_back(lastPlayed+board->POS_NS-board->POS_WE);
+  allLocalMoves.push_back(lastPlayed-board->POS_NS);
+  allLocalMoves.push_back(lastPlayed-board->POS_NS+board->POS_WE);
+  allLocalMoves.push_back(lastPlayed-board->POS_NS-board->POS_WE);
+  allLocalMoves.push_back(lastPlayed+board->POS_WE);
+  allLocalMoves.push_back(lastPlayed-board->POS_WE);
 
+
+  for(std::vector<int>::iterator i = allLocalMoves.begin(); i != allLocalMoves.end(); ++i)
+    {
+      if(board->IsEmpty(*i) && board->IsLegal(*i,board->NextPlayer()) && MatchAny(board,*i,board->NextPlayer()) )
+        {
+          moves.push_back(*i);
+        }
     }
   return moves;
 }
@@ -52,8 +65,6 @@ const bool PlayPolicy::MatchAny(GoBoard* board, const int pos, const int color)
       if(TestAllHane(board,pos,color,direction) || TestAllCut(board,pos,color,direction)) // && TestAllCut
         return true;
     }
-  if(TestEmpty(board,pos)) //Since
-    return true;
   return false;
 }
 const bool PlayPolicy::TestAllHane(GoBoard* board, const int pos, const int color, const int dirUp)
@@ -146,31 +157,80 @@ const bool PlayPolicy::TestCut2(GoBoard* board, const int pos, const int color, 
   int dirRight = getRightDirection(dirUp);
   int opp = getOpponentColor(color);
   return (
-          board->IsColor(pos+dirUp, color)
-          && board->IsColor(pos+dirRight, opp)
-          && board->IsColor(pos-dirRight, opp)
-          && (board->IsColor(pos-dirUp, color)          || board->IsEmpty(pos-dirUp))
-          && (board->IsColor(pos-dirUp-dirRight, color) || board->IsEmpty(pos-dirUp-dirRight))
-          && (board->IsColor(pos-dirUp+dirRight, color) || board->IsEmpty(pos-dirUp+dirRight))
+      board->IsColor(pos+dirUp, color)
+      && board->IsColor(pos+dirRight, opp)
+      && board->IsColor(pos-dirRight, opp)
+      && (board->IsColor(pos-dirUp, color)          || board->IsEmpty(pos-dirUp))
+      && (board->IsColor(pos-dirUp-dirRight, color) || board->IsEmpty(pos-dirUp-dirRight))
+      && (board->IsColor(pos-dirUp+dirRight, color) || board->IsEmpty(pos-dirUp+dirRight))
   );
 }
-const bool PlayPolicy::TestEmpty(GoBoard* board, const int pos)
-{
-  this->board = board;
-  int dirUp = board->POS_NS;
-  int dirRight = getRightDirection(dirUp);
-  return (
-      board->IsEmpty(pos+dirRight) && board->East(pos) != -1 //E
-      && board->IsEmpty(pos-dirRight) && board->West(pos) != -1 //W
-      && board->IsEmpty(pos+dirUp) && board->North(pos) != -1 //N
-      && board->IsEmpty(pos-dirUp) && board->South(pos) != -1 //S
 
-      && board->IsEmpty(pos+dirUp-dirRight) //NW
-      && board->IsEmpty(pos+dirUp+dirRight) //NE
-      && board->IsEmpty(pos-dirUp+dirRight) //SE
-      && board->IsEmpty(pos-dirUp-dirRight)); //SW
-  return false;
+const bool PlayPolicy::TestEdge(GoBoard* board, const int pos, const int color, const int dirUp)
+{
+  if(!board->IsBorder(pos))
+    return false;
+  this->board = board;
+  int dirRight = getRightDirection(dirUp);
+  int opp = getOpponentColor(color);
+
+  //Situation 1
+  if(
+        board->IsColor(pos+dirUp-dirRight, color)
+        && board->IsColor(pos-dirRight, opp)
+        && board->IsEmpty(pos+dirUp)
+    )
+      return true;
+
+  if(
+        board->IsColor(pos+dirUp-dirRight, opp)
+        && board->IsColor(pos-dirRight, color)
+        && board->IsEmpty(pos+dirUp)
+    )
+      return true;
+
+  //Situation 2
+  if(
+        board->IsColor(pos+dirUp, color)
+        && board->IsColor(pos-dirRight, color)
+        && board->IsColor(pos+dirRight, opp)
+    )
+      return true;
+
+  if(
+        board->IsColor(pos+dirUp, opp)
+        && board->IsColor(pos-dirRight, opp)
+        && board->IsColor(pos+dirRight, color)
+    )
+      return true;
+
+  //Situation 3
+  if(
+        board->IsColor(pos+dirUp, color)
+        && board->IsColor(pos+dirUp+dirRight, opp)
+    )
+      return true;
+
+  //Situation 4
+  if(
+      board->IsColor(pos+dirUp, opp)
+      && board->IsColor(pos+dirUp+dirRight, color)
+      && board->IsColor(pos+dirRight, opp)
+  )
+    return true;
+
+  //Situation 5
+  if(
+      board->IsColor(pos-dirRight, color)
+      && board->IsColor(pos+dirUp, opp)
+      && board->IsColor(pos+dirRight, opp)
+      && board->IsColor(pos+dirUp+dirRight, color)
+  )
+    return true;
+
+return false;
 }
+
 
 const int PlayPolicy::getRightDirection(const int dirUp) const
 {

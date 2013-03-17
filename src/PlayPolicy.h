@@ -17,7 +17,7 @@ public:
   virtual
   ~PlayPolicy();
 
-  const std::vector<int> FindPossibleMoves(GoBoard* board);
+  const std::vector<int> FindPossibleLocalMoves(GoBoard* board);
   const bool MatchAny(GoBoard* board, const int pos, const int color);
   const bool TestAllHane(GoBoard* board, const int pos, const int color, const int dirUp);
   const bool TestAllCut(GoBoard* board, const int pos, const int color, const int dirUp);
@@ -31,7 +31,7 @@ public:
   const bool TestCut1(GoBoard* board, const int pos, const int color, const int dirUp);
   const bool TestCut2(GoBoard* board, const int pos, const int color, const int dirUp);
 
-  const bool TestEmpty(GoBoard* board, const int pos);
+  const bool TestEdge(GoBoard* board, const int pos, const int color, const int dirUp);
 
 private:
   GoBoard* board;

@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Log.h"
 #include <sstream>
+#include <list>
 GoBlock::GoBlock():liberties(0),anchor(-1),board(0),color(-1)
 {
   LOG_DEBUG << "Created block at "<<this;
@@ -64,4 +65,20 @@ void GoBlock::RemoveStones()
       board->RemoveStone(*it);
     }
   LOG_DEBUG << "All stones removed";
+}
+
+const int GoBlock::LastLiberty() const
+{
+  for(std::list<int>::const_iterator it = stones.begin() ; it != stones.end(); ++it )
+    {
+      if(board->IsEmpty(board->North(*it)))
+              return board->North(*it);
+      if(board->IsEmpty(board->South(*it)))
+              return board->South(*it);
+      if(board->IsEmpty(board->West(*it)))
+              return board->West(*it);
+      if(board->IsEmpty(board->East(*it)))
+              return board->East(*it);
+    }
+  return -1;
 }

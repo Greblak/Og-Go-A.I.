@@ -20,6 +20,7 @@ public:
 	const int Liberties() const;
 	void ImportBlock(GoBlock* block); ///< Import an entire block into this block, update liberties and add stones. Deletes the other block
 	void RemoveStones(); ///< Deletes all stones from a block.
+	const int LastLiberty() const;
 
 	GoBoard* board; ///< A pointer is held to allow access to manipulative board functions
 };

@@ -24,24 +24,42 @@ const std::vector<int> PlayPolicy::FindPossibleLocalMoves(GoBoard* board)
   std::vector<int> moves;
   if(board->moves.size() == 0) //No previous moves. No possible local answers
     return moves;
-  int lastPlayed = board->Pos((*board->moves.end())->Point);
+  int lastPlayed = board->Pos((*--board->moves.end())->Point);
+  //  std::cerr<<"LP"<<lastPlayed<<std::endl;
   std::vector<int> allLocalMoves;
-  allLocalMoves.push_back(lastPlayed+board->POS_NS);
-  allLocalMoves.push_back(lastPlayed+board->POS_NS+board->POS_WE);
-  allLocalMoves.push_back(lastPlayed+board->POS_NS-board->POS_WE);
-  allLocalMoves.push_back(lastPlayed-board->POS_NS);
-  allLocalMoves.push_back(lastPlayed-board->POS_NS+board->POS_WE);
-  allLocalMoves.push_back(lastPlayed-board->POS_NS-board->POS_WE);
-  allLocalMoves.push_back(lastPlayed+board->POS_WE);
-  allLocalMoves.push_back(lastPlayed-board->POS_WE);
+  allLocalMoves.push_back(board->North(lastPlayed));
+  allLocalMoves.push_back(board->West(lastPlayed));
+  allLocalMoves.push_back(board->East(lastPlayed));
+  allLocalMoves.push_back(board->South(lastPlayed));
+  allLocalMoves.push_back(board->North(board->East(lastPlayed)));
+  allLocalMoves.push_back(board->North(board->West(lastPlayed)));
+  allLocalMoves.push_back(board->South(board->East(lastPlayed)));
+  allLocalMoves.push_back(board->South(board->West(lastPlayed)));
 
 
   for(std::vector<int>::iterator i = allLocalMoves.begin(); i != allLocalMoves.end(); ++i)
     {
-      if(board->IsEmpty(*i) && board->IsLegal(*i,board->NextPlayer()) && MatchAny(board,*i,board->NextPlayer()) )
-        {
-          moves.push_back(*i);
-        }
+      if(board->IsRealPoint(*i))
+          {
+          if(board->Occupied(*i) && board->State.blockPointers[*i]->Liberties() == 1)
+            {
+              int lib = board->State.blockPointers[*i]->LastLiberty();
+              std::cerr<<"Found liberty at "<<lib<<std::endl;
+              if(lib != -1 && (board->IsLegal(lib, S_BLACK) || board->IsLegal(lib, S_WHITE)))
+                {
+                  moves.push_back(lib);
+                  std::cerr <<"Lib legal"<<std::endl;
+                }
+
+            }
+
+          if(board->IsEmpty(*i) && board->IsLegal(*i,board->NextPlayer())  )
+            {
+
+              if(MatchAny(board,*i,board->NextPlayer()))
+                moves.push_back(*i);
+            }
+          }
     }
   return moves;
 }

@@ -22,12 +22,14 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
 {
   std::cerr<<"SD: "<<searchDepth<<std::endl;
   this->color = color;
+  std::cerr<<"SD: "<<color<<std::endl;
   this->game = game;
-  LOG_VERBOSE << "Generating UCB move for "<<color;
+  std::cerr<<"SD: "<<game<<std::endl;
+  std::cerr << "Generating UCB move for "<<color<<std::endl;
   //Generate possible moves
-  LOG_VERBOSE << "Generating move list";
+  std::cerr << "Generating move list"<<std::endl;
   std::vector<int> moves = PlayPolicy().FindPossibleLocalMoves(game->Board);
-  LOG_DEBUG << "Found "<<moves.size()<< " possible local moves";
+  std::cerr<< "Found "<<moves.size()<< " possible local moves"<<std::endl;
   //Add other moves not covered by plays
   if(moves.size()==0)
     {
@@ -104,6 +106,7 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
       std::cerr<<game->Board->ReadablePosition(moves[i])<<" E:"<<expected[i]<<" Played:"<<numPlayed[i]<<std::endl;
       if(expected[i]>bestExpected)
         {
+          std::cerr<<"BE is now"<<game->Board->ReadablePosition(moves[i])<<std::endl;
           bestExpected = expected[i];
           bestMove = i;
         }

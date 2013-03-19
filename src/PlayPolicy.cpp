@@ -87,17 +87,21 @@ const bool PlayPolicy::MatchAny(GoBoard* board, const int pos, const int color)
 }
 const bool PlayPolicy::TestAllHane(GoBoard* board, const int pos, const int color, const int dirUp)
 {
-  return TestHane1(board,pos,color,dirUp) || TestHane2(board,pos,color,dirUp) || TestHane3(board,pos,color,dirUp) || TestHane4(board,pos,color,dirUp);
+  return
+		  TestHane1(board,pos,color,dirUp, getRightDirection(dirUp)) || TestHane1(board,pos,color,dirUp, getLeftDirection(dirUp))
+		  || TestHane2(board,pos,color,dirUp, getRightDirection(dirUp)) || TestHane2(board,pos,color,dirUp, getLeftDirection(dirUp))
+		  || TestHane3(board,pos,color,dirUp, getRightDirection(dirUp)) || TestHane3(board,pos,color,dirUp, getLeftDirection(dirUp))
+		  || TestHane4(board,pos,color,dirUp, getRightDirection(dirUp)) || TestHane4(board,pos,color,dirUp, getLeftDirection(dirUp));
 }
 
 const bool PlayPolicy::TestAllCut(GoBoard* board, const int pos, const int color, const int dirUp)
 {
-  return TestCut1(board,pos,color,dirUp) || TestCut2(board,pos,color,dirUp);
+  return TestCut1(board,pos,color,dirUp,getRightDirection(dirUp)) || TestCut1(board,pos,color,dirUp,getLeftDirection(dirUp))
+		  || TestCut2(board,pos,color,dirUp,getRightDirection(dirUp)) || TestCut2(board,pos,color,dirUp,getLeftDirection(dirUp));
 }
-const bool PlayPolicy::TestHane1(GoBoard* board, const int pos, const int color, const int dirUp)
+const bool PlayPolicy::TestHane1(GoBoard* board, const int pos, const int color, const int dirUp, const int dirRight)
 {
   this->board = board;
-  int dirRight = getRightDirection(dirUp);
   int opp = getOpponentColor(color);
   if(
       board->IsColor(pos+dirUp, opp)
@@ -116,10 +120,9 @@ const bool PlayPolicy::TestHane1(GoBoard* board, const int pos, const int color,
     return true;
   return false;
 }
-const bool PlayPolicy::TestHane2(GoBoard* board, const int pos, const int color, const int dirUp)
+const bool PlayPolicy::TestHane2(GoBoard* board, const int pos, const int color, const int dirUp, const int dirRight)
 {
   this->board = board;
-  int dirRight = getRightDirection(dirUp);
   int opp = getOpponentColor(color);
   if(
       board->IsColor(pos+dirUp, opp)
@@ -138,10 +141,9 @@ const bool PlayPolicy::TestHane2(GoBoard* board, const int pos, const int color,
   return false;
 }
 
-const bool PlayPolicy::TestHane3(GoBoard* board, const int pos, const int color, const int dirUp)
+const bool PlayPolicy::TestHane3(GoBoard* board, const int pos, const int color, const int dirUp, const int dirRight)
 {
   this->board = board;
-  int dirRight = getRightDirection(dirUp);
   int opp = getOpponentColor(color);
   if(
       board->IsColor(pos+dirUp, opp)
@@ -160,10 +162,9 @@ const bool PlayPolicy::TestHane3(GoBoard* board, const int pos, const int color,
   return false;
 }
 
-const bool PlayPolicy::TestHane4(GoBoard* board, const int pos, const int color, const int dirUp)
+const bool PlayPolicy::TestHane4(GoBoard* board, const int pos, const int color, const int dirUp, const int dirRight)
 {
   this->board = board;
-  int dirRight = getRightDirection(dirUp);
   int opp = getOpponentColor(color);
   return (
       board->IsColor(pos+dirUp, opp)
@@ -174,10 +175,9 @@ const bool PlayPolicy::TestHane4(GoBoard* board, const int pos, const int color,
       && board->IsEmpty(pos-dirUp));
 }
 
-const bool PlayPolicy::TestCut1(GoBoard* board, const int pos, const int color, const int dirUp)
+const bool PlayPolicy::TestCut1(GoBoard* board, const int pos, const int color, const int dirUp, const int dirRight)
 {
   this->board = board;
-  int dirRight = getRightDirection(dirUp);
   int opp = getOpponentColor(color);
   if (
       ( //C1 hit
@@ -212,10 +212,9 @@ const bool PlayPolicy::TestCut1(GoBoard* board, const int pos, const int color, 
   return false;
 }
 
-const bool PlayPolicy::TestCut2(GoBoard* board, const int pos, const int color, const int dirUp)
+const bool PlayPolicy::TestCut2(GoBoard* board, const int pos, const int color, const int dirUp, const int dirRight)
 {
   this->board = board;
-  int dirRight = getRightDirection(dirUp);
   int opp = getOpponentColor(color);
   return (
       board->IsColor(pos+dirUp, color)
@@ -227,12 +226,11 @@ const bool PlayPolicy::TestCut2(GoBoard* board, const int pos, const int color, 
   );
 }
 
-const bool PlayPolicy::TestEdge(GoBoard* board, const int pos, const int color, const int dirUp)
+const bool PlayPolicy::TestEdge(GoBoard* board, const int pos, const int color, const int dirUp, const int dirRight)
 {
   if(!board->IsBorder(pos))
     return false;
   this->board = board;
-  int dirRight = getRightDirection(dirUp);
   int opp = getOpponentColor(color);
 
   //Situation 1
@@ -295,6 +293,7 @@ const bool PlayPolicy::TestEdge(GoBoard* board, const int pos, const int color, 
 
 const int PlayPolicy::getRightDirection(const int dirUp) const
 {
+	std::cerr<<"Attempting to get right dir for "<<dirUp<<std::endl;
   if(dirUp == board->POS_NS)
     return board->POS_WE;
   if(dirUp == -board->POS_NS)
@@ -304,6 +303,11 @@ const int PlayPolicy::getRightDirection(const int dirUp) const
   if(dirUp == -board->POS_WE)
     return board->POS_NS;
   throw "Unknown direction";
+}
+
+const int PlayPolicy::getLeftDirection(const int dirUp) const
+{
+ return -getRightDirection(dirUp);
 }
 
 const int PlayPolicy::getOpponentColor(int color) const

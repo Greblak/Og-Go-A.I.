@@ -26,24 +26,24 @@ const std::vector<int> PlayPolicy::FindPossibleLocalMoves(GoBoard* board)
     return moves;
   int lastPlayed = board->Pos((*--board->moves.end())->Point);
   //  std::cerr<<"LP"<<lastPlayed<<std::endl;
-  std::vector<int> allLocalMoves;
-  allLocalMoves.push_back(board->North(lastPlayed));
-  allLocalMoves.push_back(board->West(lastPlayed));
-  allLocalMoves.push_back(board->East(lastPlayed));
-  allLocalMoves.push_back(board->South(lastPlayed));
-  allLocalMoves.push_back(board->North(board->East(lastPlayed)));
-  allLocalMoves.push_back(board->North(board->West(lastPlayed)));
-  allLocalMoves.push_back(board->South(board->East(lastPlayed)));
-  allLocalMoves.push_back(board->South(board->West(lastPlayed)));
+  int allLocalMoves[8];
+  allLocalMoves[0] = (board->North(lastPlayed));
+  allLocalMoves[1] = (board->West(lastPlayed));
+  allLocalMoves[2] = (board->East(lastPlayed));
+  allLocalMoves[3] = (board->South(lastPlayed));
+  allLocalMoves[4] = (board->North(board->East(lastPlayed)));
+  allLocalMoves[5] = (board->North(board->West(lastPlayed)));
+  allLocalMoves[6] = (board->South(board->East(lastPlayed)));
+  allLocalMoves[7] = (board->South(board->West(lastPlayed)));
 
 
-  for(std::vector<int>::iterator i = allLocalMoves.begin(); i != allLocalMoves.end(); ++i)
+  for(int i = 0; i < 8; ++i)
     {
-      if(board->IsRealPoint(*i))
+      if(board->IsRealPoint(allLocalMoves[i]))
           {
-          if(board->Occupied(*i) && board->State.blockPointers[*i]->Liberties() == 1)
+          if(board->Occupied(allLocalMoves[i]) && board->State.blockPointers[allLocalMoves[i]]->Liberties() == 1)
             {
-              int lib = board->State.blockPointers[*i]->LastLiberty();
+              int lib = board->State.blockPointers[allLocalMoves[i]]->LastLiberty();
               std::cerr<<"Found liberty at "<<lib<<std::endl;
               if(lib != -1 && (board->IsLegal(lib, S_BLACK) || board->IsLegal(lib, S_WHITE)))
                 {
@@ -53,11 +53,11 @@ const std::vector<int> PlayPolicy::FindPossibleLocalMoves(GoBoard* board)
 
             }
 
-          if(board->IsEmpty(*i) && board->IsLegal(*i,board->NextPlayer())  )
+          if(board->IsEmpty(allLocalMoves[i]) && board->IsLegal(allLocalMoves[i],board->NextPlayer())  )
             {
 
-              if(MatchAny(board,*i,board->NextPlayer()))
-                moves.push_back(*i);
+              if(MatchAny(board,allLocalMoves[i],board->NextPlayer()))
+                moves.push_back(allLocalMoves[i]);
             }
           }
     }

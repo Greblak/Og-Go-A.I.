@@ -22,9 +22,9 @@ PlayPolicy::~PlayPolicy()
 const std::vector<int> PlayPolicy::FindPossibleLocalMoves(GoBoard* board)
 {
   std::vector<int> moves;
-  if(board->moves.size() == 0) //No previous moves. No possible local answers
+  if(board->movePointer == 0) //No previous moves. No possible local answers
     return moves;
-  int lastPlayed = board->Pos((*--board->moves.end())->Point);
+  int lastPlayed = board->Pos((board->moves[board->movePointer])->Point);
   //  std::cerr<<"LP"<<lastPlayed<<std::endl;
   int allLocalMoves[8];
   allLocalMoves[0] = (board->North(lastPlayed));

@@ -22,6 +22,7 @@ private:
   const int searchDepth;
   const int searchWidth;
   const float expRatio;
+  GoBoard* workingBoard;
   GoGame* game;
   int color;
 

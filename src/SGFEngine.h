@@ -41,19 +41,19 @@ public:
     file << "SZ["<<Board->Size()<<"]" << std::endl;
     //End of premable. LET'S PLAY!
 
-    for (GoMoveIterator it = Board->moves.begin(); it != Board->moves.end(); ++it)
-      {
-        char x = GTPEngine::ColumnIntToString((*it)->Point.x);
+    for(int i = 0; i<Board->movePointer;++i)
+    {
+        char x = GTPEngine::ColumnIntToString(Board->moves[i]->Point.x);
         x = tolower(x);
-        int i_y = Board->Size() - ((*it)->Point.y) - 1; //Reverses due to odd notation in SGF
+        int i_y = Board->Size() - (Board->moves[i]->Point.y) - 1; //Reverses due to odd notation in SGF
         char y = GTPEngine::ColumnIntToString(i_y);
         y = tolower(y);
         y = y > 'i' ? y-1 : y;
         x = x > 'i' ? x-1 : x;
 
-        char col = (*it)->Color == S_BLACK ? 'B' : 'W';
+        char col = Board->moves[i]->Color == S_BLACK ? 'B' : 'W';
         file << ";"<<col<<"["<<x<<y<<"]" <<std::endl;
-        char separator = it == Board->moves.begin() ? ' ' : ';';
+        char separator = Board->moves[i] == Board->moves[0] ? ' ' : ';';
         LOG_VERBOSE <<"Output to SGF:" << separator <<col<<"["<<x<<y<<"]" <<std::endl;
       }
 

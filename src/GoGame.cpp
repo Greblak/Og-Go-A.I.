@@ -30,8 +30,8 @@ void GoGame::Play(int color, int x, int y)
 
 GoPoint GoGame::GenerateMove(int color)
 {
-//  MonteCarlo ai(25,300);()
-//  SimpleRandomAI ai;
+//  MonteCarlo ai(25,300);
+//	SimpleRandomAI ai();
   UpperConfidence ai(10,3000);
   LOG_DEBUG<<"Generating move for "<<color;
   GoPoint point = ai.generateMove(color,this);

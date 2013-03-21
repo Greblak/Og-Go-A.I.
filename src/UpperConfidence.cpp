@@ -12,14 +12,17 @@
 #include "SimpleRandomAI.h"
 UpperConfidence::UpperConfidence(int searchWidth, int searchDepth):searchDepth(searchDepth),searchWidth(searchWidth),expRatio(1.5)
 {
+
 }
 
 UpperConfidence::~UpperConfidence()
 {
+	delete workingBoard;
 }
 
 GoPoint UpperConfidence::generateMove(int color, GoGame* game)
 {
+	workingBoard = new GoBoard(game->Board->Size());
   std::cerr<<"SD: "<<searchDepth<<std::endl;
   this->color = color;
   std::cerr<<"SD: "<<color<<std::endl;
@@ -87,7 +90,7 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
         result = 0;
       ++numPlayed[nextToPlay];
       ++totalNumPlayed;
-      if(totalNumPlayed%1000==0)
+      if(totalNumPlayed%100==0)
         std::cerr<<"Simulated "<<totalNumPlayed<<" games"<<std::endl;
 
       float oldWins = expected[nextToPlay] * numPlayed[nextToPlay];
@@ -119,14 +122,13 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
 const float UpperConfidence::simulateMove(int move)
 {
   float expected = 0;
-  GoBoard* nboard =game->Board->copyBoard();
-  nboard->Play(move, game->Board->NextPlayer());
-  SimpleRandomAI().simulateGame(nboard);
-  float score = nboard ->GetScore();
+  workingBoard->resetAndReplayMoves(game->Board);
+  workingBoard->Play(move, workingBoard->NextPlayer());
+  SimpleRandomAI().simulateGame(workingBoard);
+  float score = workingBoard->GetScore();
   if(color == S_BLACK && score>0)
     expected += score;
   else if(color == S_WHITE && score<0)
     expected -= score;
-  delete nboard;
   return expected;
 }

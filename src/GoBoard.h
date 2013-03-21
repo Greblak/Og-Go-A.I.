@@ -81,10 +81,12 @@ public:
 		const std::string ReadablePosition(const GoPoint& pos) const;
 
 		GoBoard* copyBoard() const;
-
+		void resetAndReplayMoves(GoBoard* board);
 		GoState State; ///< Struct containing the most basic board information
-		BlockList blocks; ///< List of active blocks on the board
-		std::vector<GoMove*> moves; ///< A list of moves made in this game. Used to reproduce in SGF files and copy game instances
+		int blockPointer;
+		int movePointer;
+		GoBlock* blocks[1000]; ///< List of active blocks on the board
+		GoMove* moves[1000]; ///< A list of moves made in this game. Used to reproduce in SGF files and copy game instances
 		float komi;
 		const int POS_WE;
 		const int POS_NS;
@@ -99,6 +101,8 @@ private:
 	
 
 	int nextPlayer;
+
+	void reset();
 
 };
 

@@ -9,11 +9,14 @@
 #include "GoGame.h"
 #include "GoBoard.h"
 
-int main()
+void TEST_UpperConfidence()
 {
   GoGame g(9);
   g.Play(S_BLACK,1,1);
   g.Play(S_BLACK,3,1);
   g.Play(S_WHITE,2,1);
+
+  GoGame gg(9);
+  gg.Board->resetAndReplayMoves(g.Board);
 
 }

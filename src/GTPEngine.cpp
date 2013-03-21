@@ -24,7 +24,8 @@ GTPEngine::GTPEngine(void):commandNum(0)
   game = new GoGame(BOARD_DEFAULT_SIZE);
   if(doTests)
     {
-      TEST_PlayPolicy();
+//      TEST_PlayPolicy();
+      TEST_UpperConfidence();
       std::string line = "test";
       std::ifstream file;
       file.open("test.gtp");

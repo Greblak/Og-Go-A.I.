@@ -3,11 +3,13 @@
 #include "Log.h"
 #include <sstream>
 #include <list>
-GoBlock::GoBlock():liberties(0),anchor(-1),board(0),color(NONE),lastStone(-1)
+GoBlock::GoBlock():liberties(0),anchor(-1),board(0),color(NONE),lastStone(0)
 {
   LOG_DEBUG << "Created block at "<<this;
   for(int i = 0; i<BLOCK_MAX_STONES;++i)
   		stones[i] = -1;
+
+  reset();
 }
 
 GoBlock::~GoBlock()
@@ -37,8 +39,9 @@ void GoBlock::ImportBlock(GoBlock* block)
   int newLiberties = 0;
   int i = 0;
   LOG_DEBUG << "LS: "<<lastStone;
-  while(stones[i] != -1)
+  while(block->stones[i] != -1)
     {
+	  LOG_DEBUG << "i :"<<i<< " "<<block->stones[i];
       LOG_DEBUG << "Checking uncommon liberties for stone at "<<block->stones[i]<<std::endl<<"Numblibs for stone: "<<board->State.numNeighboursEmpty[block->stones[i]];
 //      if(board->North(*it) != -1 && board->State.stones[board->North(*it)] == NONE && !board->IsLibertyOfBlock(board->North(*it),anchor))
 //        ++newLiberties;
@@ -53,6 +56,7 @@ void GoBlock::ImportBlock(GoBlock* block)
       //Import all stones
       addStone(block->stones[i]);
       board->State.blockPointers[block->stones[i]] = this;
+      ++i;
     }
   LOG_DEBUG << "Libs for this block: "<<liberties<< " + Unique libs for other block: "<<newLiberties;
 
@@ -93,8 +97,10 @@ const int GoBlock::LastLiberty() const
 
 void GoBlock::addStone(int pos)
 {
+	LOG_DEBUG<<"Last Stone was: "<<lastStone;
 	stones[lastStone] = pos;
 	++lastStone;
+	LOG_DEBUG<<"Last Stone is now: "<<lastStone;
 }
 
 void GoBlock::reset()
@@ -103,7 +109,7 @@ void GoBlock::reset()
 	anchor = -1;
 	board = 0;
 	color = -1;
-	lastStone = -1;
+	lastStone = 0;
 	for(int i = 0; i<BLOCK_MAX_STONES;++i)
 		stones[i] = -1;
 }

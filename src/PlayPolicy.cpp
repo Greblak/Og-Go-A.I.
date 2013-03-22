@@ -25,7 +25,7 @@ const std::vector<int> PlayPolicy::FindPossibleLocalMoves(GoBoard* board)
   if(board->movePointer == 0) //No previous moves. No possible local answers
     return moves;
   int lastPlayed = board->Pos((board->moves[board->movePointer])->Point);
-  //  std::cerr<<"LP"<<lastPlayed<<std::endl;
+  //  LOG_VERBOSE<<"LP"<<lastPlayed<<std::endl;
   int allLocalMoves[8];
   allLocalMoves[0] = (board->North(lastPlayed));
   allLocalMoves[1] = (board->West(lastPlayed));
@@ -44,11 +44,11 @@ const std::vector<int> PlayPolicy::FindPossibleLocalMoves(GoBoard* board)
           if(board->Occupied(allLocalMoves[i]) && board->State.blockPointers[allLocalMoves[i]]->Liberties() == 1)
             {
               int lib = board->State.blockPointers[allLocalMoves[i]]->LastLiberty();
-              std::cerr<<"Found liberty at "<<lib<<std::endl;
+              LOG_VERBOSE<<"Found liberty at "<<lib<<std::endl;
               if(lib != -1 && (board->IsLegal(lib, S_BLACK) || board->IsLegal(lib, S_WHITE)))
                 {
                   moves.push_back(lib);
-                  std::cerr <<"Lib legal"<<std::endl;
+                  LOG_VERBOSE <<"Lib legal"<<std::endl;
                 }
 
             }
@@ -293,7 +293,7 @@ const bool PlayPolicy::TestEdge(GoBoard* board, const int pos, const int color, 
 
 const int PlayPolicy::getRightDirection(const int dirUp) const
 {
-	std::cerr<<"Attempting to get right dir for "<<dirUp<<std::endl;
+	LOG_VERBOSE<<"Attempting to get right dir for "<<dirUp<<std::endl;
   if(dirUp == board->POS_NS)
     return board->POS_WE;
   if(dirUp == -board->POS_NS)

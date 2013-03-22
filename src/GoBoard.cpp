@@ -18,9 +18,9 @@
 
 GoBoard::GoBoard(int size):POS_WE(1),POS_NS(size)
 {
-	std::cerr<<sizeof(GoBoard)<<std::endl;
-	std::cerr<<sizeof(GoMove)<<std::endl;
-	std::cerr<<sizeof(GoBlock)<<std::endl;
+	LOG_VERBOSE<<sizeof(GoBoard)<<std::endl;
+	LOG_VERBOSE<<sizeof(GoMove)<<std::endl;
+	LOG_VERBOSE<<sizeof(GoBlock)<<std::endl;
 	if(size > BOARD_MAX_SIZE || size < BOARD_MINIMUM_SIZE)
 		throw "Invalid boardsize.";
 	BoardSize = size;
@@ -190,7 +190,7 @@ void GoBoard::UpdateBlocks(int pos, int color)
 		b->liberties= State.numNeighboursEmpty[pos];
 		State.blockPointers[pos] = b;
 
-		std::cerr << "Single stone places with liberties: "<<b->liberties<<" "<<State.blockPointers[pos]->anchor<<std::endl;
+		LOG_VERBOSE << "Single stone places with liberties: "<<b->liberties<<" "<<State.blockPointers[pos]->anchor<<std::endl;
 
 	}
 	else //Not solo. Attach to block
@@ -226,10 +226,10 @@ void GoBoard::UpdateBlocks(int pos, int color)
 		}
 		else
 			LOG_ERROR <<"Something went terribly wrong";
-		std::cerr << "Old block("<<State.blockPointers[pos]->anchor<<") libcount: "<<State.blockPointers[pos]->liberties<<std::endl;
+		LOG_VERBOSE << "Old block("<<State.blockPointers[pos]->anchor<<") libcount: "<<State.blockPointers[pos]->liberties<<std::endl;
 		//Subtract one since the new stone is always placed on a liberty for the block.
 		State.blockPointers[pos]->liberties += uniqueLiberties;
-		std::cerr <<  " Stone liberties :"<<State.numNeighboursEmpty[pos] <<" Unique: "<<uniqueLiberties<< " New block liberty total: "<<State.blockPointers[pos]->liberties<<std::endl;
+		LOG_VERBOSE <<  " Stone liberties :"<<State.numNeighboursEmpty[pos] <<" Unique: "<<uniqueLiberties<< " New block liberty total: "<<State.blockPointers[pos]->liberties<<std::endl;
 
 
 		//Detect neighboring blocks to perform join.
@@ -262,7 +262,7 @@ void GoBoard::KillSurroundingDeadBlocks(const int pos)
 	//Reset kopoint
 	State.koPoint = NO_KO_POINT;
 	bool singleStoneKilledBefore = false;
-	std::cerr<< "Searching for dead blocks around "<<pos;
+	LOG_VERBOSE<< "Searching for dead blocks around "<<pos;
 	for(int i = 0; i<4; i++)
 	{
 		int blockPos = -1;
@@ -278,9 +278,9 @@ void GoBoard::KillSurroundingDeadBlocks(const int pos)
 		//if(blockPos == -1)
 		else
 			continue;
-		std::cerr << "Found potentially dead block at "<<blockPos;
+		LOG_VERBOSE << "Found potentially dead block at "<<blockPos;
 		GoBlock* p_block = State.blockPointers[blockPos];
-		std::cerr << "Block has " << p_block->Liberties()<<" liberties";
+		LOG_VERBOSE << "Block has " << p_block->Liberties()<<" liberties";
 		if(p_block->Liberties() == 0)
 		{
 			//Create ko-point if applicable(Single stone)
@@ -509,9 +509,9 @@ void GoBoard::RemoveStone(const int pos)
 	}
 	int opponentColor = stoneColor == S_BLACK ? S_WHITE : S_BLACK;
 
-	//  std::cerr<<opponentColor<<" now has "<<State.bw_prisoners[opponentColor]<<" prisoners";
+	//  LOG_VERBOSE<<opponentColor<<" now has "<<State.bw_prisoners[opponentColor]<<" prisoners";
 	//  ++State.bw_prisoners[opponentColor];
-	//  std::cerr<<opponentColor<<" now has "<<State.bw_prisoners[opponentColor]<<" prisoners";
+	//  LOG_VERBOSE<<opponentColor<<" now has "<<State.bw_prisoners[opponentColor]<<" prisoners";
 	//Remove the stone from the board
 	LOG_DEBUG << "Removing last references of stone at "<<pos;
 	State.blockPointers[pos] = 0;
@@ -700,25 +700,25 @@ int GoBoard::East(const GoPoint p) const
 void GoBoard::DisplayCurrentState() const
 {
 	LOG_OUT << "=1 \n Showing current gamestate\n";
-	std::cerr<<"\n    ";
+	LOG_VERBOSE<<"\n    ";
 	for(int k = 0; k<Size(); k++)
 	{
-		std::cerr<<GTPEngine::ColumnIntToString(k)<<" ";
+		LOG_VERBOSE<<GTPEngine::ColumnIntToString(k)<<" ";
 	}
 	for(int i = Size()-1; i>=0;i--)
 	{
 		if(i+1 >= 10)
-			std::cerr<<"\n "<<(i+1);
+			LOG_VERBOSE<<"\n "<<(i+1);
 		else
-			std::cerr<<"\n  "<<(i+1);
+			LOG_VERBOSE<<"\n  "<<(i+1);
 		for(int j = 0; j<Size();j++)
 		{
 			if(State.stones[Size()*i+j] == NONE)
-				std::cerr<< " -";
+				LOG_VERBOSE<< " -";
 			else if(State.stones[Size()*i+j] == B_BLACK)
-				std::cerr<< " O";
+				LOG_VERBOSE<< " O";
 			else if(State.stones[Size()*i+j] == B_WHITE)
-				std::cerr<< " X";
+				LOG_VERBOSE<< " X";
 			else
 			{
 				LOG_ERROR<< "Wrong domain in board representation "<< State.stones[Size()*i+j];
@@ -726,12 +726,12 @@ void GoBoard::DisplayCurrentState() const
 			}
 		}
 	}
-	std::cerr<<"\n    ";
+	LOG_VERBOSE<<"\n    ";
 	for(int k = 0; k<Size(); k++)
 	{
-		std::cerr<<GTPEngine::ColumnIntToString(k)<<" ";
+		LOG_VERBOSE<<GTPEngine::ColumnIntToString(k)<<" ";
 	}
-	std::cerr<<"\n\n\n\n\n";
+	LOG_VERBOSE<<"\n\n\n\n\n";
 }
 
 const bool GoBoard::IsTrueEye(const int point, const int boardColor)
@@ -792,12 +792,12 @@ const float GoBoard::GetScore() const
 const float GoBoard::GetScoreInternal() const
 {
 	float score = -komi; //Positive score = black win
-	//  std::cerr << "Post komi"<<score<<std::endl;
+	//  LOG_VERBOSE << "Post komi"<<score<<std::endl;
 	//Count captures
 
 	score += State.bw_prisoners[S_BLACK] - State.bw_prisoners[S_WHITE];
-	//  std::cerr << "Caps "<<State.bw_prisoners[S_BLACK]<<" "<<State.bw_prisoners[S_WHITE]<< " " << score+komi << std::endl;
-	//  std::cerr << "Post caps"<<score<<std::endl;
+	//  LOG_VERBOSE << "Caps "<<State.bw_prisoners[S_BLACK]<<" "<<State.bw_prisoners[S_WHITE]<< " " << score+komi << std::endl;
+	//  LOG_VERBOSE << "Post caps"<<score<<std::endl;
 	int bstones = 0;
 	int wstones = 0;
 	int bterr = 0;
@@ -821,9 +821,9 @@ const float GoBoard::GetScoreInternal() const
 				++wterr;
 		}
 	}
-	//  std::cerr << bstones << " " <<wstones<< " "<<bterr<< " "<<wterr;
+	//  LOG_VERBOSE << bstones << " " <<wstones<< " "<<bterr<< " "<<wterr;
 	score += bstones + bterr - wstones - wterr;
-	//  std::cerr << "Finished score"<<score<<std::endl;
+	//  LOG_VERBOSE << "Finished score"<<score<<std::endl;
 	return score;
 }
 
@@ -862,12 +862,12 @@ const std::string GoBoard::ReadablePosition(const GoPoint& pos) const
 const std::string GoBoard::ReadablePosition(const int pos) const
 {
 	std::stringstream ss;
-	//  std::cerr << pos<<std::endl;
+	//  LOG_VERBOSE << pos<<std::endl;
 	char alpha = pos%Size() + 65;
 	alpha = alpha >= 'I' ? ++alpha : alpha;
-	//  std::cerr << alpha<<std::endl;
+	//  LOG_VERBOSE << alpha<<std::endl;
 	int num =floor((float)pos/Size()) + 1;
-	//  std::cerr << num << std::endl;
+	//  LOG_VERBOSE << num << std::endl;
 	ss << alpha <<num;
 	return ss.str();
 }
@@ -895,7 +895,7 @@ void GoBoard::resetAndReplayMoves(GoBoard* board)
 void GoBoard::reset()
 {
 	komi = 0.5;
-	std::cerr <<"resetting board";
+	LOG_VERBOSE <<"resetting board";
 
 	LOG_VERBOSE << "Board set to size "<<BoardSize;
 	State.koPoint = NO_KO_POINT;

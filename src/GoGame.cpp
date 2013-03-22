@@ -12,30 +12,30 @@
 GoGame::GoGame(int boardSize)
 {
 
-  Board = new GoBoard(boardSize);
+	Board = new GoBoard(boardSize);
 }
 
 GoGame::~GoGame()
 {
-  delete Board;
+	delete Board;
 }
 
 void GoGame::Play(int color, int x, int y)
 {
-  GoPoint p = GoPoint(x,y,color);
-  Board->Play(p);
+	GoPoint p = GoPoint(x,y,color);
+	Board->Play(p);
 
-//  SGFEngine::generateFile(this);
+	//  SGFEngine::generateFile(this);
 }
 
 GoPoint GoGame::GenerateMove(int color)
 {
-//  MonteCarlo ai(25,300);
-//	SimpleRandomAI ai();
-  UpperConfidence ai(10,3000);
-  LOG_DEBUG<<"Generating move for "<<color;
-  GoPoint point = ai.generateMove(color,this);
-//  if(point.x != -1 && point.y != -1 && point.color == NONE) //PASS
-//    Play(point.color, point.x, point.y);
-  return point;
+	  MonteCarlo ai(25,300);
+//	GoPoint point = SimpleRandomAI().generateMove(color,this);
+//	  UpperConfidence ai(10,3000);
+	LOG_DEBUG<<"Generating move for "<<color;
+	GoPoint point = ai.generateMove(color,this);
+	//  if(point.x != -1 && point.y != -1 && point.color == NONE) //PASS
+	//    Play(point.color, point.x, point.y);
+	return point;
 }

@@ -16,7 +16,7 @@
 #include <iostream>
 
 
-GoBoard::GoBoard(int size):POS_WE(1),POS_NS(size)
+GoBoard::GoBoard(int size):POS_WE(1),POS_NS(size),BoardSize(size)
 {
 	LOG_VERBOSE<<sizeof(GoBoard)<<std::endl;
 	LOG_VERBOSE<<sizeof(GoMove)<<std::endl;
@@ -897,9 +897,7 @@ void GoBoard::resetAndReplayMoves(GoBoard* board)
 void GoBoard::reset()
 {
 	komi = 0.5;
-	LOG_VERBOSE <<"resetting board";
-
-	LOG_VERBOSE << "Board set to size "<<BoardSize;
+	LOG_VERBOSE<<"resetting board";
 	State.koPoint = NO_KO_POINT;
 
 
@@ -943,6 +941,8 @@ void GoBoard::reset()
 
 	blockPointer = 0;
 	movePointer = 0;
+	POS_WE = 1;
+	POS_NS = Size();
 
 	LOG_VERBOSE <<"Board reset. Let's play!";
 }

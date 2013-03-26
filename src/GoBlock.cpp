@@ -5,7 +5,7 @@
 #include <list>
 GoBlock::GoBlock():liberties(0),anchor(-1),board(0),color(NONE),lastStone(0)
 {
-  LOG_DEBUG << "Created block at "<<this;
+//  LOG_DEBUG << "Created block at "<<this;
   for(int i = 0; i<BLOCK_MAX_STONES;++i)
   		stones[i] = -1;
 
@@ -15,7 +15,7 @@ GoBlock::GoBlock():liberties(0),anchor(-1),board(0),color(NONE),lastStone(0)
 GoBlock::~GoBlock()
 {	
   //Remove itself from Board:
-  LOG_DEBUG << "Block deconstructor intialized";
+//  LOG_DEBUG << "Block deconstructor intialized";
 //  for(BlockListIterator it = board->blocks.begin(); it != board->blocks.end(); it++)
 //    {
 //      if((*it) == (this))
@@ -26,23 +26,23 @@ GoBlock::~GoBlock()
 //    }
 //  RemoveStones();
   board = 0;
-  LOG_DEBUG << "Block deconstructor complete. Destroyed:"<<this;
+//  LOG_DEBUG << "Block deconstructor complete. Destroyed:"<<this;
 }
 const int GoBlock::Liberties() const
 {
-  LOG_DEBUG << "Libs for block at "<< this<< " : "<<board->Liberties(anchor);
+//  LOG_DEBUG << "Libs for block at "<< this<< " : "<<board->Liberties(anchor);
   return board->Liberties(anchor);
 }
 void GoBlock::ImportBlock(GoBlock* block)
 {
-  LOG_DEBUG << "Importing block "<<block->anchor<< " into " <<anchor;
+//  LOG_DEBUG << "Importing block "<<block->anchor<< " into " <<anchor;
   int newLiberties = 0;
   int i = 0;
-  LOG_DEBUG << "LS: "<<lastStone;
+//  LOG_DEBUG << "LS: "<<lastStone;
   while(block->stones[i] != -1)
     {
-	  LOG_DEBUG << "i :"<<i<< " "<<block->stones[i];
-      LOG_DEBUG << "Checking uncommon liberties for stone at "<<block->stones[i]<<std::endl<<"Numblibs for stone: "<<board->State.numNeighboursEmpty[block->stones[i]];
+//	  LOG_DEBUG << "i :"<<i<< " "<<block->stones[i];
+//      LOG_DEBUG << "Checking uncommon liberties for stone at "<<block->stones[i]<<std::endl<<"Numblibs for stone: "<<board->State.numNeighboursEmpty[block->stones[i]];
 //      if(board->North(*it) != -1 && board->State.stones[board->North(*it)] == NONE && !board->IsLibertyOfBlock(board->North(*it),anchor))
 //        ++newLiberties;
 //      if(board->South(*it) != -1 && board->State.stones[board->South(*it)] == NONE && !board->IsLibertyOfBlock(board->South(*it),anchor))
@@ -52,13 +52,13 @@ void GoBlock::ImportBlock(GoBlock* block)
 //      if(board->East(*it) != -1 && board->State.stones[board->West(*it)] == NONE && !board->IsLibertyOfBlock(board->West(*it),anchor))
 //        ++newLiberties;
       newLiberties += board->FindUniqueLiberties(block->stones[i], board->State.blockPointers[anchor]);
-      LOG_DEBUG << "Current unique liberties" <<newLiberties<<std::endl;
+//      LOG_DEBUG << "Current unique liberties" <<newLiberties<<std::endl;
       //Import all stones
       addStone(block->stones[i]);
       board->State.blockPointers[block->stones[i]] = this;
       ++i;
     }
-  LOG_DEBUG << "Libs for this block: "<<liberties<< " + Unique libs for other block: "<<newLiberties;
+//  LOG_DEBUG << "Libs for this block: "<<liberties<< " + Unique libs for other block: "<<newLiberties;
 
   liberties += newLiberties;
   LOG_DEBUG << "Blocks joined. "<<" - New number of liberties: "<<liberties;
@@ -70,11 +70,11 @@ void GoBlock::RemoveStones()
 	int i = 0;
 	  while(i<lastStone)
 	    {
-      LOG_DEBUG << "Deleting stone at position: "<<stones[i];
+//      LOG_DEBUG << "Deleting stone at position: "<<stones[i];
       board->RemoveStone(stones[i]);
       ++i;
     }
-  LOG_DEBUG << "All stones removed";
+//  LOG_DEBUG << "All stones removed";
 }
 
 const int GoBlock::LastLiberty() const

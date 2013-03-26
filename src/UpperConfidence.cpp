@@ -23,6 +23,7 @@ UpperConfidence::~UpperConfidence()
 GoPoint UpperConfidence::generateMove(int color, GoGame* game)
 {
 	workingBoard = new GoBoard(game->Board->Size());
+	workingBoard->resetAndReplayMoves(game->Board);
   LOG_VERBOSE<<"SD: "<<searchDepth<<std::endl;
   this->color = color;
   LOG_VERBOSE<<"SD: "<<color<<std::endl;
@@ -31,7 +32,7 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
   LOG_VERBOSE << "Generating UCB move for "<<color<<std::endl;
   //Generate possible moves
   LOG_VERBOSE << "Generating move list"<<std::endl;
-  std::vector<int> moves = PlayPolicy().FindPossibleLocalMoves(game->Board);
+  std::vector<int> moves = PlayPolicy().FindPossibleLocalMoves(workingBoard);
   LOG_VERBOSE<< "Found "<<moves.size()<< " possible local moves"<<std::endl;
   //Add other moves not covered by plays
   if(moves.size()==0)
@@ -116,6 +117,7 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
     }
 
   LOG_DEBUG<<"Best move ("<<game->Board->ReadablePosition(moves[bestMove])<<") : "<<bestExpected<<std::endl;
+
   return game->Board->ReversePos(moves[bestMove],color);
 }
 

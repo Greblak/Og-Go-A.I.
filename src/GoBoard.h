@@ -88,8 +88,8 @@ public:
 		GoBlock* blocks[1000]; ///< List of active blocks on the board
 		GoMove* moves[1000]; ///< A list of moves made in this game. Used to reproduce in SGF files and copy game instances
 		float komi;
-		const int POS_WE;
-		const int POS_NS;
+		int POS_WE;
+		int POS_NS;
 		
 private:
 	int BoardSize; ///< Boardsize (19x19 will be stored as 19 here)

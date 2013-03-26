@@ -31,7 +31,8 @@ GoBlock::~GoBlock()
 const int GoBlock::Liberties() const
 {
   LOG_DEBUG << "Libs for block at "<< this<< " : "<<board->Liberties(anchor);
-  return board->Liberties(anchor);
+  return liberties;
+//  return board->Liberties(anchor);
 }
 void GoBlock::ImportBlock(GoBlock* block)
 {

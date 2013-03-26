@@ -1,13 +1,13 @@
 CC = g++
-CC_FLAGS = -g 
-#-O3 -funroll-loops
+#-g -pg
+CC_FLAGS = -g -pg -O3 -fno-rtti
 SOURCES = $(wildcard *.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
 DEPENDENCIES = $(wildcard *.d)
 EXEC = ../bin/oggoai
 all: default
 default: $(OBJECTS)
-	$(CC) $(OBJECTS) -o $(EXEC)
+	$(CC) $(OBJECTS) -pg -o $(EXEC)
 	chmod +x $(EXEC)
 -include $(OBJECTS:.o=.d)
 %.o: %.cpp 

@@ -62,7 +62,7 @@ void GoBlock::ImportBlock(GoBlock* block)
 
   liberties += newLiberties;
   LOG_DEBUG << "Blocks joined. "<<" - New number of liberties: "<<liberties;
-  delete block;
+  block->reset();
   ++i;
 }
 void GoBlock::RemoveStones()
@@ -97,10 +97,7 @@ const int GoBlock::LastLiberty() const
 
 void GoBlock::addStone(int pos)
 {
-	LOG_DEBUG<<"Last Stone was: "<<lastStone;
-	stones[lastStone] = pos;
-	++lastStone;
-	LOG_DEBUG<<"Last Stone is now: "<<lastStone;
+	stones[lastStone++] = pos;
 }
 
 void GoBlock::reset()

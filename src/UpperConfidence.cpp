@@ -91,7 +91,7 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
       ++numPlayed[nextToPlay];
       ++totalNumPlayed;
       if(totalNumPlayed%100==0)
-        LOG_VERBOSE<<"Simulated "<<totalNumPlayed<<" games"<<std::endl;
+        std::cerr<<"Simulated "<<totalNumPlayed<<" games"<<std::endl;
 
       float oldWins = expected[nextToPlay] * numPlayed[nextToPlay];
       ++numPlayed[nextToPlay];

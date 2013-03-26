@@ -42,7 +42,7 @@ GoBoard::GoBoard(int size):POS_WE(1),POS_NS(size)
 
 GoBoard::~GoBoard(void)
 {
-
+	std::cerr<<"Destructor called"<<std::endl;
 }
 
 const bool GoBoard::IsBorder(int pos) const
@@ -885,9 +885,11 @@ GoBoard* GoBoard::copyBoard() const
 
 void GoBoard::resetAndReplayMoves(GoBoard* board)
 {
+	LOG_VERBOSE << "RESETTING BOARD";
 	reset();
 	for(int i = 0; i<board->movePointer; ++i)
 	{
+		LOG_VERBOSE << "Playing move "<<i;
 		Play(board->moves[i]->Point, board->moves[i]->Color);
 	}
 }
@@ -899,8 +901,6 @@ void GoBoard::reset()
 
 	LOG_VERBOSE << "Board set to size "<<BoardSize;
 	State.koPoint = NO_KO_POINT;
-	blockPointer = 0;
-	movePointer = 0;
 
 
 	for(int i = 0; i<(Size()*Size()); i++)
@@ -911,32 +911,38 @@ void GoBoard::reset()
 		State.numNeighbours[S_WHITE][i] = 0;
 		State.numNeighbours[S_BLACK][i] = 0;
 
-		if(IsCorner(i))
-		{
-			State.numNeighboursEmpty[i]= 2;
-		}
-		else if(IsBorder(i))
+		if(IsBorder(i))
 		{
 			State.numNeighboursEmpty[i] = 3;
+		}
+		else if(IsCorner(i))
+		{
+			State.numNeighboursEmpty[i]= 2;
 		}
 		else //Mid board
 		{
 			State.numNeighboursEmpty[i] = 4;
 		}
+
+		LOG_VERBOSE<<"First reset: "<<i;
 	}
 	State.bw_prisoners[S_BLACK] = 0;
 	State.bw_prisoners[S_WHITE] = 0;
 
-	for(int i = 0; i<1000; ++i)
+	for(int i = 0; i<=blockPointer; ++i)
 	{
 		blocks[i]->reset();
+	}
+	for(int i = 0; i<=movePointer; ++i)
+	{
 		moves[i]->Color= -1;
 		moves[i]->Point.x=-1;
 		moves[i]->Point.y=-1;
 		moves[i]->Point.color=-1;
 	}
 
+	blockPointer = 0;
+	movePointer = 0;
 
-
-	LOG_VERBOSE <<"Board initialised. Let's play!";
+	LOG_VERBOSE <<"Board reset. Let's play!";
 }

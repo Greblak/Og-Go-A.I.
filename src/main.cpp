@@ -88,21 +88,11 @@ int initMainProc(int argc, char *argv[])
 			return 1;
 		}
 	}
-//	unlink(fifo);
+	//	unlink(fifo);
 }
 
 int initChildProc()
 {
-	if (mkfifo(fifo, 0666) < 0)
-	        perror("mkfifo");
-	std::cout<<"Child proc init";
-	fd = open(fifo, O_WRONLY);
-	std::cout<<"fd:"<<fd;
-	char* dat = "Hi";
-	int w = write(fd, dat, sizeof(dat));
-	std::cout<<"wrote bytes:"<<w<<dat;
-	close(fd);
-
 }
 
 
@@ -112,13 +102,26 @@ int main(int argc, char *argv[])
 	doTests = false;
 	RAND_SEED = time(NULL);
 	srand (RAND_SEED);
-	fifo = "/tmp/myfifo";
+
+	int pipefd[2];
+	char buf;
+	if (pipe(pipefd) == -1) {
+			perror("pipe");
+			exit(EXIT_FAILURE);
+		}
 
 	pid_t pID = fork();
 	std::cerr<<"forkval "<<pID<<std::endl;
 	if (pID == 0)                // child
 	{
-		std::cout<<"1";
+		std::cout<<"Child proc init";
+		close(pipefd[1]); //Unused write
+		while (read(pipefd[0], &buf, 1) > 0)
+			write(STDOUT_FILENO, &buf, 1);
+
+		write(STDOUT_FILENO, "\n", 1);
+		close(pipefd[0]);
+		_exit(EXIT_SUCCESS);
 		initChildProc();
 	}
 	else if(pID < 0) //Fork failed
@@ -129,19 +132,11 @@ int main(int argc, char *argv[])
 	else
 	{
 		std::cout<<"Parent proc init";
-		char dat[4];
-		wait();
-		std::cout<<"Child done";
-		fd = open(fifo, O_RDONLY);
-		std::cout<<"Fdopen"<<fd<<" ";
-		int r = read(fd, &dat, sizeof("Hi"));
-		std::cout<<"Read:"<<r;
-		std::cout<<"read";
-		close(fd);
-		std::cout<<"closed";
-		std::cout<<dat[0];
-		unlink(fifo);
-		std::cout<<"Unlinked "<<fifo;
+		close(pipefd[0]);          /* Close unused read end */
+		write(pipefd[1], "Hello world", strlen("Hello world"));
+		close(pipefd[1]);          /* Reader will see EOF */
+		wait();                /* Wait for child */
+		exit(EXIT_SUCCESS);
 		return initMainProc(argc,argv);
 	}
 	return EXIT_SUCCESS;

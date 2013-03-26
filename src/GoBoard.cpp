@@ -700,25 +700,25 @@ int GoBoard::East(const GoPoint p) const
 void GoBoard::DisplayCurrentState() const
 {
 	LOG_OUT << "=1 \n Showing current gamestate\n";
-	LOG_VERBOSE<<"\n    ";
+	std::cerr<<"\n    ";
 	for(int k = 0; k<Size(); k++)
 	{
-		LOG_VERBOSE<<GTPEngine::ColumnIntToString(k)<<" ";
+		std::cerr<<GTPEngine::ColumnIntToString(k)<<" ";
 	}
 	for(int i = Size()-1; i>=0;i--)
 	{
 		if(i+1 >= 10)
-			LOG_VERBOSE<<"\n "<<(i+1);
+			std::cerr<<"\n "<<(i+1);
 		else
-			LOG_VERBOSE<<"\n  "<<(i+1);
+			std::cerr<<"\n  "<<(i+1);
 		for(int j = 0; j<Size();j++)
 		{
 			if(State.stones[Size()*i+j] == NONE)
-				LOG_VERBOSE<< " -";
+				std::cerr<< " -";
 			else if(State.stones[Size()*i+j] == B_BLACK)
-				LOG_VERBOSE<< " O";
+				std::cerr<< " O";
 			else if(State.stones[Size()*i+j] == B_WHITE)
-				LOG_VERBOSE<< " X";
+				std::cerr<< " X";
 			else
 			{
 				LOG_ERROR<< "Wrong domain in board representation "<< State.stones[Size()*i+j];
@@ -726,12 +726,12 @@ void GoBoard::DisplayCurrentState() const
 			}
 		}
 	}
-	LOG_VERBOSE<<"\n    ";
+	std::cerr<<"\n    ";
 	for(int k = 0; k<Size(); k++)
 	{
-		LOG_VERBOSE<<GTPEngine::ColumnIntToString(k)<<" ";
+		std::cerr<<GTPEngine::ColumnIntToString(k)<<" ";
 	}
-	LOG_VERBOSE<<"\n\n\n\n\n";
+	std::cerr<<"\n\n\n\n\n";
 }
 
 const bool GoBoard::IsTrueEye(const int point, const int boardColor)

@@ -103,42 +103,47 @@ int main(int argc, char *argv[])
 	RAND_SEED = time(NULL);
 	srand (RAND_SEED);
 
-	int pipefd[2];
+	int pipefd[10][2];
 	char buf;
-	if (pipe(pipefd) == -1) {
+
+
+	pid_t pID;
+	std::cerr<<"forkval "<<pID<<std::endl;
+	for(int i = 0; i<10;++i)
+	{
+		if (pipe(pipefd[i]) == -1) {
 			perror("pipe");
 			exit(EXIT_FAILURE);
 		}
+		if ((pID = fork()) == 0)                // child
+		{
+			std::cout<<"Child proc init";
+			close(pipefd[i][1]); //Unused write
+			while (read(pipefd[i][0], &buf, 1) > 0)
+				write(STDOUT_FILENO, &buf, 1);
+			write(STDOUT_FILENO, "\n", 1);
+			close(pipefd[i][0]);
+			_exit(EXIT_SUCCESS);
+			initChildProc();
+		}
+		else if(pID < 0) //Fork failed
+		{
+			std::cout<<"FFail";
+			exit(EXIT_FAILURE);
+		}
+	}
 
-	pid_t pID = fork();
-	std::cerr<<"forkval "<<pID<<std::endl;
-	if (pID == 0)                // child
+	//	std::cout<<"Parent proc init";
+	for(int i = 0; i<10;++i)
 	{
-		std::cout<<"Child proc init";
-		close(pipefd[1]); //Unused write
-		while (read(pipefd[0], &buf, 1) > 0)
-			write(STDOUT_FILENO, &buf, 1);
+		close(pipefd[i][0]);          /* Close unused read end */
+		write(pipefd[i][1], &itoa(i), strlen("1"));
+		close(pipefd[i][1]);          /* Reader will see EOF */
+	}
+	wait();                /* Wait for child */
+	exit(EXIT_SUCCESS);
+	return initMainProc(argc,argv);
 
-		write(STDOUT_FILENO, "\n", 1);
-		close(pipefd[0]);
-		_exit(EXIT_SUCCESS);
-		initChildProc();
-	}
-	else if(pID < 0) //Fork failed
-	{
-		std::cout<<"FFail";
-		exit(EXIT_FAILURE);
-	}
-	else
-	{
-		std::cout<<"Parent proc init";
-		close(pipefd[0]);          /* Close unused read end */
-		write(pipefd[1], "Hello world", strlen("Hello world"));
-		close(pipefd[1]);          /* Reader will see EOF */
-		wait();                /* Wait for child */
-		exit(EXIT_SUCCESS);
-		return initMainProc(argc,argv);
-	}
 	return EXIT_SUCCESS;
 }
 

@@ -29,7 +29,9 @@ Version 0.4 - Begin work on move-deciding algorithms. Type yet undefined.
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-
+#include "GoBoard.h"
+#include "UpperConfidence.h"
+#include "PipeCommunication.h"
 
 int LogLevel;
 bool doTests;
@@ -44,10 +46,15 @@ Arguments taken:
 
 int RAND_SEED = 1;
 bool keepRand = false;
-int fd;
-char * fifo;
+
+
+//child writes to child and reads from parent
+//parent writes to parent and reads from child
+int pipe_child[4][2];
+int pipe_parent[4][2];
 
 //Used to initialise mother process
+
 int initMainProc(int argc, char *argv[])
 {
 
@@ -91,8 +98,20 @@ int initMainProc(int argc, char *argv[])
 	//	unlink(fifo);
 }
 
-int initChildProc()
+int initChildProc(int procID)
 {
+	close(pipe_parent[procID][0]);
+	//	close(pipe_child[procID][0]);
+	close(pipe_child[procID][1]);
+
+	std::string input = PipeCommunication::readPipe(pipe_child[procID][0]);
+		if(input != "startgame")
+			_exit(EXIT_SUCCESS);
+	std::string buf = "ready\n";
+	int w = PipeCommunication::writePipe(pipe_parent[procID][1],buf);
+	close(pipe_parent[procID][1]);
+
+	exit(EXIT_SUCCESS);
 }
 
 
@@ -103,28 +122,19 @@ int main(int argc, char *argv[])
 	RAND_SEED = time(NULL);
 	srand (RAND_SEED);
 
-	int pipefd[10][2];
-	char buf;
 
 
 	pid_t pID;
 	std::cerr<<"forkval "<<pID<<std::endl;
-	for(int i = 0; i<10;++i)
+	for(int i = 0; i<4;++i)
 	{
-		if (pipe(pipefd[i]) == -1) {
+		if (pipe(pipe_child[i]) == -1 || pipe(pipe_parent[i]) == -1){
 			perror("pipe");
 			exit(EXIT_FAILURE);
 		}
 		if ((pID = fork()) == 0)                // child
 		{
-			std::cout<<"Child proc init";
-			close(pipefd[i][1]); //Unused write
-			while (read(pipefd[i][0], &buf, 1) > 0)
-				write(STDOUT_FILENO, &buf, 1);
-			write(STDOUT_FILENO, "\n", 1);
-			close(pipefd[i][0]);
-			_exit(EXIT_SUCCESS);
-			initChildProc();
+			initChildProc(i);
 		}
 		else if(pID < 0) //Fork failed
 		{
@@ -134,13 +144,20 @@ int main(int argc, char *argv[])
 	}
 
 	//	std::cout<<"Parent proc init";
-	for(int i = 0; i<10;++i)
+	for(int i = 0; i<4;++i)
 	{
-		close(pipefd[i][0]);          /* Close unused read end */
-		write(pipefd[i][1], &itoa(i), strlen("1"));
-		close(pipefd[i][1]);          /* Reader will see EOF */
+		close(pipe_child[i][0]);
+		//		close(pipe_child[i][1]);
+		std::string wbuf = "startgame\n";
+		PipeCommunication::writePipe(pipe_child[i][1],wbuf);
+		close(pipe_child[i][1]);
 	}
-	wait();                /* Wait for child */
+	for(int i = 0; i<4;++i)
+	{
+		char ic = i+65;
+		std::string str = PipeCommunication::readPipe(pipe_parent[i][0]);
+		std::cout<<"From child: "<<i<<" "<<str<<std::endl;
+	}
 	exit(EXIT_SUCCESS);
 	return initMainProc(argc,argv);
 

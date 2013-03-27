@@ -42,7 +42,7 @@ GoBoard::GoBoard(int size):POS_WE(1),POS_NS(size)
 
 GoBoard::~GoBoard(void)
 {
-	std::cerr<<"Destructor called"<<std::endl;
+	LOG_VERBOSE<<"Destructor called"<<std::endl;
 }
 
 const bool GoBoard::IsBorder(int pos) const

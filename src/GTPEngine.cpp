@@ -48,8 +48,16 @@ GTPEngine::~GTPEngine()
 {
 
 }
-
-void GTPEngine::parse(std::string userInput)
+void GTPEngine::parseList(std::string userInput)
+{
+	std::vector<std::string> cmds;
+	boost::split(cmds, userInput,boost::is_any_of( " " ));
+	for(int i = 0; i<cmds.size();++i)
+	{
+		parse(cmds[i]);
+	}
+}
+std::vector<std::string> GTPEngine::parse(std::string userInput)
 {
   LOG_VERBOSE << "Parsing GTP Command # "<<++commandNum;
   std::vector<std::string> args;
@@ -104,7 +112,7 @@ void GTPEngine::parse(std::string userInput)
       if(pos.x == -1 && pos.y == -1) // Play pass
         {
           LOG_OUT << "= PASS";
-          return;
+          return args;
         }
       for(std::vector<GoMove*>::iterator it = genmoves.begin(); it != genmoves.end(); ++it)
         {
@@ -176,10 +184,13 @@ void GTPEngine::parse(std::string userInput)
       LOG_OUT << "= 1";
     }
 #endif //IFDEF DEBUG_MODE
+
   else
-    throw Exception("Unknown command");
+    LOG_ERROR<<"Unknown GTP command";
 
   //  game->Board->DisplayCurrentState();
+
+  return args;
 }
 
 const int GTPEngine::ColumnStringToInt(std::string str) const
@@ -240,4 +251,21 @@ const char GTPEngine::ColumnIntToString(int n)
 const int GTPEngine::RowIntToString(int n) 
 {
   return ++n; //To account for 0-indexed to 1-indexed
+}
+
+const std::string GTPEngine::generateGTPString(GoBoard* board)
+{
+	std::stringstream ss;
+	ss<<"boardsize "<<board->Size()<<"\n";
+	for(int i = 0; i<board->movePointer-1; ++i)
+	{
+		ss << "play ";
+		if(board->moves[i]->Color == S_BLACK)
+			ss<<"b ";
+		else if(board->moves[i]->Color == S_WHITE)
+			ss<<"w ";
+
+		ss<<board->ReadablePosition(board->moves[i]->Point)<<"\n";
+	}
+	return ss.str();
 }

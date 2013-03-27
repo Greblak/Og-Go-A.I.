@@ -20,7 +20,7 @@ Version 0.4 - Begin work on move-deciding algorithms. Type yet undefined.
 #include <iostream>
 #include <cstring>
 #include "Config.h"
-#include "GTPEngine.h"
+#include "EGTPEngine.h"
 #include "GoBoard.h"
 #include "Exception.h"
 #include <stdlib.h>
@@ -104,9 +104,17 @@ int initChildProc(int procID)
 	//	close(pipe_child[procID][0]);
 	close(pipe_child[procID][1]);
 
-	std::string input = PipeCommunication::readPipe(pipe_child[procID][0]);
-		if(input != "startgame")
-			_exit(EXIT_SUCCESS);
+	EGTPEngine gtp;
+	std::string input = "";
+	std::vector<std::string> cmd;
+	while(true)
+	{
+		input = PipeCommunication::readPipe(pipe_child[procID][0]);
+		std::cout<<"input: "<<procID<<" "<<input<<std::endl;
+		if(input != "genmove b" || input != "genmove w")
+			break;
+		cmd = gtp.parse(input);
+	}
 	std::string buf = "ready\n";
 	int w = PipeCommunication::writePipe(pipe_parent[procID][1],buf);
 	close(pipe_parent[procID][1]);
@@ -148,8 +156,15 @@ int main(int argc, char *argv[])
 	{
 		close(pipe_child[i][0]);
 		//		close(pipe_child[i][1]);
-		std::string wbuf = "startgame\n";
+		GoGame g(9);
+		g.Play(S_BLACK,3,3);
+		g.Play(S_WHITE,2,3);
+		std::string wbuf = GTPEngine::generateGTPString(g.Board);
 		PipeCommunication::writePipe(pipe_child[i][1],wbuf);
+		std::cout<<"Wrote "<<wbuf;
+		wbuf = "e_useai ucb s 1000\ngenmove b\n";
+		PipeCommunication::writePipe(pipe_child[i][1],wbuf);
+		std::cout<<"Wrote "<<wbuf;
 		close(pipe_child[i][1]);
 	}
 	for(int i = 0; i<4;++i)

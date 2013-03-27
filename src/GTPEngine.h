@@ -14,13 +14,13 @@ const int 	GTP_OFFSET_NUM = 48; //Makes row 1 0-indexed
 class GTPEngine
 {
 private:
-	GoGame* game;
+
 	int commandNum;
 public:
 	GTPEngine(void);
 	~GTPEngine();
-
-	void parse(std::string input); ///< Handles user input and sends command to member game.
+	void parseList(std::string input);
+	std::vector<std::string> parse(std::string input); ///< Handles user input and sends command to member game.
 
 
 	const int ColumnStringToInt(std::string str) const ; ///< Converts the column names A-T / a-t to 0-18. Omits the I/i. Capable of taking entire posision string
@@ -31,6 +31,10 @@ public:
 	static const int RowIntToString(int n)  ; ///< Converts row int to row character
 
 	const int ColorFromString(std::string str) const; ///< Converts a string describing stone color to respective enum
+
+
+	static const std::string generateGTPString(GoBoard* board);
+	GoGame* game;
 };
 
 #endif //#ifndef __GTPENGINE_H__

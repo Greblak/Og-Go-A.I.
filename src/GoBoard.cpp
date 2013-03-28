@@ -381,8 +381,8 @@ const GoMove* GoBoard::Play(int p, int color)
 	LOG_DEBUG <<"Stone added";
 	nextPlayer = color==S_WHITE ? S_BLACK : S_WHITE; //Inverse color.
 
-	moves[movePointer++]->Color = color;
-	moves[movePointer]->Point = ReversePos(p,color);
+	moves[movePointer]->Color = color;
+	moves[movePointer++]->Point = ReversePos(p,color);
 	return 0;
 }
 
@@ -393,10 +393,10 @@ const GoMove* GoBoard::Play(GoPoint p, int color)
 
 const GoMove* GoBoard::Play(GoPoint p)
 {
-	return Play(p,p.color);
+	return Play(Pos(p),p.color);
 }
 
-const GoPoint GoBoard::ReversePos(const int pos, const int color)
+GoPoint GoBoard::ReversePos(const int pos, const int color)
 {
 
 	int x = pos%Size();

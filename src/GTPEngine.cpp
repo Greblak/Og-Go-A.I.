@@ -257,7 +257,7 @@ const std::string GTPEngine::generateGTPString(GoBoard* board)
 {
 	std::stringstream ss;
 	ss<<"boardsize "<<board->Size()<<"\n";
-	for(int i = 0; i<board->movePointer-1; ++i)
+	for(int i = 0; i<board->movePointer; ++i)
 	{
 		ss << "play ";
 		if(board->moves[i]->Color == S_BLACK)

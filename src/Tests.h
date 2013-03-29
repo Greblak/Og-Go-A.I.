@@ -38,7 +38,7 @@ void TEST_UpperConfidence()
 
 void TEST_EGTPEngine()
 {
-	EGTPEngine gtp;
+	EGTPEngine gtp(1);
 	std::string input[3] = {"boardsize 9", "e_useai ucb s 10", "genmove b"};
 	std::vector<std::string> cmd;
 

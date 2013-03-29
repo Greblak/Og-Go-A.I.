@@ -26,7 +26,6 @@ const std::vector<int> PlayPolicy::FindPossibleLocalMoves(GoBoard* board)
   if(board->movePointer == 0) //No previous moves. No possible local answers
     return moves;
   int lastPlayed = board->Pos((board->moves[board->movePointer-1])->Point);
-  std::cout<<"LP"<<board->Size()<<std::endl;
   int allLocalMoves[8];
   allLocalMoves[0] = (board->North(lastPlayed));
   allLocalMoves[1] = (board->West(lastPlayed));
@@ -88,7 +87,6 @@ const bool PlayPolicy::MatchAny(GoBoard* board, const int pos, const int color)
 }
 const bool PlayPolicy::TestAllHane(GoBoard* board, const int pos, const int color, const int dirUp)
 {
-	std::cout<<"H"<<std::endl;
   return
 		  TestHane1(board,pos,color,dirUp, getRightDirection(dirUp)) || TestHane1(board,pos,color,dirUp, getLeftDirection(dirUp))
 		  || TestHane2(board,pos,color,dirUp, getRightDirection(dirUp)) || TestHane2(board,pos,color,dirUp, getLeftDirection(dirUp))
@@ -98,7 +96,6 @@ const bool PlayPolicy::TestAllHane(GoBoard* board, const int pos, const int colo
 
 const bool PlayPolicy::TestAllCut(GoBoard* board, const int pos, const int color, const int dirUp)
 {
-	std::cout<<"C"<<std::endl;
   return TestCut1(board,pos,color,dirUp,getRightDirection(dirUp)) || TestCut1(board,pos,color,dirUp,getLeftDirection(dirUp))
 		  || TestCut2(board,pos,color,dirUp,getRightDirection(dirUp)) || TestCut2(board,pos,color,dirUp,getLeftDirection(dirUp));
 }

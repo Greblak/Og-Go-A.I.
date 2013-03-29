@@ -18,7 +18,7 @@ enum AiType{
 class EGTPEngine : public GTPEngine
 {
 public:
-	EGTPEngine();
+	EGTPEngine(int writePipe);
 	virtual ~EGTPEngine();
 
 	std::vector<std::string> parse(std::string input);
@@ -26,7 +26,10 @@ private:
 	AiType aiType;
 	int timeAlloc;
 	int simulations;
-	int randMoves;
+	std::vector<int> preselRandMoves;
+	int numRandMoves;
+	int writePipe;
+
 };
 
 

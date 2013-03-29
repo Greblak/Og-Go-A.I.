@@ -11,7 +11,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
-
+#include "Log.h"
 class PipeCommunication {
 public:
 	static inline std::string readPipe(int pipe)
@@ -19,7 +19,7 @@ public:
 		char buf;
 		std::stringstream ss;
 		bool wait = true;
-		int timeout = 2;
+		int timeout = 10;
 		while(wait && timeout>0)
 		{
 			while(read(pipe,&buf,1) > 0 && wait)
@@ -33,15 +33,18 @@ public:
 			}
 			if(!wait)
 				break;
+			std::cout<<"waiting "<<timeout<<std::endl;
 			sleep(1);
 			timeout-=1;
 		}
+		if(timeout == 0)
+			std::cerr<<"Read timed out";
+		std::cout<<"read: "<<ss.str()<<std::endl;
 		return ss.str();
 	}
 
 	static inline int writePipe(int pipe, std::string message)
 	{
-
 		char buf[message.size()];
 		for(int i = 0; i<message.size();++i)
 			buf[i] = message[i];

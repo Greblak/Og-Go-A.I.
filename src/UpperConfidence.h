@@ -12,16 +12,19 @@
 class UpperConfidence
 {
 public:
-  UpperConfidence(int searchWidth, int searchDepth);
+	UpperConfidence(void);
+	UpperConfidence(int randomMoves, int numSimulations);
+	UpperConfidence(std::vector<int> randomMoves, int numSimulations);
   GoPoint generateMove(int color, GoGame* game);
   const float simulateMove(int move);
   virtual
   ~UpperConfidence();
 
 private:
-  const int searchDepth;
-  const int searchWidth;
+  const int numSimulations;
+  const int numRandMoves;
   const float expRatio;
+  std::vector<int> preselRandMoves;
   GoBoard* workingBoard;
   GoGame* game;
   int color;

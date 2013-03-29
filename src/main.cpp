@@ -122,10 +122,9 @@ int initChildProc(int procID)
 	//	close(pipe_child[procID][0]);
 	close(pipe_child[procID][1]);
 
-	EGTPEngine gtp;
+	EGTPEngine gtp(pipe_parent[procID][1]);
 	std::string input = "";
 	std::vector<std::string> cmd;
-
 	while(true)
 	{
 		input = PipeCommunication::readPipe(pipe_child[procID][0]);
@@ -136,10 +135,7 @@ int initChildProc(int procID)
 			break;
 	}
 
-	std::string buf = "ready\n";
-	int w = PipeCommunication::writePipe(pipe_parent[procID][1],buf);
-	close(pipe_parent[procID][1]);
-
+	std::cout<<"Child proc "<<procID<<" signing out"<<std::endl;
 	exit(EXIT_SUCCESS);
 }
 
@@ -178,10 +174,21 @@ int main(int argc, char *argv[])
 			GoGame g(9);
 			g.Play(S_BLACK,3,3);
 			g.Play(S_WHITE,2,3);
+			std::vector<int> randMoves;
+			randMoves.push_back(1);
+			randMoves.push_back(3);
+			randMoves.push_back(4);
+			randMoves.push_back(5);
 			std::string wbuf = GTPEngine::generateGTPString(g.Board);
 			PipeCommunication::writePipe(pipe_child[i][1],wbuf);
 			//		std::cout<<"Wrote "<<wbuf;
-			wbuf = "e_useai ucb s 1000\ngenmove b\n";
+			std::stringstream ss;
+			ss<<"e_randmoves";
+			for(int j = 0;j<randMoves.size();++j)
+				ss<<" "<<randMoves[j];
+			ss<<"\n";
+			PipeCommunication::writePipe(pipe_child[i][1],ss.str());
+			wbuf = "e_useai ucb 0 s 100\ngenmove b\n";
 			PipeCommunication::writePipe(pipe_child[i][1],wbuf);
 			//		std::cout<<"Wrote "<<wbuf;
 			close(pipe_child[i][1]);
@@ -190,7 +197,7 @@ int main(int argc, char *argv[])
 		{
 			char ic = i+65;
 			std::string str = PipeCommunication::readPipe(pipe_parent[i][0]);
-			//		std::cout<<"From child: "<<i<<" "<<str<<std::endl;
+			std::cout<<"From child: "<<i<<" "<<str<<std::endl;
 		}
 	//	exit(EXIT_SUCCESS);
 	return initMainProc(argc,argv);

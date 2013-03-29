@@ -12,7 +12,7 @@
 #include "Config.h"
 #include "GoGame.h"
 #include "Exception.h"
-#include "Tests.h"
+//#include "Tests.h"
 
 extern int LogLevel;
 extern bool doTests;
@@ -22,41 +22,14 @@ GTPEngine::GTPEngine(void):commandNum(0)
 {
   LOG_DEBUG<< "Starting GTP Engine";
   game = new GoGame(BOARD_DEFAULT_SIZE);
-  if(doTests)
-    {
-//      TEST_PlayPolicy();
-      TEST_UpperConfidence();
-      std::string line = "test";
-      std::ifstream file;
-      file.open("test.gtp");
-      if(file.fail())
-        {
-          LOG_DEBUG << "Test file failed to open. Business as usual";
-          return;
-        }
-      int i = 0;
-      while(std::getline(file,line))
-        {
-          std::cout << line <<std::endl;
-          parse(line);
-          ++i;
-        }
-    }
+
 }
 
 GTPEngine::~GTPEngine()
 {
 
 }
-void GTPEngine::parseList(std::string userInput)
-{
-	std::vector<std::string> cmds;
-	boost::split(cmds, userInput,boost::is_any_of( " " ));
-	for(int i = 0; i<cmds.size();++i)
-	{
-		parse(cmds[i]);
-	}
-}
+
 std::vector<std::string> GTPEngine::parse(std::string userInput)
 {
   LOG_VERBOSE << "Parsing GTP Command # "<<++commandNum;
@@ -231,7 +204,7 @@ const int GTPEngine::RowStringToInt(std::string str) const
   return n;
 }
 
-const int GTPEngine::ColorFromString(std::string str) const
+int GTPEngine::ColorFromString(std::string str) const
 {
   if(str == "w" || str == "W" || str == "white" || str == "WHITE")
     return S_WHITE;

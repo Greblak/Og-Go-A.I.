@@ -26,7 +26,7 @@ const int NO_KO_POINT = -1; ///< Defines the KO position. -1 when ko rule does n
  */
 enum LoggingLevels
 {
-        PRINT = 0,
+	SILENT= 0,
 	ERROR,
 	DEBUG,
 	VERBOSE

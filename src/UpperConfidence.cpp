@@ -22,7 +22,9 @@ UpperConfidence::~UpperConfidence()
 
 GoPoint UpperConfidence::generateMove(int color, GoGame* game)
 {
+	std::cout<<"Began UCB"<<std::endl;
 	workingBoard = new GoBoard(game->Board->Size());
+	workingBoard->resetAndReplayMoves(game->Board);
   LOG_VERBOSE<<"SD: "<<searchDepth<<std::endl;
   this->color = color;
   LOG_VERBOSE<<"SD: "<<color<<std::endl;
@@ -30,9 +32,10 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
   LOG_VERBOSE<<"SD: "<<game<<std::endl;
   LOG_VERBOSE << "Generating UCB move for "<<color<<std::endl;
   //Generate possible moves
-  LOG_VERBOSE << "Generating move list"<<std::endl;
+  std::cout << "Generating move list"<<std::endl;
+
   std::vector<int> moves = PlayPolicy().FindPossibleLocalMoves(game->Board);
-  LOG_VERBOSE<< "Found "<<moves.size()<< " possible local moves"<<std::endl;
+  std::cout<< "Found "<<moves.size()<< " possible local moves"<<std::endl;
   //Add other moves not covered by plays
   if(moves.size()==0)
     {
@@ -44,7 +47,7 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
   int totalNumPlayed = 0;
 
   int initialPlayNum = 1;
-  LOG_VERBOSE << "Play all 1 time";
+  std::cout << "Play all 1 time";
   //Play all moves "once"
   for(size_t j = 0; j<moves.size(); ++j)
     {
@@ -106,16 +109,16 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
   float bestExpected = 0;
   for(size_t i = 0; i<moves.size(); ++i)
     {
-      LOG_VERBOSE<<game->Board->ReadablePosition(moves[i])<<" E:"<<expected[i]<<" Played:"<<numPlayed[i]<<std::endl;
+	  std::cout<<game->Board->ReadablePosition(moves[i])<<" E:"<<expected[i]<<" Played:"<<numPlayed[i]<<std::endl;
       if(expected[i]>bestExpected)
         {
-          LOG_VERBOSE<<"BE is now"<<game->Board->ReadablePosition(moves[i])<<std::endl;
+    	  std::cout<<"BE is now"<<game->Board->ReadablePosition(moves[i])<<std::endl;
           bestExpected = expected[i];
           bestMove = i;
         }
     }
 
-  LOG_DEBUG<<"Best move ("<<game->Board->ReadablePosition(moves[bestMove])<<") : "<<bestExpected<<std::endl;
+  std::cout<<"Best move ("<<game->Board->ReadablePosition(moves[bestMove])<<") : "<<bestExpected<<std::endl;
   return game->Board->ReversePos(moves[bestMove],color);
 }
 

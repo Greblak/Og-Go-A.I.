@@ -32,6 +32,8 @@ Version 0.4 - Begin work on move-deciding algorithms. Type yet undefined.
 #include "GoBoard.h"
 #include "UpperConfidence.h"
 #include "PipeCommunication.h"
+#include <boost/algorithm/string.hpp>
+#include "Tests.h"
 
 int LogLevel;
 bool doTests;
@@ -75,6 +77,22 @@ int initMainProc(int argc, char *argv[])
 	}
 	LOG_VERBOSE << "Built " << __DATE__ << " - " << __TIME__;
 
+	if(doTests)
+	{
+		//      TEST_PlayPolicy();
+		//      TEST_UpperConfidence();
+		TEST_EGTPEngine();
+		std::string line = "test";
+		std::ifstream file;
+		file.open("test.gtp");
+		if(file.fail())
+		{
+			LOG_DEBUG << "Test file failed to open. Business as usual";
+		}
+		int i = 0;
+		return(EXIT_SUCCESS);
+	}
+
 	GTPEngine gtp = GTPEngine();
 	while(true)
 	{
@@ -107,14 +125,17 @@ int initChildProc(int procID)
 	EGTPEngine gtp;
 	std::string input = "";
 	std::vector<std::string> cmd;
+
 	while(true)
 	{
 		input = PipeCommunication::readPipe(pipe_child[procID][0]);
-		std::cout<<"input: "<<procID<<" "<<input<<std::endl;
-		if(input != "genmove b" || input != "genmove w")
-			break;
 		cmd = gtp.parse(input);
+		input = "";
+
+		if(cmd[0] == "genmove" || cmd[0] == "genmove")
+			break;
 	}
+
 	std::string buf = "ready\n";
 	int w = PipeCommunication::writePipe(pipe_parent[procID][1],buf);
 	close(pipe_parent[procID][1]);
@@ -125,55 +146,53 @@ int initChildProc(int procID)
 
 int main(int argc, char *argv[])
 {
-	LogLevel = ERROR;
+	LogLevel = SILENT;
 	doTests = false;
 	RAND_SEED = time(NULL);
 	srand (RAND_SEED);
 
-
-
-	pid_t pID;
-	std::cerr<<"forkval "<<pID<<std::endl;
-	for(int i = 0; i<4;++i)
-	{
-		if (pipe(pipe_child[i]) == -1 || pipe(pipe_parent[i]) == -1){
-			perror("pipe");
-			exit(EXIT_FAILURE);
-		}
-		if ((pID = fork()) == 0)                // child
+		pid_t pID;
+		std::cerr<<"forkval "<<pID<<std::endl;
+		for(int i = 0; i<1;++i)
 		{
-			initChildProc(i);
+			if (pipe(pipe_child[i]) == -1 || pipe(pipe_parent[i]) == -1){
+				perror("pipe");
+				exit(EXIT_FAILURE);
+			}
+			if ((pID = fork()) == 0)                // child
+			{
+				initChildProc(i);
+			}
+			else if(pID < 0) //Fork failed
+			{
+				std::cout<<"FFail";
+				exit(EXIT_FAILURE);
+			}
 		}
-		else if(pID < 0) //Fork failed
-		{
-			std::cout<<"FFail";
-			exit(EXIT_FAILURE);
-		}
-	}
 
-	//	std::cout<<"Parent proc init";
-	for(int i = 0; i<4;++i)
-	{
-		close(pipe_child[i][0]);
-		//		close(pipe_child[i][1]);
-		GoGame g(9);
-		g.Play(S_BLACK,3,3);
-		g.Play(S_WHITE,2,3);
-		std::string wbuf = GTPEngine::generateGTPString(g.Board);
-		PipeCommunication::writePipe(pipe_child[i][1],wbuf);
-		std::cout<<"Wrote "<<wbuf;
-		wbuf = "e_useai ucb s 1000\ngenmove b\n";
-		PipeCommunication::writePipe(pipe_child[i][1],wbuf);
-		std::cout<<"Wrote "<<wbuf;
-		close(pipe_child[i][1]);
-	}
-	for(int i = 0; i<4;++i)
-	{
-		char ic = i+65;
-		std::string str = PipeCommunication::readPipe(pipe_parent[i][0]);
-		std::cout<<"From child: "<<i<<" "<<str<<std::endl;
-	}
-	exit(EXIT_SUCCESS);
+		//	std::cout<<"Parent proc init";
+		for(int i = 0; i<1;++i)
+		{
+			close(pipe_child[i][0]);
+			//		close(pipe_child[i][1]);
+			GoGame g(9);
+			g.Play(S_BLACK,3,3);
+			g.Play(S_WHITE,2,3);
+			std::string wbuf = GTPEngine::generateGTPString(g.Board);
+			PipeCommunication::writePipe(pipe_child[i][1],wbuf);
+			//		std::cout<<"Wrote "<<wbuf;
+			wbuf = "e_useai ucb s 1000\ngenmove b\n";
+			PipeCommunication::writePipe(pipe_child[i][1],wbuf);
+			//		std::cout<<"Wrote "<<wbuf;
+			close(pipe_child[i][1]);
+		}
+		for(int i = 0; i<1;++i)
+		{
+			char ic = i+65;
+			std::string str = PipeCommunication::readPipe(pipe_parent[i][0]);
+			//		std::cout<<"From child: "<<i<<" "<<str<<std::endl;
+		}
+	//	exit(EXIT_SUCCESS);
 	return initMainProc(argc,argv);
 
 	return EXIT_SUCCESS;

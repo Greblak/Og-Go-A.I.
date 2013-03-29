@@ -23,6 +23,7 @@ EGTPEngine::~EGTPEngine()
 
 std::vector<std::string> EGTPEngine::parse(std::string input)
 {
+	std::cout<<"Attempting to parse "<<input<<std::endl;
 	std::vector<std::string> args;
 	boost::split(args, input,boost::is_any_of( " " ));
 
@@ -37,10 +38,10 @@ std::vector<std::string> EGTPEngine::parse(std::string input)
 		if(args[1] == "ucb") //args: e_useai ucb [random moves] [t|s] [time in sec|num simulations] //t uses time, s uses simulations
 		{
 			aiType = UCB;
-			if(args[3] == "t") //Time alloc
-				timeAlloc = atoi(args[4].c_str());
-			if(args[3] == "s") //simulations
-				simulations = atoi(args[4].c_str());
+			if(args[2] == "t") //Time alloc
+				timeAlloc = atoi(args[3].c_str());
+			if(args[2] == "s") //simulations
+				simulations = atoi(args[3].c_str());
 		}
 
 		randMoves = atoi(args[2].c_str());
@@ -51,16 +52,22 @@ std::vector<std::string> EGTPEngine::parse(std::string input)
 		{
 		case(UCB):
 			{
+
 			UpperConfidence ucb(randMoves,simulations);
-			ucb.generateMove(ColorFromString(args[1]),game);
+			std::cout<<"Generating move for "<<args[1]<<randMoves<<simulations<<std::endl;
+
+			GoPoint p = ucb.generateMove(ColorFromString(args[1]),game);
+			std::cout<<"Generated move "<<p.x<<" "<<p.y<<std::endl;
 			break;
 			}
 		case(MC):
 		{
+			MonteCarlo mc(randMoves,simulations);
+			GoPoint p = mc.generateMove(ColorFromString(args[1]),game);
+			std::cout<<"Generated move "<<p.x<<" "<<p.y<<std::endl;
 			break;
 		}
 		}
-		GoPoint pos = game->GenerateMove(ColorFromString(args[1]));
 	}
 	else
 		return GTPEngine::parse(input);

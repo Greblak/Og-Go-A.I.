@@ -30,7 +30,7 @@ public:
 	const int RowStringToInt(std::string str) const ; ///< Converts a string containing the row number to an int. Can take the entire position string.
 	static const int RowIntToString(int n)  ; ///< Converts row int to row character
 
-	const int ColorFromString(std::string str) const; ///< Converts a string describing stone color to respective enum
+	int ColorFromString(std::string str) const; ///< Converts a string describing stone color to respective enum
 
 
 	static const std::string generateGTPString(GoBoard* board);

@@ -33,13 +33,13 @@ public:
 			}
 			if(!wait)
 				break;
-			std::cout<<"waiting "<<timeout<<std::endl;
+//			std::cout<<"waiting "<<timeout<<std::endl;
 			sleep(1);
 			timeout-=1;
 		}
-		if(timeout == 0)
-			std::cerr<<"Read timed out";
-		std::cout<<"read: "<<ss.str()<<std::endl;
+//		if(timeout == 0)
+//			std::cerr<<"Read timed out";
+//		std::cout<<"read: "<<ss.str()<<std::endl;
 		return ss.str();
 	}
 

@@ -58,7 +58,7 @@ std::vector<std::string> EGTPEngine::parse(std::string input)
 		switch(aiType)
 		{
 		case(UCB):
-		{
+				{
 
 			if(preselRandMoves.size()>0)
 			{
@@ -72,7 +72,7 @@ std::vector<std::string> EGTPEngine::parse(std::string input)
 			}
 
 			break;
-		}
+				}
 		case(MC):
 				{
 			MonteCarlo mc(numRandMoves,simulations);
@@ -84,8 +84,47 @@ std::vector<std::string> EGTPEngine::parse(std::string input)
 		ss << "= "<<game->Board->Pos(p)<<"\n";
 		int w = PipeCommunication::writePipe(writePipe,ss.str());
 		std::cout<<"wrote "<<ss.str()<<" "<<w<<std::endl;
+		game->Board->reset();
 	}
 	else
 		return GTPEngine::parse(input);
 	return args;
+}
+
+
+extern int childProcs;
+extern int pipe_child[16][2];
+extern int pipe_parent[16][2];
+GoPoint EGTPEngine::genMoveFromChildProcs(int color, GoGame* game)
+{
+	for(int i = 0; i<childProcs; ++i)
+	{
+		UpperConfidence ucb;
+		std::vector<int> preselMoves = ucb.getPossibleMoves(color, game);
+
+		std::string wbuf = GTPEngine::generateGTPString(game->Board);
+		PipeCommunication::writePipe(pipe_child[i][1],wbuf);
+		//		std::cout<<"Wrote "<<wbuf;
+		std::stringstream ss;
+		ss<<"e_randmoves";
+		for(int j = 0;j<preselMoves.size();++j)
+			ss<<" "<<preselMoves[j];
+		ss<<"\n";
+		std::cout<<"Wrote "<<ss.str()<<std::endl;
+		PipeCommunication::writePipe(pipe_child[i][1],ss.str());
+		wbuf = "e_useai ucb 0 s 100\ngenmove b\n";
+		PipeCommunication::writePipe(pipe_child[i][1],wbuf);
+		std::cout<<"Wrote "<<wbuf;
+		close(pipe_child[i][1]);
+	}
+	for(int i = 0; i<childProcs; ++i)
+	{
+		std::string str = PipeCommunication::readPipe(pipe_parent[i][0]);
+		std::cout<<"From child: "<<i<<" "<<str<<std::endl;
+		std::vector<std::string> args;
+		boost::split(args, str,boost::is_any_of( " " ));
+		return game->Board->ReversePos(atoi(args[1].c_str()),color);
+	}
+
+
 }

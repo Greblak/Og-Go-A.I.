@@ -90,6 +90,7 @@ public:
 		float komi;
 		const int POS_WE;
 		const int POS_NS;
+		void reset();
 		
 private:
 	int BoardSize; ///< Boardsize (19x19 will be stored as 19 here)
@@ -102,7 +103,7 @@ private:
 
 	int nextPlayer;
 
-	void reset();
+
 
 };
 

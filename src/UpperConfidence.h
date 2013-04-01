@@ -15,10 +15,14 @@ public:
 	UpperConfidence(void);
 	UpperConfidence(int randomMoves, int numSimulations);
 	UpperConfidence(std::vector<int> randomMoves, int numSimulations);
-  GoPoint generateMove(int color, GoGame* game);
+	GoPoint generateMove(int color, GoGame* game);
+	GoPoint generateMove(std::vector<int> preselMoves);
+  std::vector<int> getPossibleMoves(int color, GoGame* game);
   const float simulateMove(int move);
   virtual
   ~UpperConfidence();
+
+  std::vector<int> moves;
 
 private:
   const int numSimulations;

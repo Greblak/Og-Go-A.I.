@@ -22,6 +22,7 @@ public:
 	virtual ~EGTPEngine();
 
 	std::vector<std::string> parse(std::string input);
+	static GoPoint genMoveFromChildProcs(int color, GoGame* game);
 private:
 	AiType aiType;
 	int timeAlloc;

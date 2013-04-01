@@ -124,7 +124,7 @@ std::vector<std::string> GTPEngine::parse(std::string userInput)
     }
   else if(args[0] == "quit")
     {
-      exit(EXIT_SUCCESS);
+      _exit(EXIT_SUCCESS);
     }
 #ifdef DEBUG_MODE
   else if(args[0] == "d")

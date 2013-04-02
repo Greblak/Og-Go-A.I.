@@ -75,7 +75,7 @@ int preparePipes(int numPipes)
 int initMainProc(int argc, char *argv[])
 {
 
-	std::cout<<"Init main proc";
+	LOG_VERBOSE<<"Init main proc";
 	for (int i = 1; i < argc; i++)
 	{
 		if(strcmp(argv[i], "-v") == 0)
@@ -84,8 +84,6 @@ int initMainProc(int argc, char *argv[])
 			LogLevel = DEBUG;
 		if(strcmp(argv[i], "-t") == 0)
 			doTests = true;
-		if(strcmp(argv[i], "-c") == 0)
-			childProcs = atoi(argv[i+1]);
 		if(strcmp(argv[i], "-r") == 0)
 		{
 			RAND_SEED = atoi(argv[i+1]);
@@ -155,15 +153,21 @@ int initChildProc(int procID)
 
 int main(int argc, char *argv[])
 {
-	LogLevel = SILENT;
+	LogLevel = ERROR;
 	doTests = false;
 	RAND_SEED = time(NULL);
 	srand (RAND_SEED);
 	childProcs = 1;
 
+	for (int i = 1; i < argc; i++)
+	{
+		if(strcmp(argv[i], "-c") == 0)
+			childProcs = atoi(argv[i+1]);
+	}
+
 	pid_t pID;
 	preparePipes(childProcs);
-	for(int i = 0; i<1;++i)
+	for(int i = 0; i<childProcs;++i)
 	{
 		if ((pID = fork()) == 0)                // child
 		{

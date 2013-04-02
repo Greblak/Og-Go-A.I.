@@ -44,9 +44,10 @@ std::vector<int> UpperConfidence::getPossibleMoves(int color , GoGame* game)
 	LOG_VERBOSE<<"Generated random moves: "<<numRandMoves<<std::endl;
 	return moves;
 }
-
-GoPoint UpperConfidence::generateMove(int color, GoGame* game)
+std::vector<UCBrow> UpperConfidence::generateUCBTable(int color, GoGame* game)
 {
+	LOG_DEBUG<<"Generating UCB table"<<std::endl;
+	std::vector<UCBrow> ucbtable;
 	LOG_VERBOSE<<"Began UCB"<<std::endl;
 	workingBoard = new GoBoard(game->Board->Size());
 	workingBoard->resetAndReplayMoves(game->Board);
@@ -91,6 +92,7 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
 	int nextToPlay = 0;
 	while(totalNumPlayed<numSimulations)
 	{
+		int firstClock = clock();
 		//Maximise for all following plays
 		for(size_t i = 0; i<moves.size(); ++i)
 		{
@@ -111,33 +113,49 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
 			result = 0;
 		++numPlayed[nextToPlay];
 		++totalNumPlayed;
+
 		if(totalNumPlayed%100==0)
-			LOG_VERBOSE<<"Simulated "<<totalNumPlayed<<" games"<<std::endl;
+			std::cerr<<"Simulated "<<totalNumPlayed<<" games "<<(firstClock - clock())<<std::endl;
 
 		float oldWins = expected[nextToPlay] * numPlayed[nextToPlay];
-		++numPlayed[nextToPlay];
+
 		expected[nextToPlay] = ((float)(result+oldWins)/(float)numPlayed[nextToPlay]);
 
 		maximisedVal = 0;
 		nextToPlay = 0;
-	}
 
+	}
+	for(size_t i = 0; i<moves.size(); ++i)
+	{
+		UCBrow u;
+		u.pos = moves[i];
+		u.expected = expected[i];
+		u.timesPlayed = numPlayed[i];
+		ucbtable.push_back(u);
+	}
+	LOG_VERBOSE<<"Completed UCB table"<<std::endl;
+	return ucbtable;
+}
+GoPoint UpperConfidence::generateMove(int color, GoGame* game)
+{
+
+	std::vector<UCBrow> ucb = generateUCBTable(color,game);
 	//Select best move after search completion
 	int bestMove = -1;
 	float bestExpected = 0;
-	for(size_t i = 0; i<moves.size(); ++i)
+	for(size_t i = 0; i<ucb.size(); ++i)
 	{
-		LOG_VERBOSE<<game->Board->ReadablePosition(moves[i])<<" E:"<<expected[i]<<" Played:"<<numPlayed[i]<<std::endl;
-		if(expected[i]>bestExpected)
+		LOG_VERBOSE<<game->Board->ReadablePosition(ucb[i].pos)<<" E:"<<ucb[i].expected<<" Played:"<<ucb[i].timesPlayed<<std::endl;
+		if(ucb[i].expected>bestExpected)
 		{
-			LOG_VERBOSE<<"BE is now"<<game->Board->ReadablePosition(moves[i])<<std::endl;
-			bestExpected = expected[i];
+			LOG_VERBOSE<<"BE is now"<<game->Board->ReadablePosition(ucb[i].pos)<<std::endl;
+			bestExpected = ucb[i].expected;
 			bestMove = i;
 		}
 	}
 
-	std::cout<<"Best move ("<<game->Board->ReadablePosition(moves[bestMove])<<") : "<<bestExpected<<std::endl;
-	return game->Board->ReversePos(moves[bestMove],color);
+	LOG_VERBOSE<<"Best move ("<<game->Board->ReadablePosition(ucb[bestMove].pos)<<") : "<<bestExpected<<std::endl;
+	return game->Board->ReversePos(ucb[bestMove].pos,color);
 }
 
 const float UpperConfidence::simulateMove(int move)

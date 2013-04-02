@@ -33,8 +33,8 @@ public:
 			}
 			if(!wait)
 				break;
-//			std::cout<<"waiting "<<timeout<<std::endl;
-			sleep(1);
+			LOG_DEBUG<<"waiting on pipe: "<<pipe<<std::endl;
+			usleep(100);
 			timeout-=1;
 		}
 //		if(timeout == 0)

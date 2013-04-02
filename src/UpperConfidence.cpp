@@ -47,6 +47,8 @@ std::vector<int> UpperConfidence::getPossibleMoves(int color , GoGame* game)
 std::vector<UCBrow> UpperConfidence::generateUCBTable(int color, GoGame* game)
 {
 	LOG_DEBUG<<"Generating UCB table"<<std::endl;
+	time_t timer;
+	time(&timer);
 	std::vector<UCBrow> ucbtable;
 	LOG_VERBOSE<<"Began UCB"<<std::endl;
 	workingBoard = new GoBoard(game->Board->Size());
@@ -92,7 +94,6 @@ std::vector<UCBrow> UpperConfidence::generateUCBTable(int color, GoGame* game)
 	int nextToPlay = 0;
 	while(totalNumPlayed<numSimulations)
 	{
-		int firstClock = clock();
 		//Maximise for all following plays
 		for(size_t i = 0; i<moves.size(); ++i)
 		{
@@ -115,7 +116,7 @@ std::vector<UCBrow> UpperConfidence::generateUCBTable(int color, GoGame* game)
 		++totalNumPlayed;
 
 		if(totalNumPlayed%100==0)
-			std::cerr<<"Simulated "<<totalNumPlayed<<" games "<<(firstClock - clock())<<std::endl;
+			std::cerr<<"Simulated "<<totalNumPlayed<<" games"<<std::endl;
 
 		float oldWins = expected[nextToPlay] * numPlayed[nextToPlay];
 
@@ -133,6 +134,12 @@ std::vector<UCBrow> UpperConfidence::generateUCBTable(int color, GoGame* game)
 		u.timesPlayed = numPlayed[i];
 		ucbtable.push_back(u);
 	}
+
+	time_t now;
+	time(&now);
+	int perf = (float)numSimulations/difftime(now,timer);
+	std::cerr<<"child; " <<perf<<" sims per sec"<<std::endl;
+
 	LOG_VERBOSE<<"Completed UCB table"<<std::endl;
 	return ucbtable;
 }
@@ -153,7 +160,6 @@ GoPoint UpperConfidence::generateMove(int color, GoGame* game)
 			bestMove = i;
 		}
 	}
-
 	LOG_VERBOSE<<"Best move ("<<game->Board->ReadablePosition(ucb[bestMove].pos)<<") : "<<bestExpected<<std::endl;
 	return game->Board->ReversePos(ucb[bestMove].pos,color);
 }

@@ -116,6 +116,8 @@ extern int pipe_child[16][2];
 extern int pipe_parent[16][2];
 GoPoint EGTPEngine::genMoveFromChildProcs(int color, GoGame* game)
 {
+	time_t timer;
+	time(&timer);
 	for(int i = 0; i<childProcs; ++i)
 	{
 
@@ -198,7 +200,10 @@ GoPoint EGTPEngine::genMoveFromChildProcs(int color, GoGame* game)
 
 		totalSims+=ucbtable[i].timesPlayed;
 	}
-
+	time_t now;
+	time(&now);
+	int perf = (float)totalSims/difftime(now,timer);
+	std::cerr<<perf<<" sims per sec"<<std::endl;
 	LOG_VERBOSE<<"Best move: "<<bestPos<<" based on "<<totalSims<<" simulations"<<std::endl;
 	return game->Board->ReversePos(bestPos,color);
 

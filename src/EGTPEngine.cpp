@@ -110,10 +110,7 @@ std::vector<std::string> EGTPEngine::parse(std::string input)
 	return args;
 }
 
-
-extern int childProcs;
-extern int pipe_child[16][2];
-extern int pipe_parent[16][2];
+/*
 GoPoint EGTPEngine::genMoveFromChildProcs(int color, GoGame* game)
 {
 	time_t timer;
@@ -208,3 +205,5 @@ GoPoint EGTPEngine::genMoveFromChildProcs(int color, GoGame* game)
 	return game->Board->ReversePos(bestPos,color);
 
 }
+
+*/

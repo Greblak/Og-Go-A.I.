@@ -39,6 +39,7 @@ GoPoint GoGame::GenerateMove(int color)
 	//  if(point.x != -1 && point.y != -1 && point.color == NONE) //PASS
 	//    Play(point.color, point.x, point.y);
 
-	GoPoint point = EGTPEngine::genMoveFromChildProcs(color,this);
+//	GoPoint point = EGTPEngine::genMoveFromChildProcs(color,this);
+    GoPoint point;
 	return point;
 }

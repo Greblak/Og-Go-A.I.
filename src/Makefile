@@ -1,6 +1,6 @@
 CC = g++
 #-g -pg
-CC_FLAGS = -g -pg -O3 -fno-rtti
+CC_FLAGS = -g -O3 #-fno-rtti -funroll-loops
 SOURCES = $(wildcard *.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
 DEPENDENCIES = $(wildcard *.d)

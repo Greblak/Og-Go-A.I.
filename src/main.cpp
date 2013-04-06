@@ -41,6 +41,7 @@ Arguments taken:
 int RAND_SEED = 1;
 bool keepRand = false;
 
+<<<<<<< HEAD
 int main(int argc, char *argv[])
 {
   LogLevel = ERROR;
@@ -84,4 +85,174 @@ int main(int argc, char *argv[])
       }
     }
 
+=======
+
+//child writes to child and reads from parent
+//parent writes to parent and reads from child
+//int pipe_child[4][2];
+//int pipe_parent[4][2];
+
+int pipe_child[16][2];
+int pipe_parent[16][2];
+
+int childProcs;
+
+//Used to initialise mother process
+int preparePipes(int numPipes)
+{
+	for(int i = 0; i< numPipes;++i)
+	{
+		if (pipe(pipe_child[i]) == -1 || pipe(pipe_parent[i]) == -1)
+		{
+			perror("pipe");
+			exit(EXIT_FAILURE);
+		}
+	}
+}
+int initMainProc(int argc, char *argv[])
+{
+
+	LOG_VERBOSE<<"Init main proc";
+	for (int i = 1; i < argc; i++)
+	{
+		if(strcmp(argv[i], "-v") == 0)
+			LogLevel = VERBOSE;
+		if(strcmp(argv[i], "-d") == 0)
+			LogLevel = DEBUG;
+		if(strcmp(argv[i], "-t") == 0)
+			doTests = true;
+		if(strcmp(argv[i], "-r") == 0)
+		{
+			RAND_SEED = atoi(argv[i+1]);
+			keepRand = true;
+		}
+	}
+	LOG_VERBOSE << "Built " << __DATE__ << " - " << __TIME__;
+
+	if(doTests)
+	{
+		//      TEST_PlayPolicy();
+		//      TEST_UpperConfidence();
+		TEST_EGTPEngine();
+		std::string line = "test";
+		std::ifstream file;
+		file.open("test.gtp");
+		if(file.fail())
+		{
+			LOG_DEBUG << "Test file failed to open. Business as usual";
+		}
+		int i = 0;
+		return(EXIT_SUCCESS);
+	}
+
+	GTPEngine gtp;
+	while(true)
+	{
+		try
+		{
+			std::string userInput;
+			std::getline(std::cin, userInput);
+			gtp.parse(userInput);
+		}
+		catch( const char * str )
+		{
+			LOG_ERROR <<"? Fatal exception raised: "<<str<<"\n\n"<<"Exiting...";
+			return 1;
+		}
+		catch (Exception e)
+		{
+			LOG_ERROR <<"? Fatal exception raised: "<<e.getMessage()<<"\n\n"<<"Exiting...";
+			return 1;
+		}
+	}
+	//	unlink(fifo);
+}
+
+int initChildProc(int procID)
+{
+	close(pipe_parent[procID][0]);
+	//	close(pipe_child[procID][0]);
+	close(pipe_child[procID][1]);
+
+	EGTPEngine gtp(pipe_parent[procID][1]);
+	std::string input = "";
+	std::vector<std::string> cmd;
+	while(true)
+	{
+		input = PipeCommunication::readPipe(pipe_child[procID][0]);
+		cmd = gtp.parse(input);
+		input = "";
+	}
+
+
+}
+
+
+int main(int argc, char *argv[])
+{
+	LogLevel = ERROR;
+	doTests = false;
+	RAND_SEED = time(NULL);
+	srand (RAND_SEED);
+	childProcs = 1;
+
+	for (int i = 1; i < argc; i++)
+	{
+		if(strcmp(argv[i], "-c") == 0)
+			childProcs = atoi(argv[i+1]);
+	}
+
+	pid_t pID;
+	preparePipes(childProcs);
+	for(int i = 0; i<childProcs;++i)
+	{
+		if ((pID = fork()) == 0)                // child
+		{
+			initChildProc(i);
+		}
+		else if(pID < 0) //Fork failed
+		{
+			perror("Fork failed");
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	//	std::cout<<"Parent proc init";
+//	for(int i = 0; i<1;++i)
+//	{
+//		close(pipe_child[i][0]);
+//		//		close(pipe_child[i][1]);
+//		GoGame g(9);
+//		g.Play(S_BLACK,3,3);
+//		g.Play(S_WHITE,2,3);
+//		std::vector<int> randMoves;
+//		randMoves.push_back(1);
+//		randMoves.push_back(3);
+//		randMoves.push_back(4);
+//		randMoves.push_back(5);
+//		std::string wbuf = GTPEngine::generateGTPString(g.Board);
+//		PipeCommunication::writePipe(pipe_child[i][1],wbuf);
+//		//		std::cout<<"Wrote "<<wbuf;
+//		std::stringstream ss;
+//		ss<<"e_randmoves";
+//		for(int j = 0;j<randMoves.size();++j)
+//			ss<<" "<<randMoves[j];
+//		ss<<"\n";
+//		PipeCommunication::writePipe(pipe_child[i][1],ss.str());
+//		wbuf = "e_useai ucb 0 s 100\ngenmove b\n";
+//		PipeCommunication::writePipe(pipe_child[i][1],wbuf);
+//		//		std::cout<<"Wrote "<<wbuf;
+//		close(pipe_child[i][1]);
+//	}
+//	for(int i = 0; i<1;++i)
+//	{
+//		char ic = i+65;
+//		std::string str = PipeCommunication::readPipe(pipe_parent[i][0]);
+//		std::cout<<"From child: "<<i<<" "<<str<<std::endl;
+//	}
+	//	exit(EXIT_SUCCESS);
+	return initMainProc(argc,argv);
+
+	return EXIT_SUCCESS;
+>>>>>>> d63b420... Parallelisation now works but is surprisingly slow. refs #27 @3h0
 }

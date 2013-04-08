@@ -177,3 +177,57 @@ const float UpperConfidence::simulateMove(int move)
 		expected -= score;
 	return expected;
 }
+
+static std::vector<UCBrow> UpperConfidence::combineUCBTables(std::vector<UCBrow> t1, std::vector<UCBrow> t2){
+	for(std::vector<UCBrow>::iterator it1 = t1.begin(); it1 != t1.end(); ++it1)
+	{
+		for(std::vector<UCBrow>::iterator it2 = t2.begin(); it2 != t2.end(); ++it2)
+		{
+			if((*it1).pos == (*it2).pos)
+			{
+				(*it1).expected =
+						((*it1).expected*(*it1).timesPlayed)+((*it2).expected*(*it2).timesPlayed)/
+						((*it1).timesPlayed+(*it2).timesPlayed);
+				(*it1).timesPlayed+= (*it2).timesPlayed;
+			}
+		}
+	}
+	return t1;
+}
+
+static std::vector<UCBrow> UpperConfidence::parseUCBTableString(std::string str)
+{
+	std::vector<UCBrow> ucbtable;
+	std::vector<std::string> args;
+	boost::split(args, str,boost::is_any_of( " " ));
+	std::string ucbrstr = args[1];
+	args.clear();
+	boost::split(args, ucbrstr,boost::is_any_of( ";" ));
+	for(int j = 0; j<args.size(); ++j)
+	{
+		std::vector<std::string> row;
+		boost::split(row, args[j],boost::is_any_of( "," ));
+		if(row[0].size()>0)
+		{
+			UCBrow u;
+			u.pos = atoi(row[0].c_str());
+			u.expected = atof(row[1].c_str());
+			u.timesPlayed = atoi(row[2].c_str());
+			bool exists = false;
+			for(std::vector<UCBrow>::iterator it = ucbtable.begin(); it != ucbtable.end(); ++it)
+			{
+
+				if(atoi(row[0].c_str()) == (*it).pos)
+				{
+					//Recalculate current ucbrow;
+					(*it).expected = ((u.expected*u.timesPlayed)+((*it).expected+(*it).timesPlayed))/(u.timesPlayed*(*it).timesPlayed);
+					(*it).timesPlayed += u.timesPlayed;
+					exists = true;
+				}
+			}
+			if(!exists)
+				ucbtable.push_back(u);
+		}
+	}
+	return ucbtable;
+}

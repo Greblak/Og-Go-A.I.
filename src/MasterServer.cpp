@@ -5,6 +5,7 @@
  *      Author: rune
  */
 
+#include <ctime>
 #include "MasterServer.h"
 #include "TCPServer.h"
 #include "Log.h"
@@ -15,6 +16,7 @@
 #include <boost/array.hpp>
 #include "GTPEngine.h"
 #include "Exception.h"
+#include "UpperConfidence.h"
 MasterServer::MasterServer(int port):tcp_server(io_service,port,boost::bind(&MasterServer::newConnection,this, _1))
 {
 	try
@@ -59,15 +61,15 @@ void MasterServer::run()
 	}
 }
 
-void MasterServer::newConnection(const boost::asio::ip::tcp::socket& socket_)
+void MasterServer::newConnection(boost::asio::ip::tcp::socket* socket_)
 {
-	std::cout<<"New connection from "<<socket_.remote_endpoint().address().to_string()<<std::endl;
-	doHandshake(socket_);
-	if(socket_.is_open())
-		sockets.push_back(&socket_);
+	std::cout<<"New connection from "<<socket_->remote_endpoint().address().to_string()<<std::endl;
+	doHandshake(*socket_);
+	if(socket_->is_open())
+		sockets.push_back(socket_);
 }
 
-void MasterServer::doHandshake(const boost::asio::ip::tcp::socket& socket_)
+void MasterServer::doHandshake(boost::asio::ip::tcp::socket& socket_)
 {
 	socket_.write_some(boost::asio::buffer(EGTP_HANDSHAKE));
 	boost::array<char, MASTER_BUFFER_MAX_SIZE> buf;
@@ -92,17 +94,26 @@ void MasterServer::writeAll(const std::string str)
 	}
 }
 
-void MasterServer::write(const boost::asio::ip::tcp::socket& socket, const std::string str)
+void MasterServer::write(boost::asio::ip::tcp::socket& socket, const std::string str)
 {
-
+	socket.write_some(boost::asio::buffer(str));
 }
 
-const GoPoint& MasterServer::generateMove(int color)
+const GoPoint MasterServer::generateMove(int color)
 {
 	UpperConfidence ucb;
 	std::vector<int> randMoves = UpperConfidence().getPossibleMoves(color,gtp.game);
+	for(int i = 0; i<randMoves.size(); ++i)
+	{
+		UCBrow r;
+		r.pos = randMoves[i];
+		r.expected = 0;
+		r.timesPlayed = 0;
+		ucbTable.push_back(r);
+	}
 
-	//Replay current state
+	//Replay current state to all slaves
+	writeAll(GTP_CMD_CLEAR_BOARD);
 	for(int j = 0; j<gtp.game->Board->movePointer; ++j)
 	{
 		char col = gtp.game->Board->moves[j]->Color == S_BLACK ? 'b' : 'w';
@@ -125,43 +136,16 @@ const GoPoint& MasterServer::generateMove(int color)
 
 
 	std::vector<UCBrow> ucbtable;
-	int moveNumber = gtp.game->Board->movePointer;
+	int moveNumber = gtp.game->Board->movePointer; //Implement to prevent race conditions
+
 	for(SocketVector::iterator it = sockets.begin(); it!= sockets.end(); ++it)
 	{
-		std::string str = PipeCommunication::readPipe(pipe_parent[i][0]);
-		LOG_DEBUG<<"From child: "<<i<<" "<<str<<std::endl;
-		std::vector<std::string> args;
-		boost::split(args, str,boost::is_any_of( " " ));
-		std::string ucbrstr = args[1];
-		args.clear();
-		boost::split(args, ucbrstr,boost::is_any_of( ";" ));
-		for(int j = 0; j<args.size(); ++j)
-		{
-			std::vector<std::string> row;
-			boost::split(row, args[j],boost::is_any_of( "," ));
-			if(row[0].size()>0)
-			{
-				UCBrow u;
-				u.pos = atoi(row[0].c_str());
-				u.expected = atof(row[1].c_str());
-				u.timesPlayed = atoi(row[2].c_str());
-				bool exists = false;
-				for(std::vector<UCBrow>::iterator it = ucbtable.begin(); it != ucbtable.end(); ++it)
-				{
-
-					if(atoi(row[0].c_str()) == (*it).pos)
-					{
-						//Recalculate current ucbrow;
-						(*it).expected = ((u.expected*u.timesPlayed)+((*it).expected+(*it).timesPlayed))/(u.timesPlayed*(*it).timesPlayed);
-						(*it).timesPlayed += u.timesPlayed;
-						exists = true;
-					}
-				}
-				if(!exists)
-					ucbtable.push_back(u);
-			}
-		}
+		boost::array<char, MASTER_BUFFER_MAX_SIZE>* buf = new boost::array<char, MASTER_BUFFER_MAX_SIZE>();
+		socketreads.push_back(buf);
+		(*it)->async_read_some(*buf,&MasterServer::genmoveReadCallback);
 	}
+
+	sleep(10);
 
 	int bestPos = -1;
 	float bestExpected = 0;
@@ -176,13 +160,8 @@ const GoPoint& MasterServer::generateMove(int color)
 
 		totalSims+=ucbtable[i].timesPlayed;
 	}
-	time_t now;
-	time(&now);
-	int perf = (float)totalSims/difftime(now,timer);
-	std::cerr<<perf<<" sims per sec"<<std::endl;
 	LOG_VERBOSE<<"Best move: "<<bestPos<<" based on "<<totalSims<<" simulations"<<std::endl;
-	return game->Board->ReversePos(bestPos,color);
-
+	return gtp.game->Board->ReversePos(bestPos,color);
 
 
 	GoPoint pos;
@@ -197,3 +176,23 @@ const GoPoint& MasterServer::generateMove(int color)
 
 	}
 }
+
+void MasterServer::genmoveReadCallback()
+{
+	std::cout<<"Got callback from read. Checking buffers"<<std::endl;
+	for(SocketReadVector::iterator it = socketreads.begin(); it != socketreads.end(); ++it)
+	{
+		if((*it)->at(0) == 0)
+		{
+			std::cout<<"Empty buf"<<std::endl;
+		}
+		else
+		{
+			std::cout<<"Buffer has read data!"<<std::endl;
+			std::string ucbstring((*it)->begin(), strlen((*it)->begin()));
+			ucbTable = UpperConfidence::combineUCBTables(ucbTable, UpperConfidence::parseUCBTableString(ucbstring));
+		}
+	}
+}
+
+

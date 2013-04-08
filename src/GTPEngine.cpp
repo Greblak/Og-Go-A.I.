@@ -38,17 +38,17 @@ std::vector<std::string> GTPEngine::parse(std::string userInput)
 
 	std::vector<GoMove*> genmoves;
 
-	if(args[0] == "name")
+	if(args[0] == GTP_CMD_NAME)
 		LOG_OUT << "= "+PROGRAM_NAME;
-	else if(args[0] == "version")
+	else if(args[0] == GTP_CMD_VERSION)
 		LOG_OUT << "= "+PROGRAM_VERSION;
-	else if(args[0] == "protocol_version")
+	else if(args[0] == GTP_CMD_PROTOC_VERS)
 		LOG_OUT << "= "+PROGRAM_GTP_VERSION;
-	else if(args[0] == "list_commands")
+	else if(args[0] == GTP_CMD_LIST_CMDS)
 	{
 		LOG_OUT << "= name\nversion\nprotocol_version\nlist_commands\nboardsize\ngenmove\nplay\nclear_board\nshowboard\nquit\nfinal_score";
 	}
-	else if(args[0] == "boardsize")
+	else if(args[0] == GTP_CMD_BOARDSIZE)
 	{
 		int bsize;
 		try
@@ -65,7 +65,7 @@ std::vector<std::string> GTPEngine::parse(std::string userInput)
 		game = new GoGame(bsize);
 		LOG_OUT << "= 1";
 	}
-	else if(args[0] == "clear_board")
+	else if(args[0] == GTP_CMD_CLEAR_BOARD)
 	{
 		int size = BOARD_DEFAULT_SIZE;
 		if(game != 0)
@@ -78,42 +78,24 @@ std::vector<std::string> GTPEngine::parse(std::string userInput)
 		game = new GoGame(size);
 		LOG_OUT << "= 1";
 	}
-	else if(args[0] == "play" || (LogLevel >= DEBUG && args[0] == "p"))
+	else if(args[0] == GTP_CMD_PLAY || (LogLevel >= DEBUG && args[0] == "p"))
 	{
 		if(args[2] != "PASS")
 			game->Play(ColorFromString(args[1]), ColumnStringToInt(args[2].substr(0,1)),
 					RowStringToInt(args[2].substr(1,2)));
 		LOG_OUT << "= 1";
 	}
-	else if(args[0] == "genmove")
+	else if(args[0] == GTP_CMD_GENMOVE)
 	{
-		GoPoint pos = game->GenerateMove(ColorFromString(args[1]));
-		if(pos.x == -1 && pos.y == -1) // Play pass
-		{
-			LOG_OUT << "= PASS";
-			return args;
-		}
-		for(std::vector<GoMove*>::iterator it = genmoves.begin(); it != genmoves.end(); ++it)
-		{
-			if(pos.x == (*it)->Point.x && pos.y == (*it)->Point.y)
-			{
-				LOG_ERROR<<"ERROR IN MOVE GENERATION. MOVE HAS BEEN PLAYED";
-				throw "FUCK THIS I'm OUT";
-			}
-		}
-		LOG_VERBOSE << "Generated move at "<<pos.x<<","<<pos.y;
-		game->Play(pos.color, pos.x,pos.y);
-		genmoves.push_back(new GoMove(ColorFromString(args[1]),pos));
-		LOG_OUT <<"= " << ColumnIntToString(pos.x)<<RowIntToString(pos.y);
+		return args;
 	}
-	else if(args[0] == "showboard")
+	else if(args[0] == GTP_CMD_SHOW_BOARD)
 	{
 		game->Board->DisplayCurrentState();
 	}
 
-	else if(args[0] == "final_score")
+	else if(args[0] == GTP_CMD_FINAL_SCORE)
 	{
-
 		float score = game->Board->GetScore();
 		char color;
 		if(score > 0)
@@ -128,9 +110,9 @@ std::vector<std::string> GTPEngine::parse(std::string userInput)
 
 
 	}
-	else if(args[0] == "quit")
+	else if(args[0] == GTP_CMD_QUIT)
 	{
-		_exit(EXIT_SUCCESS);
+		exit(EXIT_SUCCESS);
 	}
 #ifdef DEBUG_MODE
 	else if(args[0] == "d")

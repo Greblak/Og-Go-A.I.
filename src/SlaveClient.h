@@ -10,6 +10,8 @@
 
 #include <boost/asio.hpp>
 
+const int SLAVE_BUFFER_MAX_SIZE = 1024;
+
 class SlaveClient {
 public:
 	SlaveClient(std::string ip, int port);

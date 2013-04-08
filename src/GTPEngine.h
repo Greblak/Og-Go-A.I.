@@ -7,6 +7,18 @@ const int GTP_OFFSET_UPPERCASE_A = 65; //Makes col A 0-indexed
 const int GTP_OFFSET_I = 8; //Offset to handle the missing I
 const int GTP_OFFSET_LOWERCASE_A = 97; //Makes col a 0-indexed
 const int 	GTP_OFFSET_NUM = 48; //Makes row 1 0-indexed
+const std::string GTP_ACK_RESPONSE = "= 1";
+const std::string GTP_CMD_PLAY = "play";
+const std::string GTP_CMD_BOARDSIZE = "boardsize";
+const std::string GTP_CMD_CLEAR_BOARD = "clear_board";
+const std::string GTP_CMD_NAME = "name";
+const std::string GTP_CMD_VERSION = "play";
+const std::string GTP_CMD_PROTOC_VERS = "protocol_version";
+const std::string GTP_CMD_LIST_CMDS = "list_commands";
+const std::string GTP_CMD_GENMOVE = "genmove";
+const std::string GTP_CMD_FINAL_SCORE = "final_score";
+const std::string GTP_CMD_SHOW_BOARD = "showboard";
+const std::string GTP_CMD_QUIT = "quit";
 
 /*
  * Handles all input and output of GTP commands through console

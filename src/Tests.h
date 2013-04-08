@@ -38,13 +38,13 @@ void TEST_UpperConfidence()
 
 void TEST_EGTPEngine()
 {
-	EGTPEngine gtp(1);
+	EGTPEngine gtp;
 	std::string input[3] = {"boardsize 9", "e_useai ucb s 10", "genmove b"};
 	std::vector<std::string> cmd;
 
 	for(int i = 0; i < 3; ++i)
 	{
-		cmd = gtp.parse(input[i]);
+		gtp.parse(input[i]);
 	}
 };
 

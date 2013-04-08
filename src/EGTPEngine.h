@@ -15,13 +15,17 @@ enum AiType{
 	UCB,
 	UCT
 };
+
+const std::string EGTP_HANDSHAKE = "e_request 1";
+
+
 class EGTPEngine : public GTPEngine
 {
 public:
-	EGTPEngine(int writePipe);
+	EGTPEngine();
 	virtual ~EGTPEngine();
 
-	std::vector<std::string> parse(std::string input);
+	std::string parse(std::string input);
 	static GoPoint genMoveFromChildProcs(int color, GoGame* game);
 private:
 	AiType aiType;
@@ -29,7 +33,6 @@ private:
 	int simulations;
 	std::vector<int> preselRandMoves;
 	int numRandMoves;
-	int writePipe;
 
 };
 

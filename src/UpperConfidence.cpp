@@ -5,6 +5,8 @@
  *      Author: rune
  */
 #include <math.h>
+#include <stdlib.h>
+#include <boost/algorithm/string.hpp>
 #include "UpperConfidence.h"
 #include "Log.h"
 #include "GoBoard.h"
@@ -178,13 +180,15 @@ const float UpperConfidence::simulateMove(int move)
 	return expected;
 }
 
-static std::vector<UCBrow> UpperConfidence::combineUCBTables(std::vector<UCBrow> t1, std::vector<UCBrow> t2){
+std::vector<UCBrow> UpperConfidence::combineUCBTables(std::vector<UCBrow>& t1, std::vector<UCBrow>& t2){
+	std::cout<<"Combining tables of size: "<<t1.size()<<" "<<t2.size()<<std::endl;
 	for(std::vector<UCBrow>::iterator it1 = t1.begin(); it1 != t1.end(); ++it1)
 	{
 		for(std::vector<UCBrow>::iterator it2 = t2.begin(); it2 != t2.end(); ++it2)
 		{
 			if((*it1).pos == (*it2).pos)
 			{
+
 				(*it1).expected =
 						((*it1).expected*(*it1).timesPlayed)+((*it2).expected*(*it2).timesPlayed)/
 						((*it1).timesPlayed+(*it2).timesPlayed);
@@ -195,11 +199,11 @@ static std::vector<UCBrow> UpperConfidence::combineUCBTables(std::vector<UCBrow>
 	return t1;
 }
 
-static std::vector<UCBrow> UpperConfidence::parseUCBTableString(std::string str)
+std::vector<UCBrow> UpperConfidence::parseUCBTableString(std::string str)
 {
 	std::vector<UCBrow> ucbtable;
 	std::vector<std::string> args;
-	boost::split(args, str,boost::is_any_of( " " ));
+	boost::split(args, str,boost::is_any_of( ":" ));
 	std::string ucbrstr = args[1];
 	args.clear();
 	boost::split(args, ucbrstr,boost::is_any_of( ";" ));

@@ -6,6 +6,8 @@
  */
 
 #include <ctime>
+#include <boost/thread.hpp>
+#include <boost/bind.hpp>
 #include "MasterServer.h"
 #include "TCPServer.h"
 #include "Log.h"
@@ -17,11 +19,12 @@
 #include "GTPEngine.h"
 #include "Exception.h"
 #include "UpperConfidence.h"
-MasterServer::MasterServer(int port):tcp_server(io_service,port,boost::bind(&MasterServer::newConnection,this, _1))
+MasterServer::MasterServer(int port):tcp_server(io_service,port,boost::bind(&MasterServer::newConnection,this, _1)),writingToUcbTable(false)
 {
+
 	try
 	{
-		io_service.run();
+		boost::thread workerThread(boost::bind(&boost::asio::io_service::run, &io_service));
 	}
 	catch (std::exception& e)
 	{
@@ -61,31 +64,46 @@ void MasterServer::run()
 	}
 }
 
-void MasterServer::newConnection(boost::asio::ip::tcp::socket* socket_)
+void MasterServer::newConnection(boost::shared_ptr<TCPConnection> conn)
 {
-	std::cout<<"New connection from "<<socket_->remote_endpoint().address().to_string()<<std::endl;
-	doHandshake(*socket_);
-	if(socket_->is_open())
-		sockets.push_back(socket_);
+	std::cout<<"New connection from "<<conn->socket().remote_endpoint().address().to_string()<<std::endl;
+	doHandshake(conn);
+	if(conn->socket().is_open())
+	{
+		sockets.push_back(conn);
+	}
+
 }
 
-void MasterServer::doHandshake(boost::asio::ip::tcp::socket& socket_)
+void MasterServer::doHandshake(boost::shared_ptr<TCPConnection> conn)
 {
-	socket_.write_some(boost::asio::buffer(EGTP_HANDSHAKE));
+	conn->socket().write_some(boost::asio::buffer(EGTP_HANDSHAKE));
+	//	socket_.write_some(boost::asio::buffer(EGTP_HANDSHAKE));
 	boost::array<char, MASTER_BUFFER_MAX_SIZE> buf;
 	boost::system::error_code ec;
-	socket_.read_some(boost::asio::buffer(buf),ec);
+	conn->socket().read_some(boost::asio::buffer(buf),ec);
 	if(std::string(buf.data(),strlen(buf.data())) != GTP_ACK_RESPONSE)
-		socket_.close();
+	{
+		std::cout<<"Invalid EGTP version or malformed response. Closing connection"<<std::endl;
+		conn->socket().close();
+	}
 }
 
 void MasterServer::writeAll(const std::string str)
 {
 	for(SocketVector::iterator it = sockets.begin(); it != sockets.end(); ++it)
 	{
-		if((*it)->is_open())
+		if((**it).socket().is_open())
 		{
-			write(**it,str);
+			//			std::cout<<"Trying to write to "<<&(**it);
+			try
+			{
+				write((*it),str);
+			}
+			catch(char* ex)
+			{
+				std::cout<<ex<<std::endl;
+			}
 		}
 		else
 		{
@@ -94,9 +112,11 @@ void MasterServer::writeAll(const std::string str)
 	}
 }
 
-void MasterServer::write(boost::asio::ip::tcp::socket& socket, const std::string str)
+void MasterServer::write(boost::shared_ptr<TCPConnection> conn, const std::string str)
 {
-	socket.write_some(boost::asio::buffer(str));
+	//	std::cout<<"Trying to write "<<str<<std::endl;
+	conn->socket().async_write_some(boost::asio::buffer(str),boost::bind(&MasterServer::writeHandler,this));
+	//	std::cout<<"Successfully wrote "<<str<<std::endl;
 }
 
 const GoPoint MasterServer::generateMove(int color)
@@ -131,18 +151,18 @@ const GoPoint MasterServer::generateMove(int color)
 		ss<<" "<<randMoves[j];
 	ss<<"\n";
 	writeAll(ss.str());
-	wbuf = "e_useai ucb 0 s 1000\ngenmove b\n";
+	wbuf = "e_useai ucb 0 s 200\ngenmove b";
 	writeAll(wbuf);
 
-
-	std::vector<UCBrow> ucbtable;
 	int moveNumber = gtp.game->Board->movePointer; //Implement to prevent race conditions
 
 	for(SocketVector::iterator it = sockets.begin(); it!= sockets.end(); ++it)
 	{
+		//Build errors
 		boost::array<char, MASTER_BUFFER_MAX_SIZE>* buf = new boost::array<char, MASTER_BUFFER_MAX_SIZE>();
-		socketreads.push_back(buf);
-		(*it)->async_read_some(*buf,&MasterServer::genmoveReadCallback);
+		buf->fill('\0');
+		//		socketreads.push_back(buf);
+		(*it)->socket().async_read_some(boost::asio::buffer(*buf),boost::bind(&MasterServer::genmoveReadCallback,this,(*it),buf));
 	}
 
 	sleep(10);
@@ -150,49 +170,67 @@ const GoPoint MasterServer::generateMove(int color)
 	int bestPos = -1;
 	float bestExpected = 0;
 	int totalSims = 0;
-	for(int i = 0; i<ucbtable.size(); ++i)
+	std::cout<<"UCB table size: "<<ucbTable.size()<<std::endl;
+	for(int i = 0; i<ucbTable.size(); ++i)
 	{
-		if(ucbtable[i].expected > bestExpected)
+		std::cout<<"P: "<<ucbTable[i].pos<<" N:"<<ucbTable[i].timesPlayed<<std::endl;
+		if(ucbTable[i].expected > bestExpected)
 		{
-			bestExpected = ucbtable[i].expected;
-			bestPos = ucbtable[i].pos;
+
+			bestExpected = ucbTable[i].expected;
+			bestPos = ucbTable[i].pos;
 		}
 
-		totalSims+=ucbtable[i].timesPlayed;
+		totalSims+=ucbTable[i].timesPlayed;
 	}
-	LOG_VERBOSE<<"Best move: "<<bestPos<<" based on "<<totalSims<<" simulations"<<std::endl;
+	std::cout<<"Best move: "<<bestPos<<" based on "<<totalSims<<" simulations"<<std::endl;
 	return gtp.game->Board->ReversePos(bestPos,color);
 
 
 	GoPoint pos;
 	gtp.game->Play(pos.color, pos.x,pos.y);
 	LOG_OUT <<"= " << gtp.game->Board->ReadablePosition(pos);
-	if(sockets.size()>0) //Has active nodes. Attempt to do locally
-	{
 
-	}
-	else //Create locally
-	{
-
-	}
+	return pos;
 }
 
-void MasterServer::genmoveReadCallback()
+void MasterServer::genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, boost::array<char, 1024>* buf)
 {
-	std::cout<<"Got callback from read. Checking buffers"<<std::endl;
-	for(SocketReadVector::iterator it = socketreads.begin(); it != socketreads.end(); ++it)
+	std::cout<<"async callback"<<std::endl;
+	std::string ucbstring;
+	if(buf->size() == 0 || buf->elems[0] == '\0')
 	{
-		if((*it)->at(0) == 0)
-		{
-			std::cout<<"Empty buf"<<std::endl;
-		}
-		else
-		{
-			std::cout<<"Buffer has read data!"<<std::endl;
-			std::string ucbstring((*it)->begin(), strlen((*it)->begin()));
-			ucbTable = UpperConfidence::combineUCBTables(ucbTable, UpperConfidence::parseUCBTableString(ucbstring));
-		}
+		std::cout<<"Empty buf"<<std::endl;
 	}
+	else
+	{
+		std::cout<<"Buffer has read data!"<<buf->c_array()<<std::endl;
+		ucbstring = std::string(buf->c_array(), strlen(buf->c_array()));
+	}
+	if(!boost::starts_with(ucbstring, "= 1"))
+	{
+		std::cout<<"mutex loop"<<std::endl;
+		while(writingToUcbTable)
+		{
+
+		}
+		std::cout<<"EO mutex loop"<<std::endl;
+		writingToUcbTable = true;
+		std::cout<<"Presize"<<ucbTable[0].timesPlayed<<std::endl;
+		std::vector<UCBrow> incomingUCBTable = UpperConfidence::parseUCBTableString(ucbstring);
+		UpperConfidence::combineUCBTables(ucbTable, incomingUCBTable);
+		std::cout<<"Postsize"<<ucbTable[0].timesPlayed<<std::endl;
+		writingToUcbTable = false;
+	}
+	buf->fill('\0');
+	std::cout<<"starting new async read"<<std::endl;
+	conn->socket().async_read_some(boost::asio::buffer(*buf),boost::bind(&MasterServer::genmoveReadCallback,this,conn,buf));
+	std::cout<<"finished reading"<<std::endl;
+}
+
+void MasterServer::writeHandler()
+{
+	//	std::cout<<"Written async"<<std::endl;
 }
 
 

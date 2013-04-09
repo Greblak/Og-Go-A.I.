@@ -60,7 +60,6 @@ int LogLevel = ERROR;
 
 int initMaster(int port)
 {
-	LOG_VERBOSE << "Attempting to start master server";
 	MasterServer master(port);
 	master.run();
 	return EXIT_SUCCESS;

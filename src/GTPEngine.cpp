@@ -87,6 +87,7 @@ std::vector<std::string> GTPEngine::parse(std::string userInput)
 	}
 	else if(args[0] == GTP_CMD_GENMOVE)
 	{
+		std::cout<<"Genmove cmd"<<std::endl;
 		return args;
 	}
 	else if(args[0] == GTP_CMD_SHOW_BOARD)

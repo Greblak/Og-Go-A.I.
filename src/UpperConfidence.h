@@ -30,7 +30,7 @@ public:
 	std::vector<int> getPossibleMoves(int color, GoGame* game);
 	const float simulateMove(int move);
 
-	static std::vector<UCBrow> combineUCBTables(std::vector<UCBrow> t1, std::vector<UCBrow> t2); //TODO:: Unit test this!
+	static std::vector<UCBrow> combineUCBTables(std::vector<UCBrow>& t1, std::vector<UCBrow>& t2); //TODO:: Unit test this!
 	static std::vector<UCBrow> parseUCBTableString(std::string str);
 
 	std::vector<int> moves;

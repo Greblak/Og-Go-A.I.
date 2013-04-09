@@ -8,6 +8,8 @@
 #ifndef MASTERSERVER_H_
 #define MASTERSERVER_H_
 
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/array.hpp>
@@ -20,20 +22,22 @@
 const int MASTER_BUFFER_MAX_SIZE = 1024;
 
 
-typedef std::vector<boost::asio::ip::tcp::socket*> SocketVector;
+typedef std::vector<boost::shared_ptr<TCPConnection> > SocketVector;
 typedef std::vector< boost::array<char, MASTER_BUFFER_MAX_SIZE>* > SocketReadVector;
 
-class MasterServer {
+class MasterServer :public boost::enable_shared_from_this<MasterServer>
+{
 public:
 	MasterServer(int port);
 	void run();
 	virtual ~MasterServer();
-	void newConnection(boost::asio::ip::tcp::socket* socket);
-	void doHandshake(boost::asio::ip::tcp::socket& socket);
-	void write(boost::asio::ip::tcp::socket& socket, const std::string str);
+	void newConnection(boost::shared_ptr<TCPConnection> conn);
+	void doHandshake(boost::shared_ptr<TCPConnection> conn);
+	void write(boost::shared_ptr<TCPConnection> conn, const std::string str);
+	void writeHandler();
 	void writeAll(const std::string str);
 	const GoPoint generateMove(int color);
-	void genmoveReadCallback();
+	void genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, boost::array<char, 1024>* buf);
 	boost::asio::io_service io_service;
 	TCPServer tcp_server;
 private:
@@ -41,6 +45,7 @@ private:
 	SocketReadVector socketreads;
 	GTPEngine gtp;
 	std::vector<UCBrow> ucbTable;
+	bool writingToUcbTable;
 };
 
 #endif /* MASTERSERVER_H_ */

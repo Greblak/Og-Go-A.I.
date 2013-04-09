@@ -88,4 +88,4 @@ public:
   }
 };
 
-#endif LOG_H_
+#endif //LOG_H_

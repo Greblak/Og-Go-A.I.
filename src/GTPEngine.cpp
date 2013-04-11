@@ -12,7 +12,7 @@
 #include "Config.h"
 #include "GoGame.h"
 #include "Exception.h"
-#include "Tests.h"
+//#include "Tests.h"
 
 extern int LogLevel;
 extern bool doTests;
@@ -20,34 +20,9 @@ extern bool keepRand;
 extern int RAND_SEED;
 GTPEngine::GTPEngine(void):commandNum(0)
 {
-<<<<<<< HEAD
-  LOG_DEBUG<< "Starting GTP Engine";
-  game = new GoGame(BOARD_DEFAULT_SIZE);
-  if(doTests)
-    {
-//      TEST_PlayPolicy();
-      TEST_UpperConfidence();
-      std::string line = "test";
-      std::ifstream file;
-      file.open("test.gtp");
-      if(file.fail())
-        {
-          LOG_DEBUG << "Test file failed to open. Business as usual";
-          return;
-        }
-      int i = 0;
-      while(std::getline(file,line))
-        {
-          std::cout << line <<std::endl;
-          parse(line);
-          ++i;
-        }
-    }
-=======
 	LOG_DEBUG<< "Starting GTP Engine";
 	game = new GoGame(BOARD_DEFAULT_SIZE);
 
->>>>>>> d63b420... Parallelisation now works but is surprisingly slow. refs #27 @3h0
 }
 
 GTPEngine::~GTPEngine()
@@ -55,121 +30,25 @@ GTPEngine::~GTPEngine()
 
 }
 
-void GTPEngine::parse(std::string userInput)
+std::vector<std::string> GTPEngine::parse(std::string userInput)
 {
-<<<<<<< HEAD
-  LOG_VERBOSE << "Parsing GTP Command # "<<++commandNum;
-  std::vector<std::string> args;
-  boost::split(args, userInput,boost::is_any_of( " " ));
-
-  std::vector<GoMove*> genmoves;
-
-  if(args[0] == "name")
-    LOG_OUT << "= "+PROGRAM_NAME;
-  else if(args[0] == "version")
-    LOG_OUT << "= "+PROGRAM_VERSION;
-  else if(args[0] == "protocol_version")
-    LOG_OUT << "= "+PROGRAM_GTP_VERSION;
-  else if(args[0] == "list_commands")
-    {
-      LOG_OUT << "= name\nversion\nprotocol_version\nlist_commands\nboardsize\ngenmove\nplay\nclear_board\nshowboard\nquit\nfinal_score";
-    }
-  else if(args[0] == "boardsize")
-    {
-      int bsize;
-      try
-      {
-          bsize = atoi(args[1].c_str());
-      }
-      catch( char * str)
-      {
-          throw Exception("Invalid boardsize. NaN.");;
-      }
-      LOG_VERBOSE << "Attempting to set boardsize to "<<bsize;
-      game = new GoGame(bsize);
-      LOG_OUT << "= 1";
-    }
-  else if(args[0] == "clear_board")
-    {
-      int size = game->Board->Size();
-      delete game;
-      if(keepRand)
-        srand (RAND_SEED);
-      game = new GoGame(size);
-      LOG_OUT << "= 1";
-    }
-  else if(args[0] == "play" || (LogLevel >= DEBUG && args[0] == "p"))
-    {
-      if(args[2] != "PASS")
-        game->Play(ColorFromString(args[1]), ColumnStringToInt(args[2].substr(0,1)),
-            RowStringToInt(args[2].substr(1,2)));
-      LOG_OUT << "= 1";
-    }
-  else if(args[0] == "genmove")
-    {
-      GoPoint pos = game->GenerateMove(ColorFromString(args[1]));
-      if(pos.x == -1 && pos.y == -1) // Play pass
-        {
-          LOG_OUT << "= PASS";
-          return;
-        }
-      for(std::vector<GoMove*>::iterator it = genmoves.begin(); it != genmoves.end(); ++it)
-        {
-          if(pos.x == (*it)->Point.x && pos.y == (*it)->Point.y)
-            {
-              LOG_ERROR<<"ERROR IN MOVE GENERATION. MOVE HAS BEEN PLAYED";
-              throw "FUCK THIS I'm OUT";
-            }
-        }
-      LOG_VERBOSE << "Generated move at "<<pos.x<<","<<pos.y;
-      game->Play(pos.color, pos.x,pos.y);
-      genmoves.push_back(new GoMove(ColorFromString(args[1]),pos));
-      LOG_OUT <<"= " << ColumnIntToString(pos.x)<<RowIntToString(pos.y);
-    }
-  else if(args[0] == "showboard")
-    {
-      game->Board->DisplayCurrentState();
-    }
-
-  else if(args[0] == "final_score")
-    {
-
-      float score = game->Board->GetScore();
-      char color;
-      if(score > 0)
-        color = 'B';
-      else
-        {
-          color = 'W';
-          score*=-1;
-        }
-      LOG_OUT << "= "<<color<<"+"<<score;
-
-
-
-    }
-  else if(args[0] == "quit")
-    {
-      exit(EXIT_SUCCESS);
-    }
-=======
 	LOG_VERBOSE << "Parsing GTP Command # "<<++commandNum;
 	std::vector<std::string> args;
 	boost::split(args, userInput,boost::is_any_of( " " ));
 
 	std::vector<GoMove*> genmoves;
 
-	if(args[0] == "name")
+	if(args[0] == GTP_CMD_NAME)
 		LOG_OUT << "= "+PROGRAM_NAME;
-	else if(args[0] == "version")
+	else if(args[0] == GTP_CMD_VERSION)
 		LOG_OUT << "= "+PROGRAM_VERSION;
-	else if(args[0] == "protocol_version")
+	else if(args[0] == GTP_CMD_PROTOC_VERS)
 		LOG_OUT << "= "+PROGRAM_GTP_VERSION;
-	else if(args[0] == "list_commands")
+	else if(args[0] == GTP_CMD_LIST_CMDS)
 	{
 		LOG_OUT << "= name\nversion\nprotocol_version\nlist_commands\nboardsize\ngenmove\nplay\nclear_board\nshowboard\nquit\nfinal_score";
 	}
-	else if(args[0] == "boardsize")
+	else if(args[0] == GTP_CMD_BOARDSIZE)
 	{
 		int bsize;
 		try
@@ -186,7 +65,7 @@ void GTPEngine::parse(std::string userInput)
 		game = new GoGame(bsize);
 		LOG_OUT << "= 1";
 	}
-	else if(args[0] == "clear_board")
+	else if(args[0] == GTP_CMD_CLEAR_BOARD)
 	{
 		int size = BOARD_DEFAULT_SIZE;
 		if(game != 0)
@@ -199,42 +78,25 @@ void GTPEngine::parse(std::string userInput)
 		game = new GoGame(size);
 		LOG_OUT << "= 1";
 	}
-	else if(args[0] == "play" || (LogLevel >= DEBUG && args[0] == "p"))
+	else if(args[0] == GTP_CMD_PLAY || (LogLevel >= DEBUG && args[0] == "p"))
 	{
 		if(args[2] != "PASS")
 			game->Play(ColorFromString(args[1]), ColumnStringToInt(args[2].substr(0,1)),
 					RowStringToInt(args[2].substr(1,2)));
 		LOG_OUT << "= 1";
 	}
-	else if(args[0] == "genmove")
+	else if(args[0] == GTP_CMD_GENMOVE)
 	{
-		GoPoint pos = game->GenerateMove(ColorFromString(args[1]));
-		if(pos.x == -1 && pos.y == -1) // Play pass
-		{
-			LOG_OUT << "= PASS";
-			return args;
-		}
-		for(std::vector<GoMove*>::iterator it = genmoves.begin(); it != genmoves.end(); ++it)
-		{
-			if(pos.x == (*it)->Point.x && pos.y == (*it)->Point.y)
-			{
-				LOG_ERROR<<"ERROR IN MOVE GENERATION. MOVE HAS BEEN PLAYED";
-				throw "FUCK THIS I'm OUT";
-			}
-		}
-		LOG_VERBOSE << "Generated move at "<<pos.x<<","<<pos.y;
-		game->Play(pos.color, pos.x,pos.y);
-		genmoves.push_back(new GoMove(ColorFromString(args[1]),pos));
-		LOG_OUT <<"= " << ColumnIntToString(pos.x)<<RowIntToString(pos.y);
+		std::cout<<"Genmove cmd"<<std::endl;
+		return args;
 	}
-	else if(args[0] == "showboard")
+	else if(args[0] == GTP_CMD_SHOW_BOARD)
 	{
 		game->Board->DisplayCurrentState();
 	}
 
-	else if(args[0] == "final_score")
+	else if(args[0] == GTP_CMD_FINAL_SCORE)
 	{
-
 		float score = game->Board->GetScore();
 		char color;
 		if(score > 0)
@@ -249,11 +111,10 @@ void GTPEngine::parse(std::string userInput)
 
 
 	}
-	else if(args[0] == "quit")
+	else if(args[0] == GTP_CMD_QUIT)
 	{
-		_exit(EXIT_SUCCESS);
+		exit(EXIT_SUCCESS);
 	}
->>>>>>> d63b420... Parallelisation now works but is surprisingly slow. refs #27 @3h0
 #ifdef DEBUG_MODE
 	else if(args[0] == "d")
 	{
@@ -285,12 +146,8 @@ void GTPEngine::parse(std::string userInput)
 		LOG_OUT << "= 1";
 	}
 #endif //IFDEF DEBUG_MODE
-<<<<<<< HEAD
   else
     throw Exception("Unknown command");
-
-  //  game->Board->DisplayCurrentState();
-=======
 
 	else
 		LOG_ERROR<<"Unknown GTP command";
@@ -298,7 +155,6 @@ void GTPEngine::parse(std::string userInput)
 	//  game->Board->DisplayCurrentState();
 
 	return args;
->>>>>>> d63b420... Parallelisation now works but is surprisingly slow. refs #27 @3h0
 }
 
 const int GTPEngine::ColumnStringToInt(std::string str) const
@@ -339,7 +195,7 @@ const int GTPEngine::RowStringToInt(std::string str) const
 	return n;
 }
 
-const int GTPEngine::ColorFromString(std::string str) const
+int GTPEngine::ColorFromString(std::string str) const
 {
 	if(str == "w" || str == "W" || str == "white" || str == "WHITE")
 		return S_WHITE;
@@ -359,4 +215,21 @@ const char GTPEngine::ColumnIntToString(int n)
 const int GTPEngine::RowIntToString(int n) 
 {
 	return ++n; //To account for 0-indexed to 1-indexed
+}
+
+const std::string GTPEngine::generateGTPString(GoBoard* board)
+{
+	std::stringstream ss;
+	ss<<"boardsize "<<board->Size()<<"\n";
+	for(int i = 0; i<board->movePointer; ++i)
+	{
+		ss << "play ";
+		if(board->moves[i]->Color == S_BLACK)
+			ss<<"b ";
+		else if(board->moves[i]->Color == S_WHITE)
+			ss<<"w ";
+
+		ss<<board->ReadablePosition(board->moves[i]->Point)<<"\n";
+	}
+	return ss.str();
 }

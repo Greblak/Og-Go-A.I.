@@ -1,3 +1,6 @@
+#ifndef LOG_H_
+#define LOG_H_
+
 #include <iostream>
 #include "Config.h"
 #include <sstream>
@@ -84,3 +87,5 @@ public:
     return ss;
   }
 };
+
+#endif //LOG_H_

@@ -21,11 +21,11 @@ PlayPolicy::~PlayPolicy()
 }
 const std::vector<int> PlayPolicy::FindPossibleLocalMoves(GoBoard* board)
 {
+	this->board = board;
   std::vector<int> moves;
   if(board->movePointer == 0) //No previous moves. No possible local answers
     return moves;
-  int lastPlayed = board->Pos((board->moves[board->movePointer])->Point);
-  //  LOG_VERBOSE<<"LP"<<lastPlayed<<std::endl;
+  int lastPlayed = board->Pos((board->moves[board->movePointer-1])->Point);
   int allLocalMoves[8];
   allLocalMoves[0] = (board->North(lastPlayed));
   allLocalMoves[1] = (board->West(lastPlayed));
@@ -44,20 +44,18 @@ const std::vector<int> PlayPolicy::FindPossibleLocalMoves(GoBoard* board)
           if(board->Occupied(allLocalMoves[i]) && board->State.blockPointers[allLocalMoves[i]]->Liberties() == 1)
             {
               int lib = board->State.blockPointers[allLocalMoves[i]]->LastLiberty();
-              LOG_VERBOSE<<"Found liberty at "<<lib<<std::endl;
               if(lib != -1 && (board->IsLegal(lib, S_BLACK) || board->IsLegal(lib, S_WHITE)))
                 {
                   moves.push_back(lib);
-                  LOG_VERBOSE <<"Lib legal"<<std::endl;
                 }
-
             }
 
           if(board->IsEmpty(allLocalMoves[i]) && board->IsLegal(allLocalMoves[i],board->NextPlayer())  )
             {
-
               if(MatchAny(board,allLocalMoves[i],board->NextPlayer()))
+              {
                 moves.push_back(allLocalMoves[i]);
+              }
             }
           }
     }
@@ -81,7 +79,9 @@ const bool PlayPolicy::MatchAny(GoBoard* board, const int pos, const int color)
       }
 
       if(TestAllHane(board,pos,color,direction) || TestAllCut(board,pos,color,direction)) // && TestAllCut
+      {
         return true;
+      }
     }
   return false;
 }

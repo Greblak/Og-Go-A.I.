@@ -11,7 +11,7 @@
 #include "UpperConfidence.h"
 #include "PipeCommunication.h"
 
-EGTPEngine::EGTPEngine(int outputPipe):aiType(MC),numRandMoves(0),simulations(1000),timeAlloc(-1),writePipe(outputPipe)
+EGTPEngine::EGTPEngine():aiType(MC),numRandMoves(0),simulations(1000),timeAlloc(-1)
 {
 
 }
@@ -21,10 +21,10 @@ EGTPEngine::~EGTPEngine()
 	// TODO Auto-generated destructor stub
 }
 extern int LogLevel;
-std::vector<std::string> EGTPEngine::parse(std::string input)
+std::string EGTPEngine::parse(std::string input)
 {
-
-	LOG_VERBOSE<<"Attempting to parse "<<input<<std::endl;
+	//Only returns in ifs on failure or on special responses. standard ack response returned if nothing else.
+	std::cout<<"Attempting to parse EGTP input "<<input<<std::endl;
 	std::vector<std::string> args;
 	boost::split(args, input,boost::is_any_of( " " ));
 
@@ -32,9 +32,6 @@ std::vector<std::string> EGTPEngine::parse(std::string input)
 	{
 		if(args[1] != "1")
 			_exit(EXIT_FAILURE);
-//			LOG_OUT<<"= 1";
-
-
 	}
 	else if(args[0] == "e_randmoves")
 	{
@@ -57,6 +54,7 @@ std::vector<std::string> EGTPEngine::parse(std::string input)
 	}
 	else if(args[0]=="genmove")
 	{
+		std::cout<<"Got genmove"<<std::endl;
 		GoPoint p;
 		std::vector<UCBrow> ucbr;
 		switch(aiType)
@@ -75,7 +73,6 @@ std::vector<std::string> EGTPEngine::parse(std::string input)
 				UpperConfidence ucb(numRandMoves,simulations);
 				ucbr = ucb.generateUCBTable(ColorFromString(args[1]),game);
 			}
-
 			break;
 									}
 		case(MC):
@@ -86,18 +83,14 @@ std::vector<std::string> EGTPEngine::parse(std::string input)
 									}
 		}
 		std::stringstream ss;
-		ss << "= ";
+		ss << "= ucbtable:";
 		for(int i = 0; i<ucbr.size();++i)
 		{
 			ss<<ucbr[i].pos<<","<<ucbr[i].expected<<","<<ucbr[i].timesPlayed<<";";
 		}
-		ss<<"\n";
-		LOG_VERBOSE<<"UCB done. sending data";
-		int w = PipeCommunication::writePipe(writePipe,ss.str());
-//		close(writePipe);
-		//		std::cout<<"wrote "<<ss.str()<<" "<<w<<std::endl;
 		game->Board->reset();
 		preselRandMoves.clear();
+		return ss.str();
 	}
 	else
 	{
@@ -105,17 +98,15 @@ std::vector<std::string> EGTPEngine::parse(std::string input)
 		LogLevel = SILENT;
 		std::vector<std::string> ret = GTPEngine::parse(input);
 		LogLevel = oldLog;
-		return ret;
 	}
-	return args;
+	return GTP_ACK_RESPONSE;
 }
 
-
-extern int childProcs;
-extern int pipe_child[16][2];
-extern int pipe_parent[16][2];
+/*
 GoPoint EGTPEngine::genMoveFromChildProcs(int color, GoGame* game)
 {
+	time_t timer;
+	time(&timer);
 	for(int i = 0; i<childProcs; ++i)
 	{
 
@@ -198,8 +189,13 @@ GoPoint EGTPEngine::genMoveFromChildProcs(int color, GoGame* game)
 
 		totalSims+=ucbtable[i].timesPlayed;
 	}
-
+	time_t now;
+	time(&now);
+	int perf = (float)totalSims/difftime(now,timer);
+	std::cerr<<perf<<" sims per sec"<<std::endl;
 	LOG_VERBOSE<<"Best move: "<<bestPos<<" based on "<<totalSims<<" simulations"<<std::endl;
 	return game->Board->ReversePos(bestPos,color);
 
 }
+
+*/

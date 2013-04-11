@@ -76,7 +76,7 @@ public:
 		const float GetScore() const; ///< Returns score. Positive score = black win. Negative score = white win
 		const float GetScoreGnuGo() const;
 		const float GetScoreInternal() const;
-		const GoPoint ReversePos(const int pos, const int color);
+		GoPoint ReversePos(const int pos, const int color);
 		const std::string ReadablePosition(const int pos) const;
 		const std::string ReadablePosition(const GoPoint& pos) const;
 
@@ -90,6 +90,7 @@ public:
 		float komi;
 		const int POS_WE;
 		const int POS_NS;
+		void reset();
 		
 private:
 	int BoardSize; ///< Boardsize (19x19 will be stored as 19 here)
@@ -102,7 +103,7 @@ private:
 
 	int nextPlayer;
 
-	void reset();
+
 
 };
 

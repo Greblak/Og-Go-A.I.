@@ -15,32 +15,34 @@ struct UCBrow
 	float expected;
 	int timesPlayed;
 };
+
 class UpperConfidence
 {
 public:
-<<<<<<< HEAD
-  UpperConfidence(int searchWidth, int searchDepth);
-  GoPoint generateMove(int color, GoGame* game);
-=======
 	UpperConfidence(void);
 	UpperConfidence(int randomMoves, int numSimulations);
 	UpperConfidence(std::vector<int> randomMoves, int numSimulations);
+	virtual ~UpperConfidence();
+
 	GoPoint generateMove(int color, GoGame* game);
 	GoPoint generateMove(std::vector<int> preselMoves);
 	std::vector<UCBrow> generateUCBTable(int color, GoGame* game);
-  std::vector<int> getPossibleMoves(int color, GoGame* game);
->>>>>>> d63b420... Parallelisation now works but is surprisingly slow. refs #27 @3h0
-  const float simulateMove(int move);
-  virtual
-  ~UpperConfidence();
+	std::vector<int> getPossibleMoves(int color, GoGame* game);
+	const float simulateMove(int move);
+
+	static std::vector<UCBrow> combineUCBTables(std::vector<UCBrow>& t1, std::vector<UCBrow>& t2); //TODO:: Unit test this!
+	static std::vector<UCBrow> parseUCBTableString(std::string str);
+
+	std::vector<int> moves;
 
 private:
-  const int searchDepth;
-  const int searchWidth;
-  const float expRatio;
-  GoBoard* workingBoard;
-  GoGame* game;
-  int color;
+	const int numSimulations;
+	const int numRandMoves;
+	const float expRatio;
+	std::vector<int> preselRandMoves;
+	GoBoard* workingBoard;
+	GoGame* game;
+	int color;
 
 };
 

@@ -107,9 +107,6 @@ std::vector<std::string> GTPEngine::parse(std::string userInput)
 			score*=-1;
 		}
 		LOG_OUT << "= "<<color<<"+"<<score;
-
-
-
 	}
 	else if(args[0] == GTP_CMD_QUIT)
 	{
@@ -148,9 +145,6 @@ std::vector<std::string> GTPEngine::parse(std::string userInput)
 #endif //IFDEF DEBUG_MODE
   else
     throw Exception("Unknown command");
-
-	else
-		LOG_ERROR<<"Unknown GTP command";
 
 	//  game->Board->DisplayCurrentState();
 

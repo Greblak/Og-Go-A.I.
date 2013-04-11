@@ -130,5 +130,3 @@ int main(int argc, char *argv[])
 	}
 	return initMaster(port);
 }
-
-}

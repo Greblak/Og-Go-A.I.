@@ -66,7 +66,7 @@ void MasterServer::run()
 
 void MasterServer::newConnection(boost::shared_ptr<TCPConnection> conn)
 {
-	std::cout<<"New connection from "<<conn->socket().remote_endpoint().address().to_string()<<std::endl;
+	LOG_VERBOSE<<"New connection from "<<conn->socket().remote_endpoint().address().to_string()<<std::endl;
 	doHandshake(conn);
 	if(conn->socket().is_open())
 	{
@@ -84,7 +84,7 @@ void MasterServer::doHandshake(boost::shared_ptr<TCPConnection> conn)
 	conn->socket().read_some(boost::asio::buffer(buf),ec);
 	if(std::string(buf.data(),strlen(buf.data())) != GTP_ACK_RESPONSE)
 	{
-		std::cout<<"Invalid EGTP version or malformed response. Closing connection"<<std::endl;
+		LOG_DEBUG<<"Invalid EGTP version or malformed response. Closing connection"<<std::endl;
 		conn->socket().close();
 	}
 }
@@ -102,7 +102,7 @@ void MasterServer::writeAll(const std::string str)
 			}
 			catch(char* ex)
 			{
-				std::cout<<ex<<std::endl;
+				LOG_ERROR<<ex<<std::endl;
 			}
 		}
 		else
@@ -123,6 +123,7 @@ const GoPoint MasterServer::generateMove(int color)
 {
 	UpperConfidence ucb;
 	std::vector<int> randMoves = UpperConfidence().getPossibleMoves(color,gtp.game);
+	ucbTable.clear();
 	for(int i = 0; i<randMoves.size(); ++i)
 	{
 		UCBrow r;
@@ -150,7 +151,6 @@ const GoPoint MasterServer::generateMove(int color)
 	for(int j = 0;j<randMoves.size();++j)
 		ss<<" "<<randMoves[j];
 	ss<<"\n";
-	std::cout<<"Sending "<<randMoves.size()<< "moves :"<<ss.str()<<std::endl;
 	writeAll(ss.str());
 	wbuf = "e_useai ucb 0 s 200\ngenmove b";
 	writeAll(wbuf);
@@ -171,10 +171,8 @@ const GoPoint MasterServer::generateMove(int color)
 	int bestPos = -1;
 	float bestExpected = 0;
 	int totalSims = 0;
-	std::cout<<"UCB table size: "<<ucbTable.size()<<std::endl;
 	for(int i = 0; i<ucbTable.size(); ++i)
 	{
-		std::cout<<"P: "<<ucbTable[i].pos<<" E:"<<ucbTable[i].expected<<" N:"<<ucbTable[i].timesPlayed<<std::endl;
 		if(ucbTable[i].expected > bestExpected)
 		{
 
@@ -184,7 +182,7 @@ const GoPoint MasterServer::generateMove(int color)
 
 		totalSims+=ucbTable[i].timesPlayed;
 	}
-	std::cout<<"Best move: "<<bestPos<<" based on "<<totalSims<<" simulations"<<std::endl;
+	LOG_VERBOSE<<"Best move: "<<bestPos<<" based on "<<totalSims<<" simulations"<<std::endl;
 	return gtp.game->Board->ReversePos(bestPos,color);
 
 
@@ -197,36 +195,24 @@ const GoPoint MasterServer::generateMove(int color)
 
 void MasterServer::genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, boost::array<char, 1024>* buf)
 {
-	std::cout<<"async callback"<<std::endl;
 	std::string ucbstring;
-	if(buf->size() == 0 || buf->elems[0] == '\0')
+	if(buf->size() != 0 && buf->elems[0] != '\0')
 	{
-		std::cout<<"Empty buf"<<std::endl;
-	}
-	else
-	{
-		std::cout<<"Buffer has read data!"<<buf->c_array()<<std::endl;
 		ucbstring = std::string(buf->c_array(), strlen(buf->c_array()));
 	}
 	if(!boost::starts_with(ucbstring, "= 1"))
 	{
-		std::cout<<"mutex loop"<<std::endl;
 		while(writingToUcbTable)
 		{
-			std::cout<<"No UCB table consultants are available right now. Please hold while we dig one up"<<std::endl;
+			LOG_VERBOSE<<"No UCB table consultants are available right now. Please hold while we dig one up"<<std::endl;
 		}
-		std::cout<<"EO mutex loop"<<std::endl;
 		writingToUcbTable = true;
-		std::cout<<"Presize"<<ucbTable[0].timesPlayed<<std::endl;
 		std::vector<UCBrow> incomingUCBTable = UpperConfidence::parseUCBTableString(ucbstring);
 		UpperConfidence::combineUCBTables(ucbTable, incomingUCBTable);
-		std::cout<<"Postsize"<<ucbTable[0].timesPlayed<<std::endl;
 		writingToUcbTable = false;
 	}
 	buf->fill('\0');
-	std::cout<<"starting new async read"<<std::endl;
 	conn->socket().async_read_some(boost::asio::buffer(*buf),boost::bind(&MasterServer::genmoveReadCallback,this,conn,buf));
-	std::cout<<"finished reading"<<std::endl;
 }
 
 void MasterServer::writeHandler()

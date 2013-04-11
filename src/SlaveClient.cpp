@@ -52,7 +52,7 @@ void SlaveClient::run()
 	//	    socket.write_
 
 	EGTPEngine egtp;
-	std::cout<<"Starting slave"<<std::endl;
+	LOG_VERBOSE<<"Starting slave"<<std::endl;
 	while(true)
 	{
 		boost::array<char, SLAVE_BUFFER_MAX_SIZE> buf;
@@ -70,7 +70,7 @@ void SlaveClient::run()
 		{
 			if(std::string(buf.data(),bufsize) == EGTP_HANDSHAKE)
 			{
-				std::cout<<"Got handshake, approved. Sending response"<<std::endl;
+				LOG_DEBUG<<"Got handshake, approved. Sending response"<<std::endl;
 				socket.write_some(boost::asio::buffer(GTP_ACK_RESPONSE));
 			}
 			else
@@ -90,6 +90,6 @@ void SlaveClient::run()
 		}
 		usleep(100);
 	}
-	std::cout<<"Exiting"<<std::endl;
+	std::cout<<"No more work. Exiting"<<std::endl;
 }
 

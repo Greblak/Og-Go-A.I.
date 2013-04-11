@@ -198,17 +198,7 @@ const float UpperConfidence::simulateMove(int move)
 }
 
 std::vector<UCBrow> UpperConfidence::combineUCBTables(std::vector<UCBrow>& t1, std::vector<UCBrow>& t2){
-	std::cout<<"Combining tables of size: "<<t1.size()<<" "<<t2.size()<<std::endl;
-	for(int i = 0; i<t1.size(); ++i)
-	{
-		std::cout<<t1[i].pos<<" ";
-	}
-	std::cout<<std::endl;
-	for(int i = 0; i<t2.size(); ++i)
-	{
-		std::cout<<t2[i].pos<<" ";
-	}
-	std::cout<<std::endl;
+
 	for(std::vector<UCBrow>::iterator it1 = t1.begin(); it1 != t1.end(); ++it1)
 	{
 		//		std::cout<<"--------"<<(*it1).pos<<std::endl;
@@ -221,13 +211,6 @@ std::vector<UCBrow> UpperConfidence::combineUCBTables(std::vector<UCBrow>& t1, s
 						(((*it1).expected*(*it1).timesPlayed)+((*it2).expected*(*it2).timesPlayed))/
 						((*it1).timesPlayed+(*it2).timesPlayed);
 				(*it1).timesPlayed+= (*it2).timesPlayed;
-				//				std::cout<<"P1: "<< (*it1).pos<<std::endl;
-				//				std::cout<<"P2: "<< (*it2).pos<<std::endl;
-				//				std::cout<<"E1: "<< (*it1).expected<<std::endl;
-				//				std::cout<<"E2: "<< (*it2).expected<<std::endl;
-				//				std::cout<<"N1: "<< (*it1).timesPlayed<<std::endl;
-				//				std::cout<<"N2: "<< (*it2).timesPlayed<<std::endl;
-
 			}
 		}
 	}
@@ -240,17 +223,14 @@ std::vector<UCBrow> UpperConfidence::parseUCBTableString(std::string str)
 	std::vector<std::string> args;
 	boost::split(args, str,boost::is_any_of( ":" ));
 	std::string ucbrstr = args[1];
-	std::cout<<"Trying to parce UCB string: "<<ucbrstr<<std::endl;
 	args.clear();
 	boost::split(args, ucbrstr,boost::is_any_of( ";" ));
-	std::cout<<"Split UCB string into "<<args.size()<<" rows"<<std::endl;
 	for(int j = 0; j<args.size(); ++j)
 	{
 		std::vector<std::string> row;
 		boost::split(row, args[j],boost::is_any_of( "," ));
 		if(row.size()==3)
 		{
-			std::cout<<"Attempting to parse "<<row[0]<<" "<<row[1]<<" "<<row[2]<<std::endl;
 			UCBrow u;
 			u.pos = atoi(row[0].c_str());
 			u.expected = atof(row[1].c_str());

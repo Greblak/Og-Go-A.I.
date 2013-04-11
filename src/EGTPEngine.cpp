@@ -24,7 +24,7 @@ extern int LogLevel;
 std::string EGTPEngine::parse(std::string input)
 {
 	//Only returns in ifs on failure or on special responses. standard ack response returned if nothing else.
-	std::cout<<"Attempting to parse EGTP input "<<input<<std::endl;
+	LOG_VERBOSE<<"Attempting to parse EGTP input "<<input<<std::endl;
 	std::vector<std::string> args;
 	boost::split(args, input,boost::is_any_of( " " ));
 
@@ -54,7 +54,7 @@ std::string EGTPEngine::parse(std::string input)
 	}
 	else if(args[0]=="genmove")
 	{
-		std::cout<<"Got genmove"<<std::endl;
+		LOG_VERBOSE<<"Got genmove"<<std::endl;
 		GoPoint p;
 		std::vector<UCBrow> ucbr;
 		switch(aiType)

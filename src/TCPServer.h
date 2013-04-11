@@ -35,7 +35,7 @@ private:
 
 	inline void handle_write()
 	{
-		std::cout<<"Handle write called";
+//		std::cout<<"Handle write called";
 	}
 
 	boost::asio::ip::tcp::socket socket_;

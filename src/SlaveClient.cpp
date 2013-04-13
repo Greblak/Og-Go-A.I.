@@ -11,6 +11,7 @@
 #include "EGTPEngine.h"
 #include "SlaveClient.h"
 #include "Log.h"
+#include "Exception.h"
 
 SlaveClient::SlaveClient(std::string ip, int port):socket(io_service) {
   LOG_VERBOSE << "Attempting to connect to "<<ip<<":"<<port;
@@ -91,6 +92,10 @@ void SlaveClient::run()
       catch (std::exception& e)
 	{
 	  std::cerr << e.what() << std::endl;
+	}
+      catch (Exception& e)
+	{
+	  std::cerr << e.getMessage() << std::endl;
 	}
 
       usleep(100);

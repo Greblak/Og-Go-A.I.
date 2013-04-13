@@ -19,30 +19,41 @@
 #include "GTPEngine.h"
 #include "Exception.h"
 #include "UpperConfidence.h"
+
 MasterServer::MasterServer(int port):tcp_server(io_service,port,boost::bind(&MasterServer::newConnection,this, _1)),writingToUcbTable(false)
 {
-
-  try
-    {
-      boost::thread workerThread(boost::bind(&boost::asio::io_service::run, &io_service));
-    }
-  catch (std::exception& e)
-    {
-      LOG_ERROR << e.what() << std::endl;
-    }
+  
 }
-
 MasterServer::~MasterServer() {
   io_service.stop();
 }
 
+void MasterServer::ioServiceStarter()
+{
+
+  try
+    {
+      io_service.run();
+    }
+  catch (std::exception& e)
+    {
+      std::cout <<"Exception from io service: "<< e.what() << std::endl;
+    }
+
+}
+
 void MasterServer::run()
 {
+
+  boost::thread workerThread(boost::bind(&MasterServer::ioServiceStarter,this));
+
   while(true)
     {
       try
 	{
 	  std::string userInput;
+	  if(!std::cin.good())
+	    std::cout<<"Bad!"<<std::endl;
 	  std::getline(std::cin, userInput);
 	  std::vector<std::string> args = gtp.parse(userInput);
 	  if(args[0] == "genmove")

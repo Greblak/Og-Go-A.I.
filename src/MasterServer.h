@@ -41,6 +41,7 @@ public:
 	boost::asio::io_service io_service;
 	TCPServer tcp_server;
 private:
+	void ioServiceStarter();
 	SocketVector sockets;
 	SocketReadVector socketreads;
 	GTPEngine gtp;

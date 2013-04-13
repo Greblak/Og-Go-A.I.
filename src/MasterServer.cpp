@@ -1,4 +1,4 @@
-/*
+9/*
  * MasterServer.cpp
  *
  *  Created on: Apr 6, 2013
@@ -20,7 +20,7 @@
 #include "Exception.h"
 #include "UpperConfidence.h"
 
-MasterServer::MasterServer(int port):tcp_server(io_service,port,boost::bind(&MasterServer::newConnection,this, _1)),writingToUcbTable(false)
+MasterServer::MasterServer(int port):tcp_server(io_service,port,boost::bind(&MasterServer::newConnection,this, _1)),writingToUcbTable(false),genmoveResponses(0),genmoveResponseWait(false)
 {
   
 }
@@ -60,6 +60,7 @@ void MasterServer::run()
 	    {
 	      GoPoint p = generateMove(gtp.ColorFromString(args[1]));
 	      LOG_OUT<< "= "<<gtp.game->Board->ReadablePosition(gtp.game->Board->Pos(p));
+	      gtp.game->Play(p.color, p.x, p.y);
 	    }
 	}
       catch( const char * str )
@@ -132,8 +133,12 @@ void MasterServer::write(boost::shared_ptr<TCPConnection> conn, const std::strin
 
 const GoPoint MasterServer::generateMove(int color)
 {
+  genmoveResponses = 0;
+  genmoveResponseWait = true;
   UpperConfidence ucb;
-  std::vector<int> randMoves = UpperConfidence().getPossibleMoves(color,gtp.game);
+
+  //Prepare new ucb-table
+  std::vector<int> randMoves = ucb.getPossibleMoves(color,gtp.game);
   ucbTable.clear();
   for(int i = 0; i<randMoves.size(); ++i)
     {
@@ -155,6 +160,7 @@ const GoPoint MasterServer::generateMove(int color)
       writeAll(ss.str());
     }
 
+  //Prepare string for slave writing
   std::string wbuf = GTPEngine::generateGTPString(gtp.game->Board);
   writeAll(wbuf);
   std::stringstream ss;
@@ -162,9 +168,10 @@ const GoPoint MasterServer::generateMove(int color)
   for(int j = 0;j<randMoves.size();++j)
     ss<<" "<<randMoves[j];
   ss<<"\n";
+  char col = color == S_BLACK ? 'b' : 'w';
+  ss<<"e_useai ucb 0 s 200\ngenmove "<<col<<"\n";
   writeAll(ss.str());
-  wbuf = "e_useai ucb 0 s 200\ngenmove b";
-  writeAll(wbuf);
+
 
   int moveNumber = gtp.game->Board->movePointer; //Implement to prevent race conditions
 
@@ -177,7 +184,10 @@ const GoPoint MasterServer::generateMove(int color)
       (*it)->socket().async_read_some(boost::asio::buffer(*buf),boost::bind(&MasterServer::genmoveReadCallback,this,(*it),buf));
     }
 
-  sleep(10);
+  while(genmoveResponseWait)
+    {
+      usleep(100);
+    }
 
   int bestPos = -1;
   float bestExpected = 0;
@@ -210,24 +220,29 @@ void MasterServer::genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, bo
   if(buf->size() != 0 && buf->elems[0] != '\0')
     {
       input = std::string(buf->c_array(), strlen(buf->c_array()));
-    }
-  if(!boost::starts_with(input, "= 1"))
-    {
-      //Parse input and confirm UCB table
-      if(input.find("= ucbtable:") != std::string::npos)
+    
+      if(!boost::starts_with(input, "= 1"))
 	{
-	  while(writingToUcbTable)
+	  //Parse input and confirm UCB table
+	  if(input.find("= ucbtable:") != std::string::npos)
 	    {
-	      LOG_VERBOSE<<"No UCB table consultants are available right now. Please hold while we dig one up"<<std::endl;
+	      while(writingToUcbTable)
+		{
+		  LOG_VERBOSE<<"No UCB table consultants are available right now. Please hold while we dig one up"<<std::endl;
+		}
+	      writingToUcbTable = true;
+	      std::vector<UCBrow> incomingUCBTable = UpperConfidence::parseUCBTableString(input);
+	      UpperConfidence::combineUCBTables(ucbTable, incomingUCBTable);
+	      writingToUcbTable = false;
+	      ++genmoveResponses;
+	      std::cout<<genmoveResponses<< " "<<sockets.size()<<std::endl;
+	      if(genmoveResponses>=sockets.size())
+		genmoveResponseWait = false;
 	    }
-	  writingToUcbTable = true;
-	  std::vector<UCBrow> incomingUCBTable = UpperConfidence::parseUCBTableString(input);
-	  UpperConfidence::combineUCBTables(ucbTable, incomingUCBTable);
-	  writingToUcbTable = false;
 	}
+      buf->fill('\0');
+      conn->socket().async_read_some(boost::asio::buffer(*buf),boost::bind(&MasterServer::genmoveReadCallback,this,conn,buf));
     }
-  buf->fill('\0');
-  conn->socket().async_read_some(boost::asio::buffer(*buf),boost::bind(&MasterServer::genmoveReadCallback,this,conn,buf));
 }
 
 void MasterServer::writeHandler()

@@ -47,6 +47,8 @@ private:
 	GTPEngine gtp;
 	std::vector<UCBrow> ucbTable;
 	bool writingToUcbTable;
+	int genmoveResponses;
+	bool genmoveResponseWait;
 };
 
 #endif /* MASTERSERVER_H_ */

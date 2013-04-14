@@ -29,12 +29,12 @@ const int 			NO_KO_POINT = -1; ///< Defines the KO position. -1 when ko rule doe
  * Sets the logging levels for the Log-class. ERROR by default.
  */
 enum LoggingLevels
-{
-	SILENT= 0,
-	ERROR,
-	DEBUG,
-	VERBOSE
-};
+  {
+    SILENT = 0,
+    ERROR,
+    DEBUG,
+    VERBOSE
+  };
 
 #endif //#ifndef __CONFIG_H__
 

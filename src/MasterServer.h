@@ -53,6 +53,7 @@ private:
 	int genmoveResponses;
 	bool genmoveResponseWait;
 	int genmoveTimeoutMilliSec;
+	GoPoint bestMove;
 };
 
 #endif /* MASTERSERVER_H_ */

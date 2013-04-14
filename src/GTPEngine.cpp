@@ -81,8 +81,7 @@ std::vector<std::string> GTPEngine::parse(std::string userInput)
 	else if(args[0] == GTP_CMD_PLAY || (LogLevel >= DEBUG && args[0] == "p"))
 	{
 		if(args[2] != "PASS")
-			game->Play(ColorFromString(args[1]), ColumnStringToInt(args[2].substr(0,1)),
-					RowStringToInt(args[2].substr(1,2)));
+		  game->Play(ColorFromString(args[1]), ColumnStringToInt(args[2].substr(0,1)), RowStringToInt(args[2].substr(1,2)));
 		LOG_OUT << "= 1";
 	}
 	else if(args[0] == GTP_CMD_GENMOVE)
@@ -173,20 +172,23 @@ const int GTPEngine::ColumnStringToInt(std::string str) const
 
 const int GTPEngine::RowStringToInt(std::string str) const
 {
-	int n = (str[0] - GTP_OFFSET_NUM);
-	if(n>9)
-		throw Exception("Invalid row input");
-	if(str[1] != 0)
-	{
-		n*=10;
-		n+= str[1] - GTP_OFFSET_NUM;
-	}
-	n--;
+  int i = 0;
+  if(str[i] >= GTP_OFFSET_NUM+10) //Column first. use next
+    ++i;
+  int n = (str[i] - GTP_OFFSET_NUM);
+  if(n>game->Board->Size())
+    throw Exception("Invalid row input");
+  if(str[i+1] != 0)
+    {
+      n*=10;
+      n+= str[i+1] - GTP_OFFSET_NUM;
+    }
+  n--;
 
-	if(n < 0 || n >= BOARD_MAX_SIZE)
-		throw Exception("Invalid row number");
-
-	return n;
+  if(n < 0 || n >= BOARD_MAX_SIZE)
+    throw Exception("Invalid row number");
+  
+  return n;
 }
 
 int GTPEngine::ColorFromString(std::string str) const

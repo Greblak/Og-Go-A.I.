@@ -7,7 +7,7 @@ const int GTP_OFFSET_UPPERCASE_A = 65; //Makes col A 0-indexed
 const int GTP_OFFSET_I = 8; //Offset to handle the missing I
 const int GTP_OFFSET_LOWERCASE_A = 97; //Makes col a 0-indexed
 const int 	GTP_OFFSET_NUM = 48; //Makes row 1 0-indexed
-const std::string GTP_ACK_RESPONSE = "= 1";
+const std::string GTP_ACK_RESPONSE = "= 1\n";
 const std::string GTP_CMD_PLAY = "play";
 const std::string GTP_CMD_BOARDSIZE = "boardsize";
 const std::string GTP_CMD_CLEAR_BOARD = "clear_board";

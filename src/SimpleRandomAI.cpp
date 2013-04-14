@@ -12,13 +12,12 @@
 #include "GoPoint.h"
 SimpleRandomAI::SimpleRandomAI()
 {
-  // TODO Auto-generated constructor stub
 
 }
 
 SimpleRandomAI::~SimpleRandomAI()
 {
-  // TODO Auto-generated destructor stub
+
 }
 
 GoPoint SimpleRandomAI::generateMove(const int color, GoGame* Game)

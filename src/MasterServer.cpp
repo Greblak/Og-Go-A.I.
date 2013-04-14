@@ -8,19 +8,21 @@
 #include <ctime>
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/asio.hpp>
+#include <boost/array.hpp>
 #include "MasterServer.h"
 #include "TCPServer.h"
 #include "Log.h"
 #include "EGTPEngine.h"
-#include <boost/algorithm/string.hpp>
-#include <boost/bind.hpp>
-#include <boost/asio.hpp>
-#include <boost/array.hpp>
 #include "GTPEngine.h"
 #include "Exception.h"
 #include "UpperConfidence.h"
 
-MasterServer::MasterServer(int port):tcp_server(io_service,port,boost::bind(&MasterServer::newConnection,this, _1)),writingToUcbTable(false),genmoveResponses(0),genmoveResponseWait(false),genmoveTimeoutMilliSec(10*1000)
+extern std::string AI_CONFIG;
+extern int AI_TYPE;
+
+MasterServer::MasterServer(int port):tcp_server(io_service,port,boost::bind(&MasterServer::newConnection,this, _1)),writingToUcbTable(false),genmoveResponses(0),genmoveResponseWait(false),genmoveTimeoutMilliSec(10*1000),bestMove(-1,-1,NONE)
 {
   
 }
@@ -135,6 +137,8 @@ const GoPoint MasterServer::generateMove(int color)
 {
   genmoveResponses = 0;
   genmoveResponseWait = true;
+  bestMove = GoPoint(-1,-1,NONE);
+
   UpperConfidence ucb;
 
   //Prepare new ucb-table
@@ -169,8 +173,10 @@ const GoPoint MasterServer::generateMove(int color)
     ss<<" "<<randMoves[j];
   ss<<"\n";
   char col = color == S_BLACK ? 'b' : 'w';
-  ss<<"e_useai ucb 0 s 200\ngenmove "<<col<<"\n";
+  ss<<"e_useai "<<AI_CONFIG<<"\ngenmove "<<col<<"\n";
   writeAll(ss.str());
+
+  std::cout <<ss.str()<<std::endl;
 
 
   int moveNumber = gtp.game->Board->movePointer; //Implement to prevent race conditions
@@ -194,57 +200,87 @@ const GoPoint MasterServer::generateMove(int color)
     }
 
   int bestPos = -1;
+
   float bestExpected = 0;
   int totalSims = 0;
-  for(int i = 0; i<ucbTable.size(); ++i)
+    
+  if(AI_TYPE != RAN)
     {
-      if(ucbTable[i].expected > bestExpected)
+      for(int i = 0; i<ucbTable.size(); ++i)
 	{
+	  if(ucbTable[i].expected > bestExpected)
+	    {
 
-	  bestExpected = ucbTable[i].expected;
-	  bestPos = ucbTable[i].pos;
+	      bestExpected = ucbTable[i].expected;
+	      bestPos = ucbTable[i].pos;
+	    }
+
+	  totalSims+=ucbTable[i].timesPlayed;
 	}
-
-      totalSims+=ucbTable[i].timesPlayed;
+      LOG_VERBOSE<<"Best move: "<<bestPos<<" based on "<<totalSims<<" simulations"<<std::endl;
+      std::cout<<"Sockets connected: "<<sockets.size()<<std::endl;
+      bestMove = gtp.game->Board->ReversePos(bestPos,color);
+     
+      //LOG_OUT <<"= " << gtp.game->Board->ReadablePosition(pos);
     }
-  LOG_VERBOSE<<"Best move: "<<bestPos<<" based on "<<totalSims<<" simulations"<<std::endl;
-  std::cout<<"Sockets connected: "<<sockets.size()<<std::endl;
-  GoPoint pos = gtp.game->Board->ReversePos(bestPos,color);
-  gtp.game->Play(pos.color, pos.x,pos.y);
-  //LOG_OUT <<"= " << gtp.game->Board->ReadablePosition(pos);
-
-  return pos;
+  else if(AI_TYPE == RAN)
+    {
+      //Do nothing, handled by async call 
+    }
+  gtp.game->Play(bestMove.color, bestMove.x,bestMove.y);
+  return bestMove;
 }
 
 void MasterServer::genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, boost::array<char, 1024>* buf)
 {
-  std::string input;
-  if(buf->size() != 0 && buf->elems[0] != '\0')
+
+  std::string input; 
+  std::vector<std::string> responses;
+  input = std::string(buf->c_array(), strlen(buf->c_array()));
+  boost::split(responses, input,boost::is_any_of("\n"));
+  for(std::vector<std::string>::const_iterator it = responses.begin(); it != responses.end(); ++it)
     {
-      input = std::string(buf->c_array(), strlen(buf->c_array()));
-    
-      if(!boost::starts_with(input, "= 1"))
+      std::string input = (*it);
+      if(strlen(input.c_str()) != 0)
 	{
-	  //Parse input and confirm UCB table
-	  if(input.find("= ucbtable:") != std::string::npos)
+	  if(!boost::starts_with(input, "= 1"))
 	    {
-	      while(writingToUcbTable)
+	      //Parse input and confirm UCB table
+	      if(input.find("= ucbtable:") != std::string::npos)
 		{
-		  LOG_VERBOSE<<"No UCB table consultants are available right now. Please hold while we dig one up"<<std::endl;
+		  while(writingToUcbTable)
+		    {
+		      LOG_VERBOSE<<"No UCB table consultants are available right now. Please hold while we dig one up"<<std::endl;
+		    }
+		  writingToUcbTable = true;
+		  std::vector<UCBrow> incomingUCBTable = UpperConfidence::parseUCBTableString(input);
+		  UpperConfidence::combineUCBTables(ucbTable, incomingUCBTable);
+		  writingToUcbTable = false;
+		  ++genmoveResponses;
+		  std::cout<<genmoveResponses<< " "<<sockets.size()<<std::endl;
+		  if(genmoveResponses>=sockets.size())
+		    genmoveResponseWait = false;
 		}
-	      writingToUcbTable = true;
-	      std::vector<UCBrow> incomingUCBTable = UpperConfidence::parseUCBTableString(input);
-	      UpperConfidence::combineUCBTables(ucbTable, incomingUCBTable);
-	      writingToUcbTable = false;
-	      ++genmoveResponses;
-	      std::cout<<genmoveResponses<< " "<<sockets.size()<<std::endl;
-	      if(genmoveResponses>=sockets.size())
-		genmoveResponseWait = false;
+	      else if(input.find("= rand:") != std::string::npos) //Random ai used
+		{
+		  std::string pos = input.substr(7);
+		  const int x = gtp.ColumnStringToInt(pos);
+		  const int y = gtp.RowStringToInt(pos);
+		  bestMove.x = x;
+		  bestMove.y = y;
+		  bestMove.color = NONE;
+		  genmoveResponseWait = false;
+		}
+	      else
+		{
+		  std::cout<<"unable to parse input: "<<input<<std::endl;
+		}
 	    }
+	  buf->fill('\0');
+	  conn->socket().async_read_some(boost::asio::buffer(*buf),boost::bind(&MasterServer::genmoveReadCallback,this,conn,buf));
 	}
-      buf->fill('\0');
-      conn->socket().async_read_some(boost::asio::buffer(*buf),boost::bind(&MasterServer::genmoveReadCallback,this,conn,buf));
     }
+    
 }
 
 void MasterServer::writeHandler()
@@ -254,18 +290,18 @@ void MasterServer::writeHandler()
 
 void MasterServer::checkDeadConnections()
 {
-//  for(SocketVector::iterator it = sockets.begin(); it != sockets.end; ++it)
-//    {
-//      (*it).write_some(boost::asio::buffer("e_ping\n"));
-//      boost::array<char, MASTER_BUFFER_MAX_SIZE> buf;
-//      sleep(5);
-//      (*it).read_some(boost::asio::buffer(buf));		       
-//      if(std::string(buf.data(),strlen(buf.data())) != GTP_ACK_RESPONSE)
-//	{
-//	  std::cout<<"Connection to socket timed out."<<std::endl;
-//	  it = sockets.erase(it);
-//	}
-//
-//    }
+  //  for(SocketVector::iterator it = sockets.begin(); it != sockets.end; ++it)
+  //    {
+  //      (*it).write_some(boost::asio::buffer("e_ping\n"));
+  //      boost::array<char, MASTER_BUFFER_MAX_SIZE> buf;
+  //      sleep(5);
+  //      (*it).read_some(boost::asio::buffer(buf));		       
+  //      if(std::string(buf.data(),strlen(buf.data())) != GTP_ACK_RESPONSE)
+  //	{
+  //	  std::cout<<"Connection to socket timed out."<<std::endl;
+  //	  it = sockets.erase(it);
+  //	}
+  //
+  //    }
 }
 

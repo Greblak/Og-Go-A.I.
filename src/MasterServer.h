@@ -38,6 +38,8 @@ public:
 	void writeAll(const std::string str);
 	const GoPoint generateMove(int color);
 	void genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, boost::array<char, 1024>* buf);
+	void setTimeout(int seconds);
+
 	boost::asio::io_service io_service;
 	TCPServer tcp_server;
 private:
@@ -50,7 +52,7 @@ private:
 	bool writingToUcbTable;
 	int genmoveResponses;
 	bool genmoveResponseWait;
-
+	int genmoveTimeoutMilliSec;
 };
 
 #endif /* MASTERSERVER_H_ */

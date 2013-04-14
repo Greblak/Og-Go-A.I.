@@ -20,7 +20,7 @@
 #include "Exception.h"
 #include "UpperConfidence.h"
 
-MasterServer::MasterServer(int port):tcp_server(io_service,port,boost::bind(&MasterServer::newConnection,this, _1)),writingToUcbTable(false),genmoveResponses(0),genmoveResponseWait(false)
+MasterServer::MasterServer(int port):tcp_server(io_service,port,boost::bind(&MasterServer::newConnection,this, _1)),writingToUcbTable(false),genmoveResponses(0),genmoveResponseWait(false),genmoveTimeoutMilliSec(10*1000)
 {
   
 }
@@ -183,11 +183,12 @@ const GoPoint MasterServer::generateMove(int color)
       //		socketreads.push_back(buf);
       (*it)->socket().async_read_some(boost::asio::buffer(*buf),boost::bind(&MasterServer::genmoveReadCallback,this,(*it),buf));
     }
-  int timeout = 100;
+  int timestep = 100; //0.1 sec
+  int timeout = genmoveTimeoutMilliSec;
   while(genmoveResponseWait)
     {
-      usleep(100000);
-      --timeout;
+      usleep(1000*timestep);
+      timeout -= timestep;
       if(timeout == 0)
 	break;
     }

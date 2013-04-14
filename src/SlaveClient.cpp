@@ -8,6 +8,7 @@
 #include <boost/asio.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/asio/io_service.hpp>
+#include <boost/bind.hpp>
 #include "EGTPEngine.h"
 #include "SlaveClient.h"
 #include "Log.h"
@@ -37,6 +38,7 @@ SlaveClient::SlaveClient(std::string ip, int port):socket(io_service) {
     {
       std::cerr << e.what() << std::endl;
     }
+
 }
 
 SlaveClient::~SlaveClient() 
@@ -46,60 +48,50 @@ SlaveClient::~SlaveClient()
 
 void SlaveClient::run()
 {
-
-  //	    socket.write_
-
-  EGTPEngine egtp;
   LOG_VERBOSE<<"Starting slave"<<std::endl;
-  while(true)
+  try
     {
-      try
-	{
-	  boost::array<char, SLAVE_BUFFER_MAX_SIZE> buf;
-	  buf.fill('\0');
-	  boost::system::error_code error;
-	  size_t len = socket.read_some(boost::asio::buffer(buf), error);
-	  if (error && error != boost::asio::error::eof)
-	    {
-	      LOG_ERROR<<"Socket error: "<<error.message()<<std::endl;
-	      socket.close();
-	      return;
-	    }
-	  size_t bufsize = strlen(buf.data());
-	  if(bufsize>0)
-	    {
-	      if(std::string(buf.data(),bufsize) == EGTP_HANDSHAKE)
-		{
-		  LOG_DEBUG<<"Got handshake, approved. Sending response"<<std::endl;
-		  socket.write_some(boost::asio::buffer(GTP_ACK_RESPONSE));
-		}
-	      else
-		{
-		  std::string input = std::string(buf.data(),bufsize);
-		  std::cout<<"Got input: "<<input<<std::endl;
-		  std::vector<std::string> cmds;
-		  boost::split(cmds,input, boost::is_any_of( "\n" ));
-		  for(std::vector<std::string>::iterator it = cmds.begin(); it != cmds.end(); ++it)
-		    {
-		      std::string output = egtp.parse(*it);
-		      std::cout<<"Sending back: "<<output<<std::endl;
-		      socket.write_some(boost::asio::buffer(output));
-		    }
-
-		}
-	    }
-	}
-      catch (std::exception& e)
-	{
-	  std::cerr << e.what() << std::endl;
-	}
-      catch (Exception& e)
-	{
-	  std::cerr << e.getMessage() << std::endl;
-	}
-
-      usleep(100);
+      boost::array<char, SLAVE_BUFFER_MAX_SIZE>* buf = new boost::array<char,SLAVE_BUFFER_MAX_SIZE>();
+      buf->fill('\0');
+      socket.async_read_some(boost::asio::buffer(*buf),boost::bind(&SlaveClient::asyncReadCallback,this,buf));
+      io_service.run();
     }
-  std::cout<<"No more work. Exiting"<<std::endl;
+  catch (std::exception& e)
+    {
+      std::cerr <<"STD EX"<< e.what() << std::endl;
+    }
+  catch (Exception& e)
+    {
+      std::cerr <<"PERS EX"<< e.getMessage() << std::endl;
+    }
 }
 
+void SlaveClient::asyncReadCallback(boost::array<char, SLAVE_BUFFER_MAX_SIZE>* buf)
+{
+  size_t bufsize = strlen(buf->data());
+  if(bufsize>0)
+    {
+      std::cout<<"Got: "<<buf->data()<<std::endl;
+      if(std::string(buf->data(),bufsize) == EGTP_HANDSHAKE)
+	{
+	  LOG_DEBUG<<"Got handshake, approved. Sending response"<<std::endl;
+	  socket.write_some(boost::asio::buffer(GTP_ACK_RESPONSE));
+	}
+      else
+	{
+	  std::string input = std::string(buf->data(),bufsize);
+	  std::cout<<"Got input: "<<input<<std::endl;
+	  std::vector<std::string> cmds;
+	  boost::split(cmds,input, boost::is_any_of( "\n" ));
+	  for(std::vector<std::string>::iterator it = cmds.begin(); it != cmds.end(); ++it)
+	    {
+	      if(strlen((*it).c_str()) == 0)
+		continue;
+	      std::string output = egtp.parse(*it);
+	      std::cout<<"Sending back: "<<output<<std::endl;
+	      socket.write_some(boost::asio::buffer(output));
+	    }
+	}
+      socket.async_read_some(boost::asio::buffer(*buf),boost::bind(&SlaveClient::asyncReadCallback,this,buf));
+    }
+}

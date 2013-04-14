@@ -17,9 +17,11 @@ public:
 	SlaveClient(std::string ip, int port);
 	virtual ~SlaveClient();
 	void run();
+	void asyncReadCallback(boost::array<char, SLAVE_BUFFER_MAX_SIZE>* buf);
 private:
 	boost::asio::io_service io_service;
 	boost::asio::ip::tcp::socket socket;
+	EGTPEngine egtp;
 };
 
 #endif /* SLAVECLIENT_H_ */

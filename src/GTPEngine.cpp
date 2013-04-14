@@ -32,7 +32,7 @@ GTPEngine::~GTPEngine()
 
 std::vector<std::string> GTPEngine::parse(std::string userInput)
 {
-	LOG_VERBOSE << "Parsing GTP Command # "<<++commandNum;
+  std::cout << "Parsing GTP Command # "<<++commandNum<<" "<<userInput;
 	std::vector<std::string> args;
 	boost::split(args, userInput,boost::is_any_of( " " ));
 

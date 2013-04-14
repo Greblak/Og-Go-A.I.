@@ -1,4 +1,4 @@
-9/*
+/*
  * MasterServer.cpp
  *
  *  Created on: Apr 6, 2013
@@ -183,10 +183,13 @@ const GoPoint MasterServer::generateMove(int color)
       //		socketreads.push_back(buf);
       (*it)->socket().async_read_some(boost::asio::buffer(*buf),boost::bind(&MasterServer::genmoveReadCallback,this,(*it),buf));
     }
-
+  int timeout = 100;
   while(genmoveResponseWait)
     {
-      usleep(100);
+      usleep(100000);
+      --timeout;
+      if(timeout == 0)
+	break;
     }
 
   int bestPos = -1;
@@ -204,12 +207,10 @@ const GoPoint MasterServer::generateMove(int color)
       totalSims+=ucbTable[i].timesPlayed;
     }
   LOG_VERBOSE<<"Best move: "<<bestPos<<" based on "<<totalSims<<" simulations"<<std::endl;
-  return gtp.game->Board->ReversePos(bestPos,color);
-
-
-  GoPoint pos;
+  std::cout<<"Sockets connected: "<<sockets.size()<<std::endl;
+  GoPoint pos = gtp.game->Board->ReversePos(bestPos,color);
   gtp.game->Play(pos.color, pos.x,pos.y);
-  LOG_OUT <<"= " << gtp.game->Board->ReadablePosition(pos);
+  //LOG_OUT <<"= " << gtp.game->Board->ReadablePosition(pos);
 
   return pos;
 }
@@ -250,4 +251,20 @@ void MasterServer::writeHandler()
   //	std::cout<<"Written async"<<std::endl;
 }
 
+void MasterServer::checkDeadConnections()
+{
+//  for(SocketVector::iterator it = sockets.begin(); it != sockets.end; ++it)
+//    {
+//      (*it).write_some(boost::asio::buffer("e_ping\n"));
+//      boost::array<char, MASTER_BUFFER_MAX_SIZE> buf;
+//      sleep(5);
+//      (*it).read_some(boost::asio::buffer(buf));		       
+//      if(std::string(buf.data(),strlen(buf.data())) != GTP_ACK_RESPONSE)
+//	{
+//	  std::cout<<"Connection to socket timed out."<<std::endl;
+//	  it = sockets.erase(it);
+//	}
+//
+//    }
+}
 

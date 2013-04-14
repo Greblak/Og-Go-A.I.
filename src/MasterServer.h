@@ -41,6 +41,7 @@ public:
 	boost::asio::io_service io_service;
 	TCPServer tcp_server;
 private:
+	void checkDeadConnections();
 	void ioServiceStarter();
 	SocketVector sockets;
 	SocketReadVector socketreads;
@@ -49,6 +50,7 @@ private:
 	bool writingToUcbTable;
 	int genmoveResponses;
 	bool genmoveResponseWait;
+
 };
 
 #endif /* MASTERSERVER_H_ */

@@ -52,6 +52,10 @@ std::string EGTPEngine::parse(std::string input)
 		}
 		numRandMoves= atoi(args[2].c_str());
 	}
+	else if(args[0]=="e_ping")
+	  {
+	    //Simply return ack response. No effect. Used to check alive connection
+	  }
 	else if(args[0]=="genmove")
 	{
 		LOG_VERBOSE<<"Got genmove"<<std::endl;

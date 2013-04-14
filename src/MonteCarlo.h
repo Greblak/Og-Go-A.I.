@@ -12,19 +12,21 @@
 #include "GoGame.h"
 #include "GoBoard.h"
 #include "SimpleRandomAI.h"
+#include "UpperConfidence.h"
+#include "GoGame.h"
 
 class MonteCarlo : public SimpleRandomAI
 {
 public:
-  MonteCarlo(int searchWidth, int searchDepth);
+  MonteCarlo(int moves, int simulations);
   virtual
   ~MonteCarlo();
 
   GoPoint generateMove(int color, GoGame* game);
-
+  std::vector<UCBrow> generateMCTable(std::vector<int> moves, int color, GoGame* game);
 private:
-  const int searchDepth;
-  const int searchWidth;
+  const int numSimulations;
+  const int numMoves;
 };
 
 #endif /* MONTECARLO_H_ */

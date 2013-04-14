@@ -9,6 +9,7 @@
 #include "EGTPEngine.h"
 #include "Log.h"
 #include "UpperConfidence.h"
+#include "MonteCarlo.h"
 #include "PipeCommunication.h"
 
 EGTPEngine::EGTPEngine():aiType(UCB),numRandMoves(0),simulations(200),timeAlloc(-1)
@@ -20,6 +21,7 @@ EGTPEngine::~EGTPEngine()
 {
   // TODO Auto-generated destructor stub
 }
+
 extern int LogLevel;
 std::string EGTPEngine::parse(std::string input)
 {
@@ -42,9 +44,9 @@ std::string EGTPEngine::parse(std::string input)
     }
   else if(args[0] == "e_useai") //Usage: e_useai [ran|mc|ucb|uct] [ai specific args]
     {
-      if(args[1] == "ucb") //args: e_useai ucb [random moves] [t|s] [time in sec|num simulations] //t uses time, s uses simulations
+      if(args[1] == "ucb" || args[1] == "mc") //args: e_useai ucb [random moves] [t|s] [time in sec|num simulations] //t uses time, s uses simulations
 	{
-	  aiType = UCB;
+	  aiType = args[1] == "ucb" ? UCB : MC;
 	  if(args[2] == "t") //Time alloc
 	    timeAlloc = atoi(args[3].c_str());
 	  if(args[2] == "s") //simulations
@@ -52,15 +54,7 @@ std::string EGTPEngine::parse(std::string input)
 	}
       else if(args[1] == "rand")
 	aiType = RAN;
-      else if(args[1] == "mc")
-	{
-	  aiType = MC;
-	  if(args[2] == "t") //Time alloc
-	    timeAlloc = atoi(args[3].c_str());
-	  if(args[2] == "s") //simulations
-	    simulations = atoi(args[3].c_str());
-	}
-
+   
       std::cout<<"Got AI type: "<<args[1]<<std::endl;
     }
   else if(args[0]=="e_ping")
@@ -84,7 +78,6 @@ std::string EGTPEngine::parse(std::string input)
 		  {
 		    UpperConfidence ucb(preselRandMoves,simulations);
 		    ucbr = ucb.generateUCBTable(ColorFromString(args[1]),game);
-		    //				p = ucb.generateMove(ColorFromString(args[1]),game);
 		  }
 		else
 		  {
@@ -96,7 +89,7 @@ std::string EGTPEngine::parse(std::string input)
 	    case(MC):
 	      {
 		MonteCarlo mc(numRandMoves,simulations);
-		//		p = mc.generateMove(ColorFromString(args[1]),game);
+		ucbr = mc.generateMCTable(preselRandMoves,ColorFromString(args[1]),game);
 		break;
 	      }
 	    }

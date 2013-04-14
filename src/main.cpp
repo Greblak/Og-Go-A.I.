@@ -41,14 +41,14 @@
   -t //perform tests
   -r <seed> //sets random seed
   -n <hostname/ip> //set program as network node
-  -ai (<ai type> <ai specific args> ) //sets ai mode for this session (UCB with 200 simulations by default)
-
+  -ai {<ai type> <ai specific args> } //sets ai mode for this session (UCB with 200 simulations by default) - examples: -ai { ucb s 1000 r 20 } will run 1000 sims for each child in ucb. 20 moves will be selected randomly in addition to any local moves, t 10 will run as many simulations as possible in 10 seconds before returning to master. The same applies to mc-ai
+  
 */
 
 int RAND_SEED = 1;
 bool keepRand = false;
 int LogLevel = ERROR;
-std::string AI_CONFIG = "ucb n 200";
+std::string AI_CONFIG = "ucb s 200 r 20";
 int AI_TYPE = UCB;
 
 extern std::string AI_CONFIG;

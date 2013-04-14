@@ -138,8 +138,20 @@ const GoPoint MasterServer::generateMove(int color)
   genmoveResponses = 0;
   genmoveResponseWait = true;
   bestMove = GoPoint(-1,-1,NONE);
+  
+  std::vector<std::string> aiconf;
+  boost::split(aiconf, AI_CONFIG, boost::is_any_of(" "));
+  int numRandom = 0;
+  for(int i = 0; i<aiconf.size(); ++i)
+    {
+      if(aiconf[i] == "r")
+	{
+	  numRandom = atoi(aiconf[i+1].c_str());
+	  break;
+	}
+    }
 
-  UpperConfidence ucb;
+  UpperConfidence ucb(numRandom,0);
 
   //Prepare new ucb-table
   std::vector<int> randMoves = ucb.getPossibleMoves(color,gtp.game);
@@ -175,12 +187,7 @@ const GoPoint MasterServer::generateMove(int color)
   char col = color == S_BLACK ? 'b' : 'w';
   ss<<"e_useai "<<AI_CONFIG<<"\ngenmove "<<col<<"\n";
   writeAll(ss.str());
-
-  std::cout <<ss.str()<<std::endl;
-
-
   int moveNumber = gtp.game->Board->movePointer; //Implement to prevent race conditions
-
   for(SocketVector::iterator it = sockets.begin(); it!= sockets.end(); ++it)
     {
       //Build errors

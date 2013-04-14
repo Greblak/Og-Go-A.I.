@@ -7,7 +7,8 @@
 
 #ifndef UPPERCONFIDENCE_H_
 #define UPPERCONFIDENCE_H_
-#include "MonteCarlo.h"
+#include <vector>
+#include "GoGame.h"
 
 struct UCBrow
 {

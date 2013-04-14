@@ -283,10 +283,13 @@ void MasterServer::genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, bo
 		  std::cout<<"unable to parse input: "<<input<<std::endl;
 		}
 	    }
-	  buf->fill('\0');
-	  conn->socket().async_read_some(boost::asio::buffer(*buf),boost::bind(&MasterServer::genmoveReadCallback,this,conn,buf));
+	  
 	}
     }
+  if(strlen(buf->c_array()) == 0)
+    return;
+  buf->fill('\0');
+  conn->socket().async_read_some(boost::asio::buffer(*buf),boost::bind(&MasterServer::genmoveReadCallback,this,conn,buf));
     
 }
 

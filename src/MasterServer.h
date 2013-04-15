@@ -22,8 +22,7 @@
 const int MASTER_BUFFER_MAX_SIZE = 1024;
 
 
-typedef std::vector<boost::shared_ptr<TCPConnection> > SocketVector;
-typedef std::vector< boost::array<char, MASTER_BUFFER_MAX_SIZE>* > SocketReadVector;
+
 
 class MasterServer :public boost::enable_shared_from_this<MasterServer>
 {
@@ -45,8 +44,7 @@ public:
 private:
 	void checkDeadConnections();
 	void ioServiceStarter();
-	SocketVector sockets;
-	SocketReadVector socketreads;
+	
 	GTPEngine gtp;
 	std::vector<UCBrow> ucbTable;
 	bool writingToUcbTable;

@@ -84,7 +84,7 @@ void MasterServer::newConnection(boost::shared_ptr<TCPConnection> conn)
   doHandshake(conn);
   if(conn->socket().is_open())
     {
-      sockets.push_back(conn);
+      tcp_server.sockets.push_back(conn);
     }
 
 }
@@ -105,11 +105,14 @@ void MasterServer::doHandshake(boost::shared_ptr<TCPConnection> conn)
 
 void MasterServer::writeAll(const std::string str)
 {
-  for(SocketVector::iterator it = sockets.begin(); it != sockets.end(); ++it)
+  if(tcp_server.sockets.size() == 0)
+    throw "Unable to find any slaves";
+  int i = 0;
+  for(SocketVector::iterator it = tcp_server.sockets.begin(); it != tcp_server.sockets.end(); ++it)
     {
-      if((**it).socket().is_open())
+      std::cout<<"Accessing socket "<<i<<std::endl;
+      if((*it)->is_open())
 	{
-	  //			std::cout<<"Trying to write to "<<&(**it);
 	  try
 	    {
 	      write((*it),str);
@@ -121,15 +124,25 @@ void MasterServer::writeAll(const std::string str)
 	}
       else
 	{
-	  it = sockets.erase(it); //Remove dead socket
+	  std::cout<<"Cleaning up dead socket "<<i<<" : "<<(*it)<<std::endl;
+	  if(tcp_server.sockets.size() == 1)
+	    tcp_server.sockets.clear();
+	  else
+	    {
+	      it = tcp_server.sockets.erase(it); //Remove dead socket
+	      --it;
+	    }
 	}
+      i++;
     }
+  
 }
 
 void MasterServer::write(boost::shared_ptr<TCPConnection> conn, const std::string str)
 {
   //	std::cout<<"Trying to write "<<str<<std::endl;
   conn->socket().async_write_some(boost::asio::buffer(str),boost::bind(&MasterServer::writeHandler,this));
+  conn->startTimeout();
   //	std::cout<<"Successfully wrote "<<str<<std::endl;
 }
 
@@ -188,7 +201,7 @@ const GoPoint MasterServer::generateMove(int color)
   ss<<"e_useai "<<AI_CONFIG<<"\ngenmove "<<col<<"\n";
   writeAll(ss.str());
   int moveNumber = gtp.game->Board->movePointer; //Implement to prevent race conditions
-  for(SocketVector::iterator it = sockets.begin(); it!= sockets.end(); ++it)
+  for(SocketVector::iterator it = tcp_server.sockets.begin(); it != tcp_server.sockets.end(); ++it)
     {
       //Build errors
       boost::array<char, MASTER_BUFFER_MAX_SIZE>* buf = new boost::array<char, MASTER_BUFFER_MAX_SIZE>();
@@ -225,7 +238,7 @@ const GoPoint MasterServer::generateMove(int color)
 	  totalSims+=ucbTable[i].timesPlayed;
 	}
       LOG_VERBOSE<<"Best move: "<<bestPos<<" based on "<<totalSims<<" simulations"<<std::endl;
-      std::cout<<"Sockets connected: "<<sockets.size()<<std::endl;
+      std::cout<<"Sockets connected: "<<tcp_server.sockets.size()<<std::endl;
       bestMove = gtp.game->Board->ReversePos(bestPos,color);
      
       //LOG_OUT <<"= " << gtp.game->Board->ReadablePosition(pos);
@@ -240,7 +253,7 @@ const GoPoint MasterServer::generateMove(int color)
 
 void MasterServer::genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, boost::array<char, 1024>* buf)
 {
-
+  conn->resetTimeout();
   std::string input; 
   std::vector<std::string> responses;
   input = std::string(buf->c_array(), strlen(buf->c_array()));
@@ -264,8 +277,8 @@ void MasterServer::genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, bo
 		  UpperConfidence::combineUCBTables(ucbTable, incomingUCBTable);
 		  writingToUcbTable = false;
 		  ++genmoveResponses;
-		  std::cout<<genmoveResponses<< " "<<sockets.size()<<std::endl;
-		  if(genmoveResponses>=sockets.size())
+		  std::cout<<genmoveResponses<< " "<<tcp_server.sockets.size()<<std::endl;
+		  if(genmoveResponses>=tcp_server.sockets.size())
 		    genmoveResponseWait = false;
 		}
 	      else if(input.find("= rand:") != std::string::npos) //Random ai used

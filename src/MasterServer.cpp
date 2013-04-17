@@ -179,26 +179,17 @@ const GoPoint MasterServer::generateMove(int color)
     }
 
   //Replay current state to all slaves
-  writeAll(GTP_CMD_CLEAR_BOARD);
-  for(int j = 0; j<gtp.game->Board->movePointer; ++j)
-    {
-      char col = gtp.game->Board->moves[j]->Color == S_BLACK ? 'b' : 'w';
-      std::stringstream ss;
-      ss<<"play "<<col<<" "<<gtp.game->Board->ReadablePosition(gtp.game->Board->moves[j]->Point)<<"\n";
-
-      writeAll(ss.str());
-    }
-
+  std::stringstream ss;
   //Prepare string for slave writing
   std::string wbuf = GTPEngine::generateGTPString(gtp.game->Board);
-  writeAll(wbuf);
-  std::stringstream ss;
+  ss<<wbuf;
   ss<<"e_randmoves";
   for(int j = 0;j<randMoves.size();++j)
     ss<<" "<<randMoves[j];
   ss<<"\n";
   char col = color == S_BLACK ? 'b' : 'w';
-  ss<<"e_useai "<<AI_CONFIG<<"\ngenmove "<<col<<"\n";
+  ss<<"e_useai "<<AI_CONFIG<<"\n";
+  ss<<"genmove "<<col<<"\n";
   writeAll(ss.str());
   int moveNumber = gtp.game->Board->movePointer; //Implement to prevent race conditions
   for(SocketVector::iterator it = tcp_server.sockets.begin(); it != tcp_server.sockets.end(); ++it)

@@ -143,7 +143,11 @@ std::vector<std::string> GTPEngine::parse(std::string userInput)
     }
 #endif //IFDEF DEBUG_MODE
   else
-    throw Exception("Unknown command");
+    {
+      std::stringstream ss;
+      ss<<"Unknown command: \""<<args[1]<<"\""<<std::endl;
+      throw Exception(ss.str());
+    }
 
   //  game->Board->DisplayCurrentState();
 
@@ -216,7 +220,8 @@ const int GTPEngine::RowIntToString(int n)
 const std::string GTPEngine::generateGTPString(GoBoard* board)
 {
   std::stringstream ss;
-  ss<<"boardsize "<<board->Size()<<"\n";
+  ss<<GTP_CMD_CLEAR_BOARD<< "\n";;
+  ss<<GTP_CMD_BOARDSIZE<<" "<<board->Size()<<"\n";
   for(int i = 0; i<board->movePointer; ++i)
     {
       ss << "play ";
@@ -227,5 +232,6 @@ const std::string GTPEngine::generateGTPString(GoBoard* board)
 
       ss<<board->ReadablePosition(board->moves[i]->Point)<<"\n";
     }
+  ss<<"\n";
   return ss.str();
 }

@@ -34,13 +34,13 @@ class TCPConnection : public boost::enable_shared_from_this<TCPConnection>
 
   inline void resetTimeout()
   {
-    std::cout<<"Timeout reset"<<std::endl;
+    LOG_VERBOSE<<"Timeout reset"<<std::endl;
     timeoutTimer.cancel();
   }
 
   inline void startTimeout(int seconds = SOCKET_DEFAULT_TIMEOUT)
   {
-    std::cout<<"Started timer at "<<seconds<<" seconds"<<std::endl;
+    LOG_VERBOSE<<"Started timer at "<<seconds<<" seconds"<<std::endl;
     timeoutTimer.expires_from_now(boost::posix_time::seconds(seconds));
     timeoutTimer.async_wait(boost::bind(&TCPConnection::handle_timeout,this,_1));
   }

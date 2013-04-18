@@ -22,7 +22,7 @@
 extern std::string AI_CONFIG;
 extern int AI_TYPE;
 
-MasterServer::MasterServer(int port):tcp_server(io_service,port,boost::bind(&MasterServer::newConnection,this, _1)),writingToUcbTable(false),genmoveResponses(0),genmoveResponseWait(false),genmoveTimeoutMilliSec(10*1000),bestMove(-1,-1,NONE)
+MasterServer::MasterServer(int port):tcp_server(io_service,port,boost::bind(&MasterServer::newConnection,this, _1)),writingToUcbTable(false),genmoveResponses(0),genmoveResponseWait(false),genmoveTimeoutMilliSec(10*1000),bestMove(-1,-1,NONE),commandNumber(1)
 {
   
 }
@@ -105,9 +105,13 @@ void MasterServer::doHandshake(boost::shared_ptr<TCPConnection> conn)
 
 void MasterServer::writeAll(const std::string str)
 {
+  ++commandNumber;
   if(tcp_server.sockets.size() == 0)
-    throw "Unable to find any slaves";
+    throw "Unable to find any slaves";  
   int i = 0;
+  std::stringstream ss;
+  ss<<commandNumber<<" "<<str;
+  std::cout<<"Sending: "<<ss.str();
   for(SocketVector::iterator it = tcp_server.sockets.begin(); it != tcp_server.sockets.end(); ++it)
     {
       std::cout<<"Accessing socket "<<i<<std::endl;
@@ -115,7 +119,7 @@ void MasterServer::writeAll(const std::string str)
 	{
 	  try
 	    {
-	      write((*it),str);
+	      write((*it),ss.str());
 	    }
 	  catch(char* ex)
 	    {
@@ -143,7 +147,7 @@ void MasterServer::write(boost::shared_ptr<TCPConnection> conn, const std::strin
   //	std::cout<<"Trying to write "<<str<<std::endl;
   conn->socket().async_write_some(boost::asio::buffer(str),boost::bind(&MasterServer::writeHandler,this));
   conn->startTimeout();
-  //	std::cout<<"Successfully wrote "<<str<<std::endl;
+  std::cout<<"Successfully wrote "<<str<<std::endl;
 }
 
 const GoPoint MasterServer::generateMove(int color)
@@ -254,37 +258,54 @@ void MasterServer::genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, bo
       std::string input = (*it);
       if(strlen(input.c_str()) != 0)
 	{
-	  if(!boost::starts_with(input, "= 1"))
+	  if(boost::starts_with(input, "="))
 	    {
-	      //Parse input and confirm UCB table
-	      if(input.find("= ucbtable:") != std::string::npos)
+	      input.substr(1); //omit =
+	      std::vector<std::string> args;
+	      boost::split(args, input, boost::is_any_of(" "));
+	      if(commandNumber == atoi(args[0].c_str()))
 		{
-		  while(writingToUcbTable)
+		  args.erase(args.begin());
+		  input = boost::algorithm::join(args," ");
+		  //Parse input and confirm UCB table
+		  std::cout<<"Input from slave: "<<input<<std::endl;
+		  if(input.find("ucbtable:") != std::string::npos)
 		    {
-		      LOG_VERBOSE<<"No UCB table consultants are available right now. Please hold while we dig one up"<<std::endl;
+		      while(writingToUcbTable)
+			{
+			  LOG_VERBOSE<<"No UCB table consultants are available right now. Please hold while we dig one up"<<std::endl;
+			}
+		      writingToUcbTable = true;
+		      std::vector<UCBrow> incomingUCBTable = UpperConfidence::parseUCBTableString(input);
+		      UpperConfidence::combineUCBTables(ucbTable, incomingUCBTable);
+		      writingToUcbTable = false;
+		      ++genmoveResponses;
+		      std::cout<<genmoveResponses<< " "<<tcp_server.sockets.size()<<std::endl;
+		      if(genmoveResponses>=tcp_server.sockets.size())
+			genmoveResponseWait = false;
 		    }
-		  writingToUcbTable = true;
-		  std::vector<UCBrow> incomingUCBTable = UpperConfidence::parseUCBTableString(input);
-		  UpperConfidence::combineUCBTables(ucbTable, incomingUCBTable);
-		  writingToUcbTable = false;
-		  ++genmoveResponses;
-		  std::cout<<genmoveResponses<< " "<<tcp_server.sockets.size()<<std::endl;
-		  if(genmoveResponses>=tcp_server.sockets.size())
-		    genmoveResponseWait = false;
-		}
-	      else if(input.find("= rand:") != std::string::npos) //Random ai used
-		{
-		  std::string pos = input.substr(7);
-		  const int x = gtp.ColumnStringToInt(pos);
-		  const int y = gtp.RowStringToInt(pos);
-		  bestMove.x = x;
-		  bestMove.y = y;
-		  bestMove.color = NONE;
-		  genmoveResponseWait = false;
+		  else if(input.find("rand:") != std::string::npos) //Random ai used
+		    {
+		      std::string pos = input.substr(7);
+		      const int x = gtp.ColumnStringToInt(pos);
+		      const int y = gtp.RowStringToInt(pos);
+		      bestMove.x = x;
+		      bestMove.y = y;
+		      bestMove.color = NONE;
+		      genmoveResponseWait = false;
+		    }
+		  else if(args.size() == 0)
+		    {
+		      LOG_VERBOSE<<"ACK from client"<<std::endl;
+		    }
+		  else
+		    {
+		      LOG_VERBOSE<<"Unable to parse response"<<std::endl;
+		    }
 		}
 	      else
 		{
-		  std::cout<<"unable to parse input: "<<input<<std::endl;
+		  LOG_VERBOSE<<"Response omitted. Outdated."<<std::endl;
 		}
 	    }
 	  

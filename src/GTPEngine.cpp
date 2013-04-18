@@ -232,6 +232,5 @@ const std::string GTPEngine::generateGTPString(GoBoard* board)
 
       ss<<board->ReadablePosition(board->moves[i]->Point)<<"\n";
     }
-  ss<<"\n";
   return ss.str();
 }

@@ -27,9 +27,10 @@ std::string EGTPEngine::parse(std::string input)
 {
   //Only returns in ifs on failure or on special responses. standard ack response returned if nothing else.
   LOG_VERBOSE<<"Attempting to parse EGTP input "<<input<<std::endl;
+
   std::vector<std::string> args;
   boost::split(args, input,boost::is_any_of( " " ));
-
+  std::stringstream ss;
   if(args[0] == "e_request")
     {
       if(args[1] != "1")
@@ -93,7 +94,7 @@ std::string EGTPEngine::parse(std::string input)
 		break;
 	      }
 	    }
-	  std::stringstream ss;
+	  
 	  ss << "= ucbtable:";
 	  for(int i = 0; i<ucbr.size();++i)
 	    {
@@ -102,7 +103,6 @@ std::string EGTPEngine::parse(std::string input)
 	  game->Board->reset();
 	  preselRandMoves.clear();
 	  ss<<"\n";
-	  return ss.str();
 	}
       else if(aiType == RAN)
 	{
@@ -111,7 +111,6 @@ std::string EGTPEngine::parse(std::string input)
 	  std::stringstream ss;
 	  ss<<"= rand:"<<game->Board->ReadablePosition(p)<<"\n";
 	  std::cout<<"Rand move: "<<ss.str()<<std::endl;
-	  return ss.str();
 	}
     }
   else
@@ -121,7 +120,7 @@ std::string EGTPEngine::parse(std::string input)
       std::vector<std::string> ret = GTPEngine::parse(input);
       LogLevel = oldLog;
     }
-  return GTP_ACK_RESPONSE;
+  return ss.str();
 }
 
 /*

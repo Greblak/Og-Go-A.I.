@@ -51,6 +51,7 @@ private:
 	int genmoveResponses;
 	bool genmoveResponseWait;
 	int genmoveTimeoutMilliSec;
+	int commandNumber;
 	GoPoint bestMove;
 };
 

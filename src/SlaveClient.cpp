@@ -7,6 +7,7 @@
 #include <boost/regex.hpp>
 #include <boost/asio.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/join.hpp>
 #include <boost/asio/io_service.hpp>
 #include <boost/bind.hpp>
 #include "EGTPEngine.h"
@@ -57,7 +58,7 @@ void SlaveClient::initSocket()
 
 void SlaveClient::run()
 {
-  LOG_VERBOSE<<"Starting slave"<<std::endl;
+  std::cout<<"Starting slave"<<std::endl;
   try
     {
       boost::array<char, SLAVE_BUFFER_MAX_SIZE>* buf = new boost::array<char,SLAVE_BUFFER_MAX_SIZE>();
@@ -90,7 +91,7 @@ void SlaveClient::asyncReadCallback(boost::array<char, SLAVE_BUFFER_MAX_SIZE>* b
 
   if(bufsize>0)
     {
-      std::cout<<"Got: "<<buf->data()<<std::endl;
+     
       if(std::string(buf->data(),bufsize) == EGTP_HANDSHAKE)
 	{
 	  LOG_DEBUG<<"Got handshake, approved. Sending response"<<std::endl;
@@ -102,14 +103,30 @@ void SlaveClient::asyncReadCallback(boost::array<char, SLAVE_BUFFER_MAX_SIZE>* b
 	  std::cout<<"Got input: "<<input<<std::endl;
 	  std::vector<std::string> cmds;
 	  boost::split(cmds,input, boost::is_any_of( "\n" ));
+	  std::vector<std::string> args;
+	  boost::split(args, cmds[0],boost::is_any_of( " " ));
+	  int commandNumber = 0;
+	  commandNumber = atoi(args[0].c_str());
+	  if(commandNumber != 0) //First argument is the command number
+	    {
+	      args.erase(args.begin());
+	      cmds[0] = boost::algorithm::join(args," ");
+	    }
+	  
 	  
 	  for(std::vector<std::string>::iterator it = cmds.begin(); it != cmds.end(); ++it)
 	    {
+	      std::cout<<"On command #"<<commandNumber<<" "<<(*it)<<std::endl;
+	      
 	      if(strlen((*it).c_str()) == 0 || !boost::regex_search ((*it),pattern, boost::regex_constants::format_perl))
 		continue;
 	      std::string output = egtp.parse(*it);
-	      std::cout<<"Sending back: "<<output<<std::endl;
-	      socket.write_some(boost::asio::buffer(output));
+	      if(strlen(output.c_str()) > 0)
+		output.substr(2);
+	      std::stringstream ss;
+	      ss<<"="<<commandNumber<<" "<<output;
+	      std::cout<<"Sending back: "<<ss.str()<<std::endl;
+	      socket.write_some(boost::asio::buffer(ss.str()));
 	    }
 	}
       socket.async_read_some(boost::asio::buffer(*buf),boost::bind(&SlaveClient::asyncReadCallback,this,buf));

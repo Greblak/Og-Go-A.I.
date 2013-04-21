@@ -232,7 +232,7 @@ const GoPoint MasterServer::generateMove(int color)
 	  totalSims+=ucbTable[i].timesPlayed;
 	}
       LOG_VERBOSE<<"Best move: "<<bestPos<<" based on "<<totalSims<<" simulations"<<std::endl;
-      std::cout<<"Sockets connected: "<<tcp_server.sockets.size()<<std::endl;
+      LOG_VERBOSE<<"Sockets connected: "<<tcp_server.sockets.size()<<std::endl;
       bestMove = gtp.game->Board->ReversePos(bestPos,color);
      
       //LOG_OUT <<"= " << gtp.game->Board->ReadablePosition(pos);
@@ -241,7 +241,6 @@ const GoPoint MasterServer::generateMove(int color)
     {
       //Do nothing, handled by async call 
     }
-  gtp.game->Play(bestMove.color, bestMove.x,bestMove.y);
   return bestMove;
 }
 
@@ -260,19 +259,15 @@ void MasterServer::genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, bo
 	  if(boost::starts_with(input, "="))
 	    {
 	      input = input.substr(1); //omit =
-	      std::cout<<"Response: "<<input<<std::endl;
 	      std::vector<std::string> args;
 	      boost::split(args, input, boost::is_any_of(" "));
-	      std::cout<<"Comparing cmd#"<<commandNumber<<" to "<<args[0]<<std::endl;
 	      if(commandNumber == atoi(args[0].c_str()))
 		{
 		  args.erase(args.begin());
 		  input = boost::algorithm::join(args," ");
 		  //Parse input and confirm UCB table
-		  std::cout<<"Input from slave: "<<input<<std::endl;
 		  if(input.find("ucbtable:") != std::string::npos)
 		    {
-		      std::cout<<"Found UCB table in response"<<std::endl;
 		      while(writingToUcbTable)
 			{
 			  LOG_VERBOSE<<"No UCB table consultants are available right now. Please hold while we dig one up"<<std::endl;
@@ -282,7 +277,6 @@ void MasterServer::genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, bo
 		      UpperConfidence::combineUCBTables(ucbTable, incomingUCBTable);
 		      writingToUcbTable = false;
 		      ++genmoveResponses;
-		      std::cout<<genmoveResponses<< " "<<tcp_server.sockets.size()<<std::endl;
 		      if(genmoveResponses>=tcp_server.sockets.size())
 			genmoveResponseWait = false;
 		    }

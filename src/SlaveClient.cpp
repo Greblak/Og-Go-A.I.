@@ -116,8 +116,6 @@ void SlaveClient::asyncReadCallback(boost::array<char, SLAVE_BUFFER_MAX_SIZE>* b
 	  
 	  for(std::vector<std::string>::iterator it = cmds.begin(); it != cmds.end(); ++it)
 	    {
-	      std::cout<<"On command #"<<commandNumber<<" "<<(*it)<<std::endl;
-	      
 	      if(strlen((*it).c_str()) == 0 || !boost::regex_search ((*it),pattern, boost::regex_constants::format_perl))
 		continue;
 	      std::string output = egtp.parse(*it);

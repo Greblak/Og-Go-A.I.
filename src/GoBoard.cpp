@@ -374,7 +374,11 @@ const int GoBoard::Size() const
 const GoMove* GoBoard::Play(int p, int color)
 {
 	if(!IsLegal(p, color))
-		LOG_DEBUG<<"Illegal move at "<<ReadablePosition(p);//throw "Illegal move at ";
+	  {
+	    std::stringstream ss;
+	    ss<<"Illegal move at "<<ReadablePosition(p)<<std::endl;//throw "Illegal move at ";
+	    throw Exception(ss.str());
+	  }
 	LOG_DEBUG << "\n\n\n";
 	LOG_DEBUG << "Playing color "<<color<<" at "<<ReadablePosition(p);
 	AddStone(p,color);

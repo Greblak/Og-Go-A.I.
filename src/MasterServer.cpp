@@ -198,7 +198,6 @@ const GoPoint MasterServer::generateMove(int color)
   int moveNumber = gtp.game->Board->movePointer; //Implement to prevent race conditions
   for(SocketVector::iterator it = tcp_server.sockets.begin(); it != tcp_server.sockets.end(); ++it)
     {
-      //Build errors
       boost::array<char, MASTER_BUFFER_MAX_SIZE>* buf = new boost::array<char, MASTER_BUFFER_MAX_SIZE>();
       buf->fill('\0');
       //		socketreads.push_back(buf);
@@ -260,9 +259,11 @@ void MasterServer::genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, bo
 	{
 	  if(boost::starts_with(input, "="))
 	    {
-	      input.substr(1); //omit =
+	      input = input.substr(1); //omit =
+	      std::cout<<"Response: "<<input<<std::endl;
 	      std::vector<std::string> args;
 	      boost::split(args, input, boost::is_any_of(" "));
+	      std::cout<<"Comparing cmd#"<<commandNumber<<" to "<<args[0]<<std::endl;
 	      if(commandNumber == atoi(args[0].c_str()))
 		{
 		  args.erase(args.begin());
@@ -271,6 +272,7 @@ void MasterServer::genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, bo
 		  std::cout<<"Input from slave: "<<input<<std::endl;
 		  if(input.find("ucbtable:") != std::string::npos)
 		    {
+		      std::cout<<"Found UCB table in response"<<std::endl;
 		      while(writingToUcbTable)
 			{
 			  LOG_VERBOSE<<"No UCB table consultants are available right now. Please hold while we dig one up"<<std::endl;

@@ -95,7 +95,7 @@ std::string EGTPEngine::parse(std::string input)
 	      }
 	    }
 	  
-	  ss << "= ucbtable:";
+	  ss << "ucbtable:";
 	  for(int i = 0; i<ucbr.size();++i)
 	    {
 	      ss<<ucbr[i].pos<<","<<ucbr[i].expected<<","<<ucbr[i].timesPlayed<<";";
@@ -109,7 +109,7 @@ std::string EGTPEngine::parse(std::string input)
 	  SimpleRandomAI rand;
 	  const GoPoint p = rand.generateMove(ColorFromString(args[1]),game);
 	  std::stringstream ss;
-	  ss<<"= rand:"<<game->Board->ReadablePosition(p)<<"\n";
+	  ss<<"rand:"<<game->Board->ReadablePosition(p)<<"\n";
 	  std::cout<<"Rand move: "<<ss.str()<<std::endl;
 	}
     }

@@ -164,6 +164,8 @@ const GoPoint MasterServer::generateMove(int color)
       if(aiconf[i] == "r")
 	{
 	  numRandom = atoi(aiconf[i+1].c_str());
+	  if(numRandom < 1)
+	    throw("Invalid number of generated possible moves. Must be > 0");
 	  break;
 	}
     }

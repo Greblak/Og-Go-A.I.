@@ -194,7 +194,13 @@ const GoPoint MasterServer::generateMove(int color)
     ss<<" "<<randMoves[j];
   ss<<"\n";
   char col = color == S_BLACK ? 'b' : 'w';
-  ss<<"e_useai "<<AI_CONFIG<<"\n";
+  int timeRemainingForMove = gtp.game->TimeHandler.GetTimeRemainingForMove();
+  if(timeRemainingForMove = GO_TIME_NOT_ACTIVE)
+    ss<<"e_useai "<<AI_CONFIG<<"\n";
+  else
+    {
+      ss<<"e_useai "<<AI_TYPE<<" t "<<timeRemainingForMove<<"\n";
+    }
   ss<<"genmove "<<col<<"\n";
   writeAll(ss.str());
   int moveNumber = gtp.game->Board->movePointer; //Implement to prevent race conditions
@@ -206,7 +212,7 @@ const GoPoint MasterServer::generateMove(int color)
       (*it)->socket().async_read_some(boost::asio::buffer(*buf),boost::bind(&MasterServer::genmoveReadCallback,this,(*it),buf));
     }
   int timestep = 100; //0.1 sec
-  int timeout = genmoveTimeoutMilliSec;
+  int timeout = timeRemainingForMove * 1000;
   while(genmoveResponseWait)
     {
       usleep(1000*timestep);

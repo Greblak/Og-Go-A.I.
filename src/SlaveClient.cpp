@@ -5,6 +5,7 @@
  *      Author: rune
  */
 #include <boost/regex.hpp>
+#include <boost/thread.hpp>
 #include <boost/asio.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/join.hpp>
@@ -15,7 +16,7 @@
 #include "Log.h"
 #include "Exception.h"
 
-SlaveClient::SlaveClient(std::string ip, int port):socket(io_service),masterIP(ip),masterPort(port) {
+SlaveClient::SlaveClient(std::string ip, int port):socket(io_service),masterIP(ip),masterPort(port),egtp(io_service) {
   initSocket();
 }
 
@@ -61,12 +62,11 @@ void SlaveClient::run()
   std::cout<<"Starting slave"<<std::endl;
   try
     {
+
       boost::array<char, SLAVE_BUFFER_MAX_SIZE>* buf = new boost::array<char,SLAVE_BUFFER_MAX_SIZE>();
       buf->fill('\0');
       socket.async_read_some(boost::asio::buffer(*buf),boost::bind(&SlaveClient::asyncReadCallback,this,buf));
-      boost::system::error_code ec;
-      io_service.run(ec);
-      std::cout<<ec.message()<<std::endl;
+      io_service.run();
     }
   catch (std::exception& e)
     {
@@ -82,6 +82,8 @@ void SlaveClient::run()
       std::cerr <<"Exception from Og-go AI: "<< e.getMessage() << std::endl;
     }
 }
+
+
 
 void SlaveClient::asyncReadCallback(boost::array<char, SLAVE_BUFFER_MAX_SIZE>* buf)
 {

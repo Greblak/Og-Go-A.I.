@@ -6,23 +6,24 @@
  */
 #include <math.h>
 #include <stdlib.h>
+#include <boost/asio.hpp>
 #include <boost/algorithm/string.hpp>
 #include "UpperConfidence.h"
 #include "Log.h"
 #include "GoBoard.h"
 #include "PlayPolicy.h"
 #include "SimpleRandomAI.h"
-UpperConfidence::UpperConfidence(void):numRandMoves(20),numSimulations(1000),expRatio(1.5),workingBoard(0)
+UpperConfidence::UpperConfidence(void):numRandMoves(20),numSimulations(1000),expRatio(1.5),workingBoard(0),playUntilStopped(true)
 {
 
 }
 
-UpperConfidence::UpperConfidence(int randMoves, int numSim):numRandMoves(randMoves),numSimulations(numSim),expRatio(1.5),workingBoard(0)
+UpperConfidence::UpperConfidence(int randMoves, int numSim):numRandMoves(randMoves),numSimulations(numSim),expRatio(1.5),workingBoard(0),playUntilStopped(true)
 {
 
 }
 
-UpperConfidence::UpperConfidence(std::vector<int> randMoves, int numSim):numRandMoves(0),numSimulations(numSim),expRatio(1.5),workingBoard(0)
+UpperConfidence::UpperConfidence(std::vector<int> randMoves, int numSim):numRandMoves(0),numSimulations(numSim),expRatio(1.5),workingBoard(0),playUntilStopped(true)
 {
 	preselRandMoves = randMoves;
 }
@@ -111,7 +112,8 @@ std::vector<UCBrow> UpperConfidence::generateUCBTable(int color, GoGame* game)
 
 	float maximisedVal = 0.0;
 	int nextToPlay = 0;
-	while(totalNumPlayed<numSimulations)
+	int numSim = numSimulations;
+	while(totalNumPlayed<numSim && playUntilStopped)
 	{
 		//Maximise for all following plays
 		for(size_t i = 0; i<moves.size(); ++i)
@@ -133,6 +135,8 @@ std::vector<UCBrow> UpperConfidence::generateUCBTable(int color, GoGame* game)
 			result = 0;
 		++numPlayed[nextToPlay];
 		++totalNumPlayed;
+		if(playUntilStopped)
+		  ++numSim;
 
 		if(totalNumPlayed%100==0)
 			std::cerr<<"Simulated "<<totalNumPlayed<<" games"<<std::endl;
@@ -252,4 +256,10 @@ std::vector<UCBrow> UpperConfidence::parseUCBTableString(std::string str)
 		}
 	}
 	return ucbtable;
+}
+void UpperConfidence::interruptSimulation()
+{
+  std::cout<<"Simulation interrupted"<<std::endl;
+  playUntilStopped = false;
+
 }

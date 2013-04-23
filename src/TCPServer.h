@@ -62,7 +62,7 @@ class TCPConnection : public boost::enable_shared_from_this<TCPConnection>
     //		std::cout<<"Handle write called";
   }
 
-  inline void handle_timeout(const boost::system::error_code& e)
+    inline void handle_timeout(const boost::system::error_code& e)
   {
    
 	// Timer expired.

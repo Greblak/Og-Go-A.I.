@@ -8,6 +8,8 @@
 #ifndef UPPERCONFIDENCE_H_
 #define UPPERCONFIDENCE_H_
 #include <vector>
+#include <boost/asio.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include "GoGame.h"
 
 struct UCBrow
@@ -30,11 +32,13 @@ public:
 	std::vector<UCBrow> generateUCBTable(int color, GoGame* game);
 	std::vector<int> getPossibleMoves(int color, GoGame* game);
 	const float simulateMove(int move);
+	void interruptSimulation();
 
 	static std::vector<UCBrow> combineUCBTables(std::vector<UCBrow>& t1, std::vector<UCBrow>& t2); //TODO:: Unit test this!
 	static std::vector<UCBrow> parseUCBTableString(std::string str);
 
 	std::vector<int> moves;
+	bool playUntilStopped;
 
 private:
 	const int numSimulations;
@@ -44,7 +48,6 @@ private:
 	GoBoard* workingBoard;
 	GoGame* game;
 	int color;
-
 };
 
 #endif /* UPPERCONFIDENCE_H_ */

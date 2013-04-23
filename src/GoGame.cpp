@@ -9,6 +9,7 @@
 #include "MonteCarlo.h"
 #include "UpperConfidence.h"
 #include "EGTPEngine.h"
+#include "GoTimeHandler.h"
 
 GoGame::GoGame(int boardSize)
 {
@@ -43,3 +44,4 @@ GoPoint GoGame::GenerateMove(int color)
     GoPoint point;
 	return point;
 }
+

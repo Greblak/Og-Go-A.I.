@@ -1,18 +1,21 @@
 /*
  * EGTPEngine.cpp
  *
- *  Created on: Mar 27, 2013
- *      Author: rune
+ *  Created on: Mar 2
  */
-
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
+#include <boost/thread.hpp>
+#include <boost/function.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/ref.hpp>
 #include "EGTPEngine.h"
 #include "Log.h"
 #include "UpperConfidence.h"
 #include "MonteCarlo.h"
 #include "PipeCommunication.h"
 
-EGTPEngine::EGTPEngine():aiType(UCB),numRandMoves(0),simulations(200),timeAlloc(-1)
+EGTPEngine::EGTPEngine(boost::asio::io_service& io_service):aiType(UCB),numRandMoves(0),simulations(200),timeAlloc(-1),simulationTimer(io_service)
 {
 
 }
@@ -33,6 +36,7 @@ std::string EGTPEngine::parse(std::string input)
   std::stringstream ss;
   if(args[0] == "e_request")
     {
+      std::cout<<"Got req"<<std::endl;
       if(args[1] != "1")
 	exit(EXIT_FAILURE);
     }
@@ -74,17 +78,15 @@ std::string EGTPEngine::parse(std::string input)
 	    {
 	    case(UCB):
 	      {
-
-		if(preselRandMoves.size()>0)
+		UpperConfidence ucb(preselRandMoves,simulations);
+		if(timeAlloc != -1)
 		  {
-		    UpperConfidence ucb(preselRandMoves,simulations);
-		    ucbr = ucb.generateUCBTable(ColorFromString(args[1]),game);
+		    std::cout << "Simulation uses time: "<<timeAlloc<<" seconds"<<std::endl;
+		    ucb.playUntilStopped = true;
+		    boost::thread wt(boost::bind(&EGTPEngine::genmoveTimer,this,timeAlloc,&ucb));
+		    std::cout<< "Timer started "<<&ucb<<std::endl;
 		  }
-		else
-		  {
-		    UpperConfidence ucb(numRandMoves,simulations);
-		    ucbr = ucb.generateUCBTable(ColorFromString(args[1]),game);
-		  }
+		ucbr = ucb.generateUCBTable(ColorFromString(args[1]),game);
 		break;
 	      }
 	    case(MC):
@@ -123,6 +125,11 @@ std::string EGTPEngine::parse(std::string input)
   return ss.str();
 }
 
+void EGTPEngine::genmoveTimer(int seconds, UpperConfidence* ucb)
+{
+  sleep(seconds);
+  ucb->interruptSimulation();
+}
 /*
   GoPoint EGTPEngine::genMoveFromChildProcs(int color, GoGame* game)
   {

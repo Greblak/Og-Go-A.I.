@@ -12,6 +12,7 @@
 #include "Config.h"
 #include "GoGame.h"
 #include "Exception.h"
+#include "GoTimeHandler.h"
 //#include "Tests.h"
 
 extern int LogLevel;
@@ -106,6 +107,19 @@ std::vector<std::string> GTPEngine::parse(std::string userInput)
 	  score*=-1;
 	}
       LOG_OUT << "= "<<color<<"+"<<score;
+    }
+else if(args[0] == GTP_CMD_TIME_SETTINGS)
+    {
+      int main = atoi(args[1].c_str());
+      int byo = atoi(args[2].c_str());
+      int stones = atoi(args[3].c_str());
+      game->TimeHandler = GoTimeHandler(main,byo,stones);
+    }
+else if(args[0] == GTP_CMD_TIME_LEFT)
+    {
+      int byo = atoi(args[1].c_str());
+      int stones = atoi(args[2].c_str());
+      game->TimeHandler.UpdateTime(byo,stones);
     }
   else if(args[0] == GTP_CMD_QUIT)
     {

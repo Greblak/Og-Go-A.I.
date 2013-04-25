@@ -61,8 +61,13 @@ void MasterServer::run()
 	  if(args[0] == "genmove")
 	    {
 	      GoPoint p = generateMove(gtp.ColorFromString(args[1]));
-	      LOG_OUT<< "= "<<gtp.game->Board->ReadablePosition(gtp.game->Board->Pos(p));
-	      gtp.game->Play(p.color, p.x, p.y);
+	      if(p.IsPass())
+		LOG_OUT<<"= PASS";
+	      else
+		{
+		  LOG_OUT<< "= "<<gtp.game->Board->ReadablePosition(gtp.game->Board->Pos(p));
+		  gtp.game->Play(p.color, p.x, p.y);
+		}
 	    }
 	}
       catch( const char * str )

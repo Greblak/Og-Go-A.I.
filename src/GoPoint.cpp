@@ -16,3 +16,11 @@ const bool GoPoint::IsPass()
     return true;
   return false;
 }
+
+bool GoPoint::operator==(GoPoint& a)
+{
+  if(a.x == x && a.y == y && a.color == color)
+    return true;
+  return false;
+}
+

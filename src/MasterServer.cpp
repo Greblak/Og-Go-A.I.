@@ -200,11 +200,16 @@ const GoPoint MasterServer::generateMove(int color)
   ss<<"\n";
   char col = color == S_BLACK ? 'b' : 'w';
   int timeRemainingForMove = gtp.game->TimeHandler.GetTimeRemainingForMove();
-  if(timeRemainingForMove = GO_TIME_NOT_ACTIVE)
-    ss<<"e_useai "<<AI_CONFIG<<"\n";
+  if(!gtp.game->TimeHandler.IsActive())
+    {
+      ss<<"e_useai "<<AI_CONFIG<<"\n";
+      std::cout<<"Timer not activated"<<std::endl;
+    }
   else
     {
+      timeRemainingForMove -= gtp.game->TimeHandler.GO_TIME_PROCESSING_BUFFER;
       ss<<"e_useai "<<AI_TYPE<<" t "<<timeRemainingForMove<<"\n";
+      std::cout<<"Timer activated"<<std::endl;
     }
   ss<<"genmove "<<col<<"\n";
   writeAll(ss.str());

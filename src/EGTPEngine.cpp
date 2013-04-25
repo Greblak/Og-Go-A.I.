@@ -49,18 +49,23 @@ std::string EGTPEngine::parse(std::string input)
     }
   else if(args[0] == "e_useai") //Usage: e_useai [ran|mc|ucb|uct] [ai specific args]
     {
-      if(args[1] == "ucb" || args[1] == "mc") //args: e_useai ucb [random moves] [t|s] [time in sec|num simulations] //t uses time, s uses simulations
+      if(args[1] == "ucb" || args[1] == "mc" || atoi(args[1].c_str()) == UCB || atoi(args[1].c_str()) == MC ) //args: e_useai ucb [random moves] [t|s] [time in sec|num simulations] //t uses time, s uses simulations
 	{
 	  aiType = args[1] == "ucb" ? UCB : MC;
+	  if(atoi(args[1].c_str()) == UCB)
+	    aiType = UCB;
+	  if(atoi(args[1].c_str()) == MC)
+	    aiType == MC;
 	  if(args[2] == "t") //Time alloc
 	    timeAlloc = atoi(args[3].c_str());
 	  if(args[2] == "s") //simulations
 	    simulations = atoi(args[3].c_str());
 	}
-      else if(args[1] == "rand")
+      else if(args[1] == "rand" || atoi(args[1].c_str()) == RAN)
 	aiType = RAN;
    
       std::cout<<"Got AI type: "<<args[1]<<std::endl;
+      std::cout<<"Got time alloc: "<<timeAlloc<<std::endl;
     }
   else if(args[0]=="e_ping")
     {

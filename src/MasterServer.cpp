@@ -57,16 +57,19 @@ void MasterServer::run()
 	  if(!std::cin.good())
 	    std::cout<<"Bad!"<<std::endl;
 	  std::getline(std::cin, userInput);
-	  std::vector<std::string> args = gtp.parse(userInput);
-	  if(args[0] == "genmove")
+	  if(userInput != "")
 	    {
-	      GoPoint p = generateMove(gtp.ColorFromString(args[1]));
-	      if(p.IsPass())
-		LOG_OUT<<"= PASS";
-	      else
+	      std::vector<std::string> args = gtp.parse(userInput);
+	      if(args[0] == "genmove")
 		{
-		  LOG_OUT<< "= "<<gtp.game->Board->ReadablePosition(gtp.game->Board->Pos(p));
-		  gtp.game->Play(p.color, p.x, p.y);
+		  GoPoint p = generateMove(gtp.ColorFromString(args[1]));
+		  if(p.IsPass())
+		    LOG_OUT<<"= PASS";
+		  else
+		    {
+		      LOG_OUT<< "= "<<gtp.game->Board->ReadablePosition(gtp.game->Board->Pos(p));
+		      gtp.game->Play(p.color, p.x, p.y);
+		    }
 		}
 	    }
 	}

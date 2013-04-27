@@ -1,8 +1,8 @@
 #!/usr/bin/python
 import urllib, urllib2, re, sys, cookielib, popen2,time
 
+
 def SGFposToGTP(pos,boardsize):
-    ##REVERSED! FIX THIS
     col = ord(pos[0])
     row = ord(pos[1]) - ord('a')
     if col >= ord('i'):
@@ -22,9 +22,9 @@ def GTPposToSGF(pos,boardsize):
     rowSGF = chr(boardsize - int(rowGTP) + ord('a'))
 
     if ord(colSGF) >= ord('i'):
-        colSGF = char(ord(colSGF)+1)
+        colSGF = chr(ord(colSGF)+1)
     if ord(rowSGF) >= ord('i'):
-        rowSGF = char(ord(rowSGF)+1)
+        rowSGF = chr(ord(rowSGF)+1)
     return "{}{}".format(colSGF,rowSGF)
     
 def generateGTP(SGFdata):
@@ -36,6 +36,7 @@ def generateGTP(SGFdata):
     boardsize = 19 
     commands = []
     nummoves = 0
+    nextplayer = "n"
     for line in SGFdata.splitlines():
         result = re.search(blackREXP,line)
         if result:
@@ -46,6 +47,7 @@ def generateGTP(SGFdata):
                 move = SGFposToGTP(result.groups()[0],boardsize)
             commands.append("play b {}".format(move))
             nummoves += 1
+            nextplayer = "w"
         result = re.search(whiteREXP,line)
         if result:
             move = ""
@@ -55,6 +57,7 @@ def generateGTP(SGFdata):
                 move = SGFposToGTP(result.groups()[0],boardsize)
             commands.append("play w {}".format(move))
             nummoves += 1
+            nextplayer = "b"
         result = re.search(komiREXP,line)
         if result:
             komi = float(result.groups()[0])
@@ -63,11 +66,13 @@ def generateGTP(SGFdata):
         if result:
             boardsize = int(result.groups()[0])
             commands.append("boardsize {}".format(result.groups()[0]))
-    return commands,boardsize,nummoves
+    return commands,boardsize,nummoves,nextplayer
 
 class Oggoai:
-    def __init__(self):
-        self.fin, self.fout = popen2.popen2("../bin/oggoai -ai { ucb t 5 r 20 }")
+    def __init__(self,time):
+        cmd = "../bin/oggoai -ai { ucb t "+str(time)+" r 20 }"
+        print cmd
+        self.fin, self.fout = popen2.popen2(cmd)
         print self.sendCommand("name")
         print self.sendCommand("version")
     def sendCommand(self, cmd):
@@ -80,6 +85,16 @@ class Oggoai:
 
 username = 'oggoai'
 password = 'uiauia'
+timePerMove = 5 #in seconds
+forceHostileTakeover = False
+
+args = str(sys.argv)
+for arg in args.splitlines():
+    print arg
+    res = re.search("-t=(\d+)",arg)
+    if res:
+        timePerMove = int(res.groups()[0])
+        print timePerMove
 
 #Login
 cookiejar = cookielib.CookieJar()
@@ -117,8 +132,8 @@ if re.search(GIDregexp,loginsrc):
         logincon = opener.open(baseurl)
         SGFdata = logincon.read()
 
-        GTPcommands,boardsize,nummoves = generateGTP(SGFdata)
-        prg = Oggoai()
+        GTPcommands,boardsize,nummoves,nextplayer = generateGTP(SGFdata)
+        prg = Oggoai(timePerMove)
         # Prepare process
 
         
@@ -126,7 +141,7 @@ if re.search(GIDregexp,loginsrc):
             prg.sendCommand(cmd)
      
         time.sleep(7) #Time is not important. Allow slaves to connect prior to genmove command
-        genmovecmd = "genmove b"
+        genmovecmd = "genmove "+nextplayer
         prg.sendCommand(genmovecmd)
         prg.sendCommand("quit")
         o = ""

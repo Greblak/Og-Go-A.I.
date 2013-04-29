@@ -138,7 +138,7 @@ std::vector<UCBrow> UpperConfidence::generateUCBTable(int color, GoGame* game)
 		if(playUntilStopped)
 		  ++numSim;
 
-		if(totalNumPlayed%100==0)
+		if(totalNumPlayed%1000==0)
 			std::cerr<<"Simulated "<<totalNumPlayed<<" games"<<std::endl;
 
 		float oldWins = expected[nextToPlay] * numPlayed[nextToPlay];
@@ -160,7 +160,7 @@ std::vector<UCBrow> UpperConfidence::generateUCBTable(int color, GoGame* game)
 
 	time_t now;
 	time(&now);
-	int perf = (float)numSimulations/difftime(now,timer);
+	int perf = (float)totalNumPlayed/difftime(now,timer);
 	std::cerr<<"child; " <<perf<<" sims per sec"<<std::endl;
 
 	LOG_VERBOSE<<"Completed UCB table"<<std::endl;

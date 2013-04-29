@@ -10,13 +10,13 @@
 
 #include "EGTPEngine.h"
 #include "SimpleRandomAI.h"
+#include "MonteCarlo.h"
 
 
 void TEST_PlayPolicy();
 void TEST_BoardRepresentation_LibertyCounting();
 void TEST_SimpleRandomAI();
 void TEST_EGTPEngine();
-
 void TEST_DOTESTS()
 {
   std::cout<<"Testing board representation"<<std::endl;
@@ -26,8 +26,8 @@ void TEST_DOTESTS()
   std::cout<<"** EGTP Engine"<<std::endl;
   TEST_EGTPEngine();
   std::cout<<"Testing A.I.s"<<std::endl;
-  std::cout<<"** Single randomly generated legal move"<<std::endl;
-  TEST_SimpleRandomAI();
+  std::cout<<"** Single randomly generated legal move(1000 games)"<<std::endl;
+  TEST_SimpleRandomAI();  
   std::cout<<"All tests completed successfully"<<std::endl;
 }
 
@@ -54,13 +54,16 @@ void TEST_BoardRepresentation_LibertyCounting()
 }
 void TEST_SimpleRandomAI()
 {
-  //Testing 50 random games
+  //Testing 1000 random games
 
   SimpleRandomAI rand;
   int color = S_BLACK;
-  for(int j = 0; j<50;++j)
+  GoGame g(19);
+  for(int j = 0; j<1000;++j)
     {
-      GoGame g(19);
+      if(j%100==0)
+	std::cout<<j<<" games"<<std::endl;
+      g.Board->reset();
       for(int i = 0; i<361; ++i)
 	{
 	  color = color == S_BLACK ? S_WHITE : S_BLACK;
@@ -70,6 +73,7 @@ void TEST_SimpleRandomAI()
 	}
     }
 };
+
 
 void TEST_EGTPEngine()
 {

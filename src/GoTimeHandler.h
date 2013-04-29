@@ -7,12 +7,13 @@
 
 */
 #define GO_TIME_NOT_ACTIVE -1
+#define GO_TIME_PROCESSING_BUFFER_DEFAULT 5
 
 class GoTimeHandler
 {
   
  public:
-  static const int GO_TIME_NOT_ACTIVE = -1;
+
   int GO_TIME_PROCESSING_BUFFER;
   inline GoTimeHandler():mainTime(0),byoyomiTime(0),byoyomiStones(0),isActive(false)
     {

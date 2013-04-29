@@ -114,22 +114,18 @@ const int GoBoard::FindUniqueLiberties(const int stone, const GoBlock* block) co
 	if(North(stone) != -1 && State.stones[North(stone)] == NONE && !IsLibertyOfBlock(North(stone),block->anchor))
 	{
 		++uniqueLiberties;
-		LOG_DEBUG << "ULN: "<<uniqueLiberties;
 	}
 	if(South(stone) != -1 && State.stones[South(stone)] == NONE && !IsLibertyOfBlock(South(stone),block->anchor))
 	{
 		++uniqueLiberties;
-		LOG_DEBUG << "ULS: "<<uniqueLiberties;
 	}
 	if(West(stone) != -1 && State.stones[West(stone)] == NONE && !IsLibertyOfBlock(West(stone),block->anchor))
 	{
 		++uniqueLiberties;
-		LOG_DEBUG << "ULW: "<<uniqueLiberties;
 	}
 	if(East(stone) != -1 && State.stones[East(stone)] == NONE && !IsLibertyOfBlock(East(stone),block->anchor))
 	{
 		++uniqueLiberties;
-		LOG_DEBUG << "ULE: "<<uniqueLiberties;
 	}
 
 	//  int lib = 0;
@@ -189,9 +185,6 @@ void GoBoard::UpdateBlocks(int pos, int color)
 		b->board = this;
 		b->liberties= State.numNeighboursEmpty[pos];
 		State.blockPointers[pos] = b;
-
-		LOG_VERBOSE << "Single stone places with liberties: "<<b->liberties<<" "<<State.blockPointers[pos]->anchor<<std::endl;
-
 	}
 	else //Not solo. Attach to block
 	{
@@ -201,37 +194,29 @@ void GoBoard::UpdateBlocks(int pos, int color)
 			//          commonLiberties = FindCommonLiberties(pos,South(pos));
 			uniqueLiberties = FindUniqueLiberties(pos, State.blockPointers[South(pos)]);
 			State.blockPointers[pos] = State.blockPointers[South(pos)];
-			LOG_DEBUG << "ULS: "<<uniqueLiberties;
 		}
 		else if (North(pos) != -1 && State.stones[North(pos)] == boardColor)
 		{
 			//          commonLiberties = FindCommonLiberties(pos,North(pos));
 			uniqueLiberties = FindUniqueLiberties(pos, State.blockPointers[North(pos)]);
 			State.blockPointers[pos] = State.blockPointers[North(pos)];
-			LOG_DEBUG << "ULN: "<<uniqueLiberties;
 		}
 		else if (West(pos) != -1 && State.stones[West(pos)] == boardColor)
 		{
 			//          commonLiberties = FindCommonLiberties(pos,West(pos));
 			uniqueLiberties = FindUniqueLiberties(pos, State.blockPointers[West(pos)]);
 			State.blockPointers[pos] = State.blockPointers[West(pos)];
-			LOG_DEBUG << "ULW: "<<uniqueLiberties;
 		}
 		else if (East(pos) != -1 && State.stones[East(pos)] == boardColor)
 		{
 			//          commonLiberties = FindCommonLiberties(pos,East(pos));
 			uniqueLiberties = FindUniqueLiberties(pos, State.blockPointers[East(pos)]);
 			State.blockPointers[pos] = State.blockPointers[East(pos)];
-			LOG_DEBUG << "ULE: "<<uniqueLiberties;
 		}
 		else
 			LOG_ERROR <<"Something went terribly wrong";
-		LOG_VERBOSE << "Old block("<<State.blockPointers[pos]->anchor<<") libcount: "<<State.blockPointers[pos]->liberties<<std::endl;
 		//Subtract one since the new stone is always placed on a liberty for the block.
 		State.blockPointers[pos]->liberties += uniqueLiberties;
-		LOG_VERBOSE <<  " Stone liberties :"<<State.numNeighboursEmpty[pos] <<" Unique: "<<uniqueLiberties<< " New block liberty total: "<<State.blockPointers[pos]->liberties<<std::endl;
-
-
 		//Detect neighboring blocks to perform join.
 		//Has similar neighbor but not recently attached block
 		if(State.stones[North(pos)] == boardColor && State.blockPointers[North(pos)] != State.blockPointers[pos])
@@ -250,8 +235,6 @@ void GoBoard::UpdateBlocks(int pos, int color)
 		//        }
 
 	}
-	LOG_DEBUG << "Stone added at: "<<pos;
-	LOG_DEBUG << "Accessing "<<State.blockPointers[pos];
 	State.blockPointers[pos]->addStone(pos);
 	KillSurroundingDeadBlocks(pos);
 
@@ -262,7 +245,6 @@ void GoBoard::KillSurroundingDeadBlocks(const int pos)
 	//Reset kopoint
 	State.koPoint = NO_KO_POINT;
 	bool singleStoneKilledBefore = false;
-	LOG_VERBOSE<< "Searching for dead blocks around "<<pos;
 	for(int i = 0; i<4; i++)
 	{
 		int blockPos = -1;
@@ -278,14 +260,12 @@ void GoBoard::KillSurroundingDeadBlocks(const int pos)
 		//if(blockPos == -1)
 		else
 			continue;
-		LOG_VERBOSE << "Found potentially dead block at "<<blockPos;
 		GoBlock* p_block = State.blockPointers[blockPos];
 		if(p_block == 0)
 		  {
 		    LOG_VERBOSE << "Tested on 0 block";
 		    continue;
 		  }
-		LOG_VERBOSE << "Block has " << p_block->Liberties()<<" liberties";
 		if(p_block->Liberties() == 0)
 		{
 			//Create ko-point if applicable(Single stone)
@@ -294,13 +274,11 @@ void GoBoard::KillSurroundingDeadBlocks(const int pos)
 				if(!singleStoneKilledBefore)
 				{
 					State.koPoint = blockPos;
-					LOG_DEBUG << "Ko-point is now on "<<State.koPoint;
 					singleStoneKilledBefore = true;
 				}
 				else
 				{
 					State.koPoint = NO_KO_POINT;
-					LOG_DEBUG << "Multiple single stones killed in same move. No more ko for you!";
 				}
 			}
 
@@ -318,22 +296,18 @@ const bool GoBoard::IsLibertyOfBlock(const int point, const int anchor) const
 	if(North(point) != -1 && State.blockPointers[North(point)] == block && State.blockPointers[North(point)] != State.blockPointers[point])
 
 	{
-		//      std::cout<<point<<" is a liberty of the group at "<<North(point)<< "with anchor in "<<anchor<<std::endl;
 		return true;
 	}
 	if(South(point) != -1 && State.blockPointers[South(point)] == block && State.blockPointers[South(point)] != State.blockPointers[point])
 	{
-		//      std::cout<<point<<" is a liberty of the group at "<<South(point)<< "with anchor in "<<anchor<<std::endl;
 		return true;
 	}
 	if(West(point) != -1 && State.blockPointers[West(point)] == block && State.blockPointers[West(point)] != State.blockPointers[point])
 	{
-		//      std::cout<<point<<" is a liberty of the group at "<<West(point)<< "with anchor in "<<anchor<<std::endl;
 		return true;
 	}
 	if(East(point) != -1 && State.blockPointers[East(point)] == block && State.blockPointers[East(point)] != State.blockPointers[point])
 	{
-		//      std::cout<<point<<" is a liberty of the group at "<<East(point)<< "with anchor in "<<anchor<<std::endl;
 		return true;
 	}
 	return false;
@@ -341,8 +315,6 @@ const bool GoBoard::IsLibertyOfBlock(const int point, const int anchor) const
 
 const int GoBoard::FindCommonLiberties(const int point, const int anchor) const
 {
-	LOG_DEBUG << "Finding common liberties between point: "<<point<<" and block at "<<anchor;
-
 	int commonLiberties = 0;
 	if(North(point)!=-1 && point != anchor && IsLibertyOfBlock(North(point),anchor))
 	{
@@ -384,10 +356,7 @@ const GoMove* GoBoard::Play(int p, int color)
 	    ss<<"Illegal move at "<<ReadablePosition(p)<<std::endl;//throw "Illegal move at ";
 	    throw Exception(ss.str());
 	  }
-	LOG_DEBUG << "\n\n\n";
-	LOG_DEBUG << "Playing color "<<color<<" at "<<ReadablePosition(p);
 	AddStone(p,color);
-	LOG_DEBUG <<"Stone added";
 	nextPlayer = color==S_WHITE ? S_BLACK : S_WHITE; //Inverse color.
 
 	moves[movePointer]->Color = color;
@@ -455,39 +424,28 @@ void GoBoard::RemoveStone(const int pos)
 {
 	int stoneColor = State.stones[pos] == B_BLACK? S_BLACK : S_WHITE;
 	//Handling opened liberties
-	LOG_DEBUG <<"Attempting to remove stone at "<<pos;
 	if(IsRealPoint(North(pos)) && North(pos) != -1)
 	{
-		LOG_DEBUG <<"Checking north";
 		//      LOG_DEBUG << "Handling renewed liberties for "<<North(pos)<< " Old libs: "<<State.blockPointers[North(pos)]->Liberties();
 		++State.numNeighboursEmpty[North(pos)];
 		--State.numNeighbours[stoneColor][North(pos)];
-		LOG_DEBUG <<"Checking north";
 		if(State.stones[North(pos)] != NONE && !IsInSameBlock(pos,North(pos)))
 		{
-			LOG_DEBUG <<"Fixing north block";
 			++State.blockPointers[North(pos)]->liberties;
-			LOG_DEBUG << "Block at : "<<East(pos)<<" has been updated with new libs: "<<State.blockPointers[North(pos)]->Liberties();
 		}
-		LOG_DEBUG <<"Done with north";
 	}
 	if(IsRealPoint(South(pos)) && South(pos) != -1)
 	{
-		LOG_DEBUG <<"Checking S";
-		//      LOG_DEBUG << "Handling renewed liberties for "<<South(pos)<< " Old libs: "<<State.blockPointers[South(pos)]->Liberties();
 		++State.numNeighboursEmpty[South(pos)];
 		--State.numNeighbours[stoneColor][South(pos)];
 		if(State.stones[South(pos)] != NONE && !IsInSameBlock(pos,South(pos))
 				&& !IsInSameBlock(South(pos),North(pos)))
 		{
 			++State.blockPointers[South(pos)]->liberties;
-			LOG_DEBUG << "Block at : "<<East(pos)<<" has been updated with new libs: "<<State.blockPointers[South(pos)]->Liberties();
 		}
 	}
 	if(IsRealPoint(West(pos)) && West(pos) != -1)
 	{
-		LOG_DEBUG <<"Checking W";
-		//      LOG_DEBUG << "Handling renewed liberties for "<<West(pos)<< " Old libs: "<<State.blockPointers[West(pos)]->Liberties();
 		++State.numNeighboursEmpty[West(pos)];
 		--State.numNeighbours[stoneColor][West(pos)];
 		if(State.stones[West(pos)] != NONE && !IsInSameBlock(pos,West(pos))
@@ -495,17 +453,12 @@ void GoBoard::RemoveStone(const int pos)
 				&& !IsInSameBlock(West(pos),South(pos)))
 		{
 			++State.blockPointers[West(pos)]->liberties;
-			LOG_DEBUG << "Block at : "<<East(pos)<<" has been updated with new libs: "<<State.blockPointers[West(pos)]->Liberties();
 		}
 	}
 	if(IsRealPoint(East(pos)) && East(pos) != -1)
 	{
-		LOG_DEBUG <<"Checking E";
-		//      LOG_DEBUG << "Handling renewed liberties for "<<East(pos)<< " Old libs: "<<State.blockPointers[East(pos)]->Liberties();
 		++State.numNeighboursEmpty[East(pos)];
-		LOG_DEBUG <<"Checking E";
 		--State.numNeighbours[stoneColor][East(pos)];
-		LOG_DEBUG <<"Checking E";
 		if(State.stones[East(pos)] != NONE && !IsInSameBlock(pos,East(pos))
 				&& !IsInSameBlock(East(pos),North(pos))
 				&& !IsInSameBlock(East(pos),South(pos))
@@ -513,7 +466,6 @@ void GoBoard::RemoveStone(const int pos)
 
 		{
 			++State.blockPointers[East(pos)]->liberties;
-			LOG_DEBUG << "Block at : "<<East(pos)<<" has been updated with new libs: "<<State.blockPointers[East(pos)]->Liberties();
 		}
 	}
 	int opponentColor = stoneColor == S_BLACK ? S_WHITE : S_BLACK;
@@ -522,24 +474,18 @@ void GoBoard::RemoveStone(const int pos)
 	//  ++State.bw_prisoners[opponentColor];
 	//  LOG_VERBOSE<<opponentColor<<" now has "<<State.bw_prisoners[opponentColor]<<" prisoners";
 	//Remove the stone from the board
-	LOG_DEBUG << "Removing last references of stone at "<<pos;
 	State.blockPointers[pos] = 0;
 	State.stones[pos] = NONE;
 }
 
 const bool GoBoard::IsInSameBlock(const int pos1,const int pos2) const
 {
-	LOG_DEBUG <<"Comparing blocks at "<<pos1<<" and "<<pos2<<". In same block?";
-	LOG_DEBUG <<"Comparing blocks at "<<State.blockPointers[pos1]<<" and "<<State.blockPointers[pos2]<<". In same block?";
 	if(pos1 == -1 || pos2 == -1 || State.blockPointers[pos1] == 0 || State.blockPointers[pos2] == 0) //Nullpointer or invalid point
 		return false;
 	if(State.blockPointers[pos1] == State.blockPointers[pos2])
 	{
-		LOG_DEBUG <<"Pointers match!";
 		return true;
 	}
-	else
-		LOG_DEBUG <<"Pointers don't match!";
 	return false;
 }
 int GoBoard::Pos( GoPoint p) const
@@ -560,15 +506,12 @@ bool GoBoard::IsLegal(const int p, int color)
 		return false;
 	if(Occupied(p))
 		return false;
-	LOG_DEBUG << "Testing to see if pos: "<<p<<" matches ko point "<<State.koPoint;
 	if(p == State.koPoint)
 	{
-		LOG_DEBUG << "Illegal move due to Ko-rule";
 		return false;
 	}
 	if(IsSuicide(p,color))
 	{
-		LOG_DEBUG << "Illegal move due to suicide";
 		return false;
 	}
 	return true;
@@ -581,68 +524,48 @@ bool GoBoard::IsSuicide(const GoPoint p) const
 bool GoBoard::IsSuicide(const int pos, const int color) const
 {
 	int boardColor = color == S_BLACK? B_BLACK : B_WHITE; //Converts GoPoint-Stonecolor to board color. Should be put in function...
-	LOG_DEBUG << "Testing if "<<pos<< " is suicide";
 
 	//Test for single stone
 	if(State.numNeighboursEmpty[pos]>0)
 	{
-
-		LOG_DEBUG << "Legal. Single stone 1+ libs";
 		return false;
 	}
 
 	//Test if joins block of same color
 	if(Occupied(North(pos)) && State.stones[North(pos)] == boardColor && State.blockPointers[North(pos)]->Liberties()>1)
 	{
-
-		LOG_DEBUG << "Legal. Joined N block";
 		return false;
 	}
 	if(Occupied(South(pos)) && State.stones[South(pos)] == boardColor && State.blockPointers[South(pos)]->Liberties()>1)
 	{
-
-		LOG_DEBUG << "Legal. Joined S block";
 		return false;
 	}
 	if(Occupied(West(pos)) && State.stones[West(pos)] == boardColor && State.blockPointers[West(pos)]->Liberties()>1)
 	{
-
-		LOG_DEBUG << "Legal. Joined W block";
 		return false;
 	}
 	if(Occupied(East(pos)) && State.stones[East(pos)] == boardColor && State.blockPointers[East(pos)]->Liberties()>1)
 	{
-
-		LOG_DEBUG << "Legal. Joined E block";
 		return false;
 	}
 
 	//Allow "temporary suicide" if it leads to capture.
 	if(Occupied(North(pos)) && State.stones[North(pos)] != boardColor && State.blockPointers[North(pos)]->liberties == 1)
 	{
-
-		LOG_DEBUG << "Legal. Led to N capture";
 		return false;
 	}
 	if (Occupied(South(pos)) && State.stones[South(pos)] != boardColor && State.blockPointers[South(pos)]->liberties == 1)
 	{
-
-		LOG_DEBUG << "Legal. Led to S capture";
 		return false;
 	}
 	if(Occupied(West(pos)) && State.stones[West(pos)] != boardColor && State.blockPointers[West(pos)]->liberties == 1)
 	{
-
-		LOG_DEBUG << "Legal. Led to W capture";
 		return false;
 	}
 	if(Occupied(East(pos)) && State.stones[East(pos)] != boardColor && State.blockPointers[East(pos)]->liberties == 1)
 	{
-
-		LOG_DEBUG << "Legal. Led to E capture";
 		return false;
 	}
-	LOG_DEBUG << "This one is definetly suicidal!";
 	return true;
 }
 
@@ -745,7 +668,6 @@ void GoBoard::DisplayCurrentState() const
 
 const bool GoBoard::IsTrueEye(const int point, const int boardColor)
 {
-	LOG_DEBUG << "Checking if "<<point <<" is a true eye";
 	if(
 			(North(point) == -1 || (State.stones[North(point)] == boardColor))
 			&& (South(point) == -1 || (State.stones[South(point)] == boardColor))
@@ -906,9 +828,6 @@ void GoBoard::resetAndReplayMoves(GoBoard* board)
 void GoBoard::reset()
 {
 	komi = 0.5;
-	LOG_VERBOSE <<"resetting board";
-
-	LOG_VERBOSE << "Board set to size "<<BoardSize;
 	State.koPoint = NO_KO_POINT;
 
 
@@ -933,7 +852,6 @@ void GoBoard::reset()
 			State.numNeighboursEmpty[i] = 4;
 		}
 
-		LOG_VERBOSE<<"First reset: "<<i;
 	}
 	State.bw_prisoners[S_BLACK] = 0;
 	State.bw_prisoners[S_WHITE] = 0;
@@ -952,6 +870,4 @@ void GoBoard::reset()
 
 	blockPointer = 0;
 	movePointer = 0;
-
-	LOG_VERBOSE <<"Board reset. Let's play!";
 }

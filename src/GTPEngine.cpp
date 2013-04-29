@@ -68,10 +68,10 @@ std::vector<std::string> GTPEngine::parse(std::string userInput)
     }
   else if(args[0] == GTP_CMD_CLEAR_BOARD)
     {
-      int size = BOARD_DEFAULT_SIZE;
+      int size = game->Board->Size();
       if(game != 0)
 	{
-	  int size = game->Board->Size();
+	  
 	  delete game;
 	}
       if(keepRand)

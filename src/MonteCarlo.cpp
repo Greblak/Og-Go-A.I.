@@ -34,8 +34,7 @@ GoPoint MonteCarlo::generateMove(int color, GoGame* game)
           nboard->Play(toPlay);
           try
 	    {
-	      std::cerr<<"Simulated "<<(i*j + j)<<" games"<<std::endl;
-              SimpleRandomAI().simulateGame(nboard);
+	      SimpleRandomAI().simulateGame(nboard);
               float score = nboard ->GetScore();
               if(color == S_BLACK && score>0)
                 ++wins;
@@ -48,18 +47,14 @@ GoPoint MonteCarlo::generateMove(int color, GoGame* game)
           nboard->resetAndReplayMoves(game->Board);
         } //Invert if black
       double winRate = (double)wins*1.0/(double)numSimulations;
-      LOG_VERBOSE<<"Winrate "<<game->Board->ReadablePosition(toPlay)<<"("<<toPlay.x<<","<<toPlay.y<<") : "<<winRate<<std::endl;
-      if(winRate > bestWinRate)
+       if(winRate > bestWinRate)
         {
           bestWinRate = winRate;
           bestMove.x = toPlay.x;
           bestMove.y = toPlay.y;
         }
     }
-  if(bestWinRate<0.4)
-    {
-      LOG_ERROR<<"Resign! The only winning move is not to play "<<std::endl;
-    }
+ 
   LOG_VERBOSE<<"Best move ("<<bestMove.x<<","<<bestMove.y<<") : "<<bestWinRate<<std::endl;
   return bestMove;
 }

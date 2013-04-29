@@ -7,6 +7,7 @@
 
 */
 #define GO_TIME_NOT_ACTIVE -1
+#define GO_TIME_PROCESSING_BUFFER 1
 
 class GoTimeHandler
 {

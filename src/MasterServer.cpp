@@ -199,7 +199,7 @@ const GoPoint MasterServer::generateMove(int color)
     ss<<"e_useai "<<AI_CONFIG<<"\n";
   else
     {
-      ss<<"e_useai "<<AI_TYPE<<" t "<<timeRemainingForMove<<"\n";
+      ss<<"e_useai "<<AI_TYPE<<" t "<<(timeRemainingForMove-GO_TIME_PROCESSING_BUFFER)<<"\n";
     }
   ss<<"genmove "<<col<<"\n";
   writeAll(ss.str());

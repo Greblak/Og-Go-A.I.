@@ -22,7 +22,7 @@ public:
 	GoPoint(void);
 	inline GoPoint(int x, int y, int color):x(x),y(y),color(color){}
 	virtual ~GoPoint();
-	const bool IsPass();
+	const bool IsPass() const;
 	int x;
 	int y;
 	int color;

@@ -48,7 +48,7 @@
 int RAND_SEED = 1;
 bool keepRand = false;
 int LogLevel = ERROR;
-std::string AI_CONFIG = "ucb s 200 r 20";
+std::string AI_CONFIG = "ucb t 10 r 20";
 int AI_TYPE = UCB;
 
 extern std::string AI_CONFIG;
@@ -130,8 +130,8 @@ int main(int argc, char *argv[])
     }
   else if(doTests)
     {
-      TEST_EGTPEngine();
-      std::string line = "test";
+      TEST_DOTESTS();
+      /*      std::string line = "test";
       std::ifstream file;
       file.open("test.gtp");
       if(file.fail())
@@ -139,6 +139,7 @@ int main(int argc, char *argv[])
 	  LOG_DEBUG << "Test file failed to open. Business as usual";
 	}
       int i = 0;
+      */
       return(EXIT_SUCCESS);
     }
   return initMaster(port);

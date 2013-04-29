@@ -103,7 +103,7 @@ private:
 
 	int nextPlayer;
 
-
+	inline GoBoard& operator=(const GoBoard& g) { };
 
 };
 

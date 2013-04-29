@@ -280,6 +280,11 @@ void GoBoard::KillSurroundingDeadBlocks(const int pos)
 			continue;
 		LOG_VERBOSE << "Found potentially dead block at "<<blockPos;
 		GoBlock* p_block = State.blockPointers[blockPos];
+		if(p_block == 0)
+		  {
+		    LOG_VERBOSE << "Tested on 0 block";
+		    continue;
+		  }
 		LOG_VERBOSE << "Block has " << p_block->Liberties()<<" liberties";
 		if(p_block->Liberties() == 0)
 		{

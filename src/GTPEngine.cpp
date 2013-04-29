@@ -114,12 +114,14 @@ else if(args[0] == GTP_CMD_TIME_SETTINGS)
       int byo = atoi(args[2].c_str());
       int stones = atoi(args[3].c_str());
       game->TimeHandler = GoTimeHandler(main,byo,stones);
+      LOG_OUT << "= 1";
     }
 else if(args[0] == GTP_CMD_TIME_LEFT)
     {
       int byo = atoi(args[1].c_str());
       int stones = atoi(args[2].c_str());
       game->TimeHandler.UpdateTime(byo,stones);
+      LOG_OUT << "= 1";
     }
   else if(args[0] == GTP_CMD_QUIT)
     {

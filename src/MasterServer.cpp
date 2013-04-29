@@ -57,12 +57,20 @@ void MasterServer::run()
 	  if(!std::cin.good())
 	    std::cout<<"Bad!"<<std::endl;
 	  std::getline(std::cin, userInput);
-	  std::vector<std::string> args = gtp.parse(userInput);
-	  if(args[0] == "genmove")
+	  if(userInput != "")
 	    {
-	      GoPoint p = generateMove(gtp.ColorFromString(args[1]));
-	      LOG_OUT<< "= "<<gtp.game->Board->ReadablePosition(gtp.game->Board->Pos(p));
-	      gtp.game->Play(p.color, p.x, p.y);
+	      std::vector<std::string> args = gtp.parse(userInput);
+	      if(args[0] == "genmove")
+		{
+		  GoPoint p = generateMove(gtp.ColorFromString(args[1]));
+		  if(p.IsPass())
+		    LOG_OUT<<"= PASS";
+		  else
+		    {
+		      LOG_OUT<< "= "<<gtp.game->Board->ReadablePosition(gtp.game->Board->Pos(p));
+		      gtp.game->Play(p.color, p.x, p.y);
+		    }
+		}
 	    }
 	}
       catch( const char * str )
@@ -195,11 +203,16 @@ const GoPoint MasterServer::generateMove(int color)
   ss<<"\n";
   char col = color == S_BLACK ? 'b' : 'w';
   int timeRemainingForMove = gtp.game->TimeHandler.GetTimeRemainingForMove();
-  if(timeRemainingForMove = GO_TIME_NOT_ACTIVE)
-    ss<<"e_useai "<<AI_CONFIG<<"\n";
+  if(!gtp.game->TimeHandler.IsActive())
+    {
+      ss<<"e_useai "<<AI_CONFIG<<"\n";
+      std::cout<<"Timer not activated"<<std::endl;
+    }
   else
     {
-      ss<<"e_useai "<<AI_TYPE<<" t "<<(timeRemainingForMove-GO_TIME_PROCESSING_BUFFER)<<"\n";
+      timeRemainingForMove -= gtp.game->TimeHandler.GO_TIME_PROCESSING_BUFFER;
+      ss<<"e_useai "<<AI_TYPE<<" t "<<timeRemainingForMove<<"\n";
+      std::cout<<"Timer activated"<<std::endl;
     }
   ss<<"genmove "<<col<<"\n";
   writeAll(ss.str());

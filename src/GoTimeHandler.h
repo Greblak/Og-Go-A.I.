@@ -7,22 +7,20 @@
 
 */
 #define GO_TIME_NOT_ACTIVE -1
-#define GO_TIME_PROCESSING_BUFFER 1
 
 class GoTimeHandler
 {
- private:
-  int mainTime;
-  int byoyomiTime;
-  int byoyomiStones;
-  bool isActive;
   
  public:
+  static const int GO_TIME_NOT_ACTIVE = -1;
+  int GO_TIME_PROCESSING_BUFFER;
   inline GoTimeHandler():mainTime(0),byoyomiTime(0),byoyomiStones(0),isActive(false)
     {
+      GO_TIME_PROCESSING_BUFFER = GO_TIME_PROCESSING_BUFFER_DEFAULT;
     }
   inline GoTimeHandler(int main,int byo,int byostones):mainTime(main),byoyomiTime(byo),byoyomiStones(byostones),isActive(true)
     {
+      GO_TIME_PROCESSING_BUFFER = GO_TIME_PROCESSING_BUFFER_DEFAULT;
     }
   inline ~GoTimeHandler()
   {
@@ -52,6 +50,18 @@ class GoTimeHandler
       }
     return GO_TIME_NOT_ACTIVE;
   }
+
+  inline bool IsActive()
+  {
+    return isActive;
+  }
+ private:
+  int mainTime;
+  int byoyomiTime;
+  int byoyomiStones;
+  bool isActive;
 };
+
+#undef GO_TIME_PROCESSING_BUFFER_DEFAULT
 
 #endif //#ifndef  __GOTIMEHANDLER_H__

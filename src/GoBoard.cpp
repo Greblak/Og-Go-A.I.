@@ -843,11 +843,11 @@ void GoBoard::reset()
 		{
 			State.numNeighboursEmpty[i] = 3;
 		}
-		else if(IsCorner(i))
+		if(IsCorner(i))
 		{
 			State.numNeighboursEmpty[i]= 2;
 		}
-		else //Mid board
+		else if(!IsCorner(i) && !IsBorder(i)) //Mid board
 		{
 			State.numNeighboursEmpty[i] = 4;
 		}

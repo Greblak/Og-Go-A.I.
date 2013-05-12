@@ -1,6 +1,6 @@
 CC = g++
 #-g -pg
-CC_FLAGS = #-O3 -fno-rtti -funroll-loops #-g
+CC_FLAGS = -O3 -fno-rtti -funroll-loops -g
 LINKS = -pthread -lboost_thread -lboost_system -lboost_regex
 SOURCES = $(wildcard *.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)

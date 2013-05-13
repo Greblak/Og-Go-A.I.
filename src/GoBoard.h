@@ -27,7 +27,7 @@ public:
 		const bool IsBorder(int pos) const; ///< Checks if pos is a border position on the board. Used to count liberties
 		const bool IsCorner(int pos) const; ///< Checks if pos is a corner position on the board. Used to count liberties
 		const bool IsColor(int pos, int color) const; ///< Checks a point for a given color
-		static const int CurrentPlayer(); ///< Returns the current player color
+		const int CurrentPlayer() const; ///< Returns the current player color
 		const int NextPlayer() const; ///< Inverted CurrentPlayer
 
 		int North(const GoPoint p) const; ///< Returns the position north of p

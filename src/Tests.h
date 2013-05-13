@@ -37,7 +37,7 @@ void TEST_GoBoard_Methods()
 {
 
   //Testing simple startup and some commands
-  //Size()
+  std::cout<<"Size()"<<std::endl;
 GoBoard* b = new GoBoard(9);
   assert(b->Size() == 9);
   delete b;
@@ -53,6 +53,7 @@ b = new GoBoard(9);
   assert(b->Size() == 9);
 
   //Occupied
+  std::cout<<"Occupied()"<<std::endl;
   assert(!b->Occupied(0)); //Not played at
   b->Play(0,0);
   assert(b->Occupied(0)); //Now played at
@@ -61,22 +62,26 @@ b = new GoBoard(9);
   b->Play(1,1);
   assert(!b->Occupied(0)); //Now captured
 
+  std::cout<<"IsCorner()"<<std::endl;
   assert(b->IsCorner(0)); // Bottom left corner
   assert(!b->IsCorner(1)); // Right of bottom left corner
   assert(!b->IsCorner(-1)); // invalid
   assert(!b->IsCorner(22)); // Valid, center
-
+  std::cout<<"IsBorder()"<<std::endl;
   assert(b->IsBorder(0)); // bottom left corner
   assert(b->IsBorder(1)); // Bottom border
   assert(!b->IsBorder(-1)); // Invalid
   assert(!b->IsBorder(22)); // Not border
   
+  std::cout<<"CurrentPlayer() "<<std::endl;
   b->Play(5,1);
   assert(b->CurrentPlayer() == S_BLACK); //Black after white
   assert(b->CurrentPlayer() != b->NextPlayer());
   b->Play(6,0);
   assert(b->CurrentPlayer() == S_WHITE); 
 
+  std::cout<<"Directional tests"<<std::endl;
+  std::cout<<"North()"<<std::endl;
   //North tests
   assert(b->North(-1) == -1); 
   assert(b->North(0) == 9); 
@@ -85,40 +90,38 @@ b = new GoBoard(9);
   assert(b->North(80) == -1);
   assert(b->North(81) == -1);
   
-//South tests
+
+  std::cout<<"South()"<<std::endl;
   assert(b->South(-1) == -1);
   assert(b->South(0) == -1);
   assert(b->South(8) == -1);
   assert(b->South(72) == 63); 
   assert(b->South(80) == 71); 
   assert(b->South(81) == -1); 
-//North tests
+
+  std::cout<<"West()"<<std::endl;
   assert(b->West(-1) == -1);
   assert(b->West(0) == -1); 
   assert(b->West(8) == 7); 
   assert(b->West(72) == -1);
   assert(b->West(80) == 79);
   assert(b->West(81) == -1);
-//North tests
+
+  std::cout<<"East()"<<std::endl;
   assert(b->East(-1) == -1);
   assert(b->East(0) == 1); 
   assert(b->East(8) == -1);
   assert(b->East(72) == 73);
   assert(b->East(80) == -1);
-  assert(b->East(81) == -1);
- 
-  assert(b->IsRealPoint(0));
-  assert(b->IsRealPoint(360)); // Last real point
-  assert(!b->IsRealPoint(361));
-  assert(b->IsRealPoint(19)); 
-  assert(b->IsLegal(2,S_BLACK)); // Empty point
-  assert(!b->IsLegal(0,S_BLACK)); // Occupied point. 
+  assert(b->East(81) == -1); 
+  std::cout<<"End of directional tests"<<std::endl;
 
-  //Blocktesting
-  assert(b->IsInSameBlock(0,1));
-  assert(!b->IsInSameBlock(0,2));
-  assert(!b->IsInSameBlock(2,1));
-  assert(!b->IsInSameBlock(2,3));
+  std::cout<<"IsRealPoint()"<<std::endl;
+  assert(b->IsRealPoint(0));
+  assert(b->IsRealPoint(80)); // Last real point
+  assert(!b->IsRealPoint(81));
+
+
 }
 void TEST_BoardRepresentation_LibertyCounting()
 {

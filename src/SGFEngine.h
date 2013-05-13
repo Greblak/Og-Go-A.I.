@@ -37,7 +37,7 @@ public:
     file << "PB[Player 1]" << std::endl;
     file << "PW[Player 2]" << std::endl;
     file << "RU[Japanese]" << std::endl;
-    file << "KM[0.5]" << std::endl;
+    file << "KM["<<Board->komi<<"]" << std::endl;
     file << "SZ["<<Board->Size()<<"]" << std::endl;
     //End of premable. LET'S PLAY!
 

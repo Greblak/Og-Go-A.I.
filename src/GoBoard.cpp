@@ -763,8 +763,9 @@ const float GoBoard::GetScoreInternal() const
 const float GoBoard::GetScoreGnuGo() const
 {
   SGFEngine().generateFile(this);
-
-  system("gnugo --score estimate --komi 0.5 --quiet -l SGF.sgf > score.s");
+  std::stringstream ss;
+  ss<<"gnugo --score estimate --komi "<<komi<<" --quiet -l SGF.sgf > score.s";
+  int ret = system(ss.str().c_str());
   std::ifstream t;
   t.open("score.s");
   if(t.fail())

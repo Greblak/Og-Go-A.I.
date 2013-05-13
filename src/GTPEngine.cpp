@@ -47,7 +47,7 @@ std::vector<std::string> GTPEngine::parse(std::string userInput)
     LOG_OUT << "= "+PROGRAM_GTP_VERSION;
   else if(args[0] == GTP_CMD_LIST_CMDS)
     {
-      LOG_OUT << "= name\nversion\nprotocol_version\nlist_commands\nboardsize\ngenmove\nplay\nclear_board\nshowboard\nquit\nfinal_score";
+      LOG_OUT << "= name\nversion\nprotocol_version\nlist_commands\nboardsize\ngenmove\nplay\nclear_board\nshowboard\nquit\nfinal_score\ntime_settings\ntime_left";
     }
   else if(args[0] == GTP_CMD_BOARDSIZE)
     {

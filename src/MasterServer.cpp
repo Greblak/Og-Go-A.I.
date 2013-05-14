@@ -280,6 +280,7 @@ void MasterServer::genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, bo
 	  if(boost::starts_with(input, "="))
 	    {
 	      input = input.substr(1); //omit =
+	      std::cout<<input<<std::endl;
 	      std::vector<std::string> args;
 	      boost::split(args, input, boost::is_any_of(" "));
 	      if(commandNumber == atoi(args[0].c_str()))
@@ -303,7 +304,7 @@ void MasterServer::genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, bo
 		    }
 		  else if(input.find("rand:") != std::string::npos) //Random ai used
 		    {
-		      std::string pos = input.substr(7);
+		      std::string pos = input.substr(5);
 		      const int x = gtp.ColumnStringToInt(pos);
 		      const int y = gtp.RowStringToInt(pos);
 		      bestMove.x = x;
@@ -317,7 +318,7 @@ void MasterServer::genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, bo
 		    }
 		  else
 		    {
-		      LOG_VERBOSE<<"Unable to parse response"<<std::endl;
+		      LOG_VERBOSE<<"Unable to parse response: "<<input<<std::endl;
 		    }
 		}
 	      else

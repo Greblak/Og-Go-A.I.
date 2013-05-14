@@ -115,9 +115,10 @@ std::string EGTPEngine::parse(std::string input)
 	{
 	  SimpleRandomAI rand;
 	  const GoPoint p = rand.generateMove(ColorFromString(args[1]),game);
-	  std::stringstream ss;
-	  ss<<"rand:"<<game->Board->ReadablePosition(p)<<"\n";
-	  std::cout<<"Rand move: "<<ss.str()<<std::endl;
+	  std::stringstream ss1;
+	  ss1<<"rand:"<<game->Board->ReadablePosition(p)<<"\n";
+	  std::cout<<"Rand move: "<<ss1.str()<<std::endl;
+	  ss<<ss1.str()<<"\n";
 	}
     }
   else

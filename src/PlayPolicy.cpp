@@ -50,9 +50,9 @@ const std::vector<int> PlayPolicy::FindPossibleLocalMoves(GoBoard* board)
                 }
             }
 
-          if(board->IsEmpty(allLocalMoves[i]) && board->IsLegal(allLocalMoves[i],board->NextPlayer())  )
+          if(board->IsEmpty(allLocalMoves[i]) && board->IsLegal(allLocalMoves[i],board->CurrentPlayer())  )
             {
-              if(MatchAny(board,allLocalMoves[i],board->NextPlayer()))
+              if(MatchAny(board,allLocalMoves[i],board->CurrentPlayer()))
               {
                 moves.push_back(allLocalMoves[i]);
               }

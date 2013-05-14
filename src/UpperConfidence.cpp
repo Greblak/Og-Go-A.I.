@@ -191,7 +191,7 @@ const float UpperConfidence::simulateMove(int move)
 {
 	float expected = 0;
 	workingBoard->resetAndReplayMoves(game->Board);
-	workingBoard->Play(move, workingBoard->NextPlayer());
+	workingBoard->Play(move, workingBoard->CurrentPlayer());
 	SimpleRandomAI().simulateGame(workingBoard);
 	float score = workingBoard->GetScore();
 	if(color == S_BLACK && score>0)

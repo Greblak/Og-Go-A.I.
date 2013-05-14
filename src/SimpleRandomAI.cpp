@@ -54,7 +54,7 @@ int SimpleRandomAI::simulateGame(GoBoard* board)
   int twoPasses = 0;
   while(twoPasses < 2)
     {
-      GoPoint p =generateMove(board->NextPlayer(),board);
+      GoPoint p =generateMove(board->CurrentPlayer(),board);
       if(p.IsPass())
         {
           ++twoPasses;

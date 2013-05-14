@@ -280,7 +280,6 @@ void MasterServer::genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, bo
 	  if(boost::starts_with(input, "="))
 	    {
 	      input = input.substr(1); //omit =
-	      std::cout<<input<<std::endl;
 	      std::vector<std::string> args;
 	      boost::split(args, input, boost::is_any_of(" "));
 	      if(commandNumber == atoi(args[0].c_str()))

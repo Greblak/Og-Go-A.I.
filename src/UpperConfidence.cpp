@@ -141,7 +141,7 @@ std::vector<UCBrow> UpperConfidence::generateUCBTable(int color, GoGame* game)
 		if(totalNumPlayed%1000==0)
 			std::cerr<<"Simulated "<<totalNumPlayed<<" games"<<std::endl;
 
-		float oldWins = expected[nextToPlay] * numPlayed[nextToPlay];
+		float oldWins = expected[nextToPlay] * (numPlayed[nextToPlay]-1);
 
 		expected[nextToPlay] = ((float)(result+oldWins)/(float)numPlayed[nextToPlay]);
 

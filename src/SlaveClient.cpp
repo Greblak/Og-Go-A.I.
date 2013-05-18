@@ -47,7 +47,7 @@ void SlaveClient::initSocket()
       if (error)
 	{
 	  std::cerr << error.message() << std::endl;
-	  sleep(5);
+	  sleep(SLAVE_MASTERWAIT_TIME);
 	  initSocket();
 	}
     }

@@ -11,6 +11,7 @@
 #include <boost/asio.hpp>
 
 const int SLAVE_BUFFER_MAX_SIZE = 1024;
+const int SLAVE_MASTERWAIT_TIME = 5; //Seconds to wait before attempting to reconnect to master.
 
 class SlaveClient {
 public:

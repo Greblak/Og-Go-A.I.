@@ -471,7 +471,7 @@ void GoBoard::RemoveStone(const int pos)
   int opponentColor = stoneColor == S_BLACK ? S_WHITE : S_BLACK;
 
   //  LOG_VERBOSE<<opponentColor<<" now has "<<State.bw_prisoners[opponentColor]<<" prisoners";
-  //  ++State.bw_prisoners[opponentColor];
+   ++State.bw_prisoners[opponentColor];
   //  LOG_VERBOSE<<opponentColor<<" now has "<<State.bw_prisoners[opponentColor]<<" prisoners";
   //Remove the stone from the board
   State.blockPointers[pos] = 0;

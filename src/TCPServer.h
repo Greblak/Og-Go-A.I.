@@ -93,6 +93,7 @@ class TCPServer
   acceptor_(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
     acceptCallback(acceptCallback)
     {
+      LOG_VERBOSE<<"Attempting to create server on port: "<<port<<std::endl;
       prepareAccept();
     }
   SocketVector sockets;

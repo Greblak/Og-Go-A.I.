@@ -4,6 +4,9 @@
  *  Created on: Apr 6, 2013
  *      Author: rune
  */
+
+#include <stdio.h>
+#include <stdlib.h>
 #include <boost/regex.hpp>
 #include <boost/thread.hpp>
 #include <boost/asio.hpp>
@@ -34,7 +37,9 @@ void SlaveClient::initSocket()
   try
     {
       boost::asio::ip::tcp::resolver resolver(io_service);
-      boost::asio::ip::tcp::resolver::query query(ip, "1919");
+std::stringstream ss;
+ss<<port;
+boost::asio::ip::tcp::resolver::query query(ip, ss.str());
       boost::asio::ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
       boost::asio::ip::tcp::resolver::iterator end;
 

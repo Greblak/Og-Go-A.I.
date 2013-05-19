@@ -1,5 +1,7 @@
 #!/usr/bin/python
 import urllib, urllib2, re, sys, cookielib, popen2,time
+from datetime import datetime
+
 
 
 # Converts SGF position to GTP position
@@ -101,7 +103,7 @@ username = 'oggoai'
 password = 'uiauia'
 
 #Default time per move in seconds
-timePerMove = 5 
+timePerMove = 120
 #Buffer time to allow slaves to reconnect (in seconds)
 slaveReconnectTimeout = 7
 
@@ -112,6 +114,8 @@ for arg in args.splitlines():
     if res:
         timePerMove = int(res.groups()[0])
         print timePerMove
+
+print datetime.now()
 
 #Login to DGS
 cookiejar = cookielib.CookieJar()

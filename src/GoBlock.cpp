@@ -32,6 +32,8 @@ const int GoBlock::Liberties() const
 }
 void GoBlock::ImportBlock(GoBlock* block)
 {
+  if(block == 0x0)
+    return;
   int newLiberties = 0;
   int i = 0;
   while(block->stones[i] != -1)

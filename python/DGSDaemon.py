@@ -9,7 +9,7 @@ def SGFposToGTP(pos,boardsize):
     col = ord(pos[0])
     row = ord(pos[1]) - ord('a')
     if col >= ord('i'):
-        col-=1
+        col+=1
     if row >= ord('i'):
         row-=1
     row = boardsize - row
@@ -155,11 +155,10 @@ if re.search(GIDregexp,loginsrc):
         prg = Oggoai(timePerMove)
         # Prepare process
 
-        
+        print "Allowing slaves to reconnect in {}".format(slaveReconnectTimeout)        
+        time.sleep(slaveReconnectTimeout)      
         for cmd in GTPcommands:
             prg.sendCommand(cmd)
-        print "Allowing slaves to reconnect in {}".format(slaveReconnectTimeout)
-        time.sleep(slaveReconnectTimeout) #Time is not important. Allow slaves to connect prior to genmove command
         print "Generating move"
         genmovecmd = "genmove "+nextplayer
         prg.sendCommand(genmovecmd)

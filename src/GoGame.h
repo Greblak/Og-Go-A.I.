@@ -18,7 +18,7 @@ public:
 
 	GoBoard* Board; ///< The active board used in this game.
 
-	GoTimeHandler TimeHandler;
+	GoTimeHandler TimeHandler; ///< Used to handle all time settings sent by GTP client
 
 	GoPoint GenerateMove(int color); ///< Used to trigger the AI to return a single move to be played
 	void Play(int color, int x, int y); ///< Playes a move with the given parameters

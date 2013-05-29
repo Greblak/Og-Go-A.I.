@@ -16,9 +16,9 @@ extern int LogLevel;
 class Log
 {
 private:
-  std::stringstream ss;
+  std::stringstream ss; ///< log message containter
   int level; ///< ERROR by default, unless otherwise set by execution flags
-//  std::ofstream logfile; ///< File to use for output
+//  std::ofstream logfile; ///< File to use for output. Deprecated
 public:
 
 

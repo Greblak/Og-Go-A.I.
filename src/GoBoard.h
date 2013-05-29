@@ -74,40 +74,35 @@ public:
 
 		void DisplayCurrentState() const; ///< Used by GTP showboard command to output the current state to console
 		const float GetScore() const; ///< Returns score. Positive score = black win. Negative score = white win
-		const float GetScoreGnuGo() const;
-		const float GetScoreInternal() const;
-		GoPoint ReversePos(const int pos, const int color);
-		const std::string ReadablePosition(const int pos) const;
-		const std::string ReadablePosition(const GoPoint& pos) const;
+		const float GetScoreGnuGo() const; ///< Returns the score using an external program(GnuGo)
+		const float GetScoreInternal() const; ///< Internal scoring method
+		GoPoint ReversePos(const int pos, const int color); ///< Converts an integer position to a GoPoint
+		const std::string ReadablePosition(const int pos) const; ///< Converts an integer position to a readable position in GTP format
+		const std::string ReadablePosition(const GoPoint& pos) const; ///< Converts a GoPoint to a readable position in GTP format.
 
-		GoBoard* copyBoard() const;
-		void resetAndReplayMoves(GoBoard* board);
+		GoBoard* copyBoard() const; ///< Copies the current board to a new heap object. This is done by creating a new board and replaying the moves
+		void resetAndReplayMoves(GoBoard* board); ///< Resets the board and replays the board according to the moves done in the argument board.
 		GoState State; ///< Struct containing the most basic board information
-		int blockPointer;
-		int movePointer;
+		int blockPointer; ///< Pointer to last active block index in the blocks-member
+		int movePointer; ///< Pointer to last active move index in the moves-member
 		GoBlock* blocks[1000]; ///< List of active blocks on the board
 		GoMove* moves[1000]; ///< A list of moves made in this game. Used to reproduce in SGF files and copy game instances
-		float komi;
-		const int POS_WE;
-		const int POS_NS;
-		void reset();
+		float komi; ///< Komi-score
+		const int POS_WE; ///< Constant for west-east movement
+		const int POS_NS; ///< constant for north-south movement
+		void reset(); ///< Reset the board to a fresh start.
 		
 private:
 	int BoardSize; ///< Boardsize (19x19 will be stored as 19 here)
 
-	int BOARD_TOP_LEFT;
-	int BOARD_TOP_RIGHT;
-	int BOARD_BOTTOM_LEFT;
-	int BOARD_BOTTOM_RIGHT;
-	
+	int BOARD_TOP_LEFT; ///< Location of top left point
+	int BOARD_TOP_RIGHT; ///< Location of top right point
+	int BOARD_BOTTOM_LEFT; ///< Location of bottom left point
+	int BOARD_BOTTOM_RIGHT; ///< Location of bottom right point
 
-	int nextPlayer;
+	int nextPlayer; ///< Color of next player. Of enum type GoStoneColor
 
-	inline GoBoard& operator=(const GoBoard& g) { };
+	inline GoBoard& operator=(const GoBoard& g) { }; ///< Prevents reassignment of stack object
 
 };
-
-
-
-
 #endif //#ifndef __GOBOARD_H__

@@ -14,12 +14,12 @@ public:
   /*
    * Generates an SGF-file based on the moves played in the given game
    */
-  static inline void generateFile(const GoGame* game)
+  static inline void generateFile(const GoGame* game) ///< Generates an SGF file based on game
   {
     generateFile(game->Board);
   }
 
-  static inline void generateFile(const GoBoard* Board)
+  static inline void generateFile(const GoBoard* Board) ///< Generates an SGF file based on the board.
   {
     LOG_VERBOSE << "Attempting to generate SGF file";
     std::ofstream file;

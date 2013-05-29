@@ -12,7 +12,7 @@
 #include <sstream>
 #include <iostream>
 #include "Log.h"
-class PipeCommunication {
+class PipeCommunication { ///< Outdated and no longer used.
 public:
 	static inline std::string readPipe(int pipe)
 	{

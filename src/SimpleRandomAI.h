@@ -24,11 +24,11 @@ public:
   virtual
   ~SimpleRandomAI();
 
-  GoPoint generateMove(const int color, GoGame* game);
-  GoPoint generateMove(const int color, GoBoard* board);
-  /*
+  GoPoint generateMove(const int color, GoGame* game); ///< Generate single move based on game
+  GoPoint generateMove(const int color, GoBoard* board); ///< Generate single move based on board
+  /**
    * Plays random moves until game is finished. Returns GameWinner
-   */
+   **/
   int simulateGame(GoBoard* board);
 };
 

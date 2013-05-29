@@ -22,11 +22,11 @@ public:
   virtual
   ~MonteCarlo();
 
-  GoPoint generateMove(int color, GoGame* game);
-  std::vector<UCBrow> generateMCTable(std::vector<int> moves, int color, GoGame* game);
+  GoPoint generateMove(int color, GoGame* game); ///< Generate single move
+  std::vector<UCBrow> generateMCTable(std::vector<int> moves, int color, GoGame* game); ///< Generate UCB table 
 private:
-  const int numSimulations;
-  const int numMoves;
+  const int numSimulations; ///< Number of simulations to run
+  const int numMoves; ///< Number of added moves.
 };
 
 #endif /* MONTECARLO_H_ */

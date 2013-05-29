@@ -9,43 +9,43 @@
 #include <boost/function.hpp>
 #include "Log.h"
 
-const int SOCKET_DEFAULT_TIMEOUT = 5;
+const int SOCKET_DEFAULT_TIMEOUT = 5; ///< Default wait timeout before socket is dropped
 class TCPConnection : public boost::enable_shared_from_this<TCPConnection>
 {
  public:
 
-  typedef boost::shared_ptr<TCPConnection> pointer;
+  typedef boost::shared_ptr<TCPConnection> pointer; ///< Shared pointer to TCP connection
 
-  inline static pointer create(boost::asio::io_service& io_service)
+  inline static pointer create(boost::asio::io_service& io_service) ///< Create a new TCP connection
   {
     //timeoutTimer(io_service);
     return pointer(new TCPConnection(io_service));
   }
 
 
-  inline boost::asio::ip::tcp::socket& socket()
+  inline boost::asio::ip::tcp::socket& socket() ///< Returns the active socket object for a TCP connection
   {
     return socket_;
   }
 
-  inline void start()
+  inline void start() ///< Does nothing
   {
   }
 
-  inline void resetTimeout()
+  inline void resetTimeout() ///< Reset the timer
   {
     LOG_VERBOSE<<"Timeout reset"<<std::endl;
     timeoutTimer.cancel();
   }
 
-  inline void startTimeout(int seconds = SOCKET_DEFAULT_TIMEOUT)
+  inline void startTimeout(int seconds = SOCKET_DEFAULT_TIMEOUT) ///< Start timeout.
   {
     LOG_VERBOSE<<"Started timer at "<<seconds<<" seconds"<<std::endl;
     timeoutTimer.expires_from_now(boost::posix_time::seconds(seconds));
     timeoutTimer.async_wait(boost::bind(&TCPConnection::handle_timeout,this,_1));
   }
 
-  inline bool is_open()
+  inline bool is_open() ///< See if connection is open. 
   {
     return isOpen;
   }
@@ -53,19 +53,19 @@ class TCPConnection : public boost::enable_shared_from_this<TCPConnection>
  private:
   bool isOpen;
   boost::asio::deadline_timer timeoutTimer;
-  inline TCPConnection(boost::asio::io_service& io_service) : socket_(io_service),timeoutTimer(io_service),isOpen(true)
-  {
-  }
+  inline TCPConnection(boost::asio::io_service& io_service) :  socket_(io_service),timeoutTimer(io_service),isOpen(true) 
+    {
+    }
 
-  inline void handle_write()
+  inline void handle_write() ///< Not used
   {
     //		std::cout<<"Handle write called";
   }
 
-    inline void handle_timeout(const boost::system::error_code& e)
+  inline void handle_timeout(const boost::system::error_code& e) ///< async callback when timer times out.
   {
    
-	// Timer expired.
+    // Timer expired.
     if(!e)
       {
 	std::cout<<"Timeout. Socket dropped."<<std::endl;
@@ -79,8 +79,8 @@ class TCPConnection : public boost::enable_shared_from_this<TCPConnection>
   boost::asio::ip::tcp::socket socket_;
 };
 
-typedef std::vector<boost::shared_ptr<TCPConnection> > SocketVector;
-typedef std::vector< boost::array<char, 1024>* > SocketReadVector;
+typedef std::vector<boost::shared_ptr<TCPConnection> > SocketVector; ///< list of connections
+typedef std::vector< boost::array<char, 1024>* > SocketReadVector; ///< message container
 
 class TCPServer
 {

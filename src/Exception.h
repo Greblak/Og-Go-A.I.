@@ -6,19 +6,19 @@
 class Exception
 {
 public:
-	inline Exception(std::string str):str(str)
+	inline Exception(std::string str):str(str) ///< Create new exception
 	{
 
 	}
 	~Exception();
-	inline std::string getMessage()
+	inline std::string getMessage() ///< Get error message from exception
 	{
 		return str;
 	}
 
 	/* data */
 private:
-	const std::string str;
+	const std::string str; ///< Stores error message
 };
 
 #endif //#ifndef __EXCEPTION_H__

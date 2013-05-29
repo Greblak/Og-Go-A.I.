@@ -28,31 +28,31 @@ class MasterServer :public boost::enable_shared_from_this<MasterServer>
 {
 public:
 	MasterServer(int port);
-	void run();
+	void run(); ///< Start the server
 	virtual ~MasterServer();
-	void newConnection(boost::shared_ptr<TCPConnection> conn);
-	void doHandshake(boost::shared_ptr<TCPConnection> conn);
-	void write(boost::shared_ptr<TCPConnection> conn, const std::string str);
-	void writeHandler();
-	void writeAll(const std::string str);
-	const GoPoint generateMove(int color);
-	void genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, boost::array<char, 1024>* buf);
+	void newConnection(boost::shared_ptr<TCPConnection> conn); ///< Prepare a new connection
+	void doHandshake(boost::shared_ptr<TCPConnection> conn); ///< Perform a handshake to confirm validity
+	void write(boost::shared_ptr<TCPConnection> conn, const std::string str); ///< Write to a connection
+	void writeHandler(); ///< Async write handler. Currently does nothing.
+	void writeAll(const std::string str); ///< Write to all current connections
+	const GoPoint generateMove(int color); ///< Generate move
+	void genmoveReadCallback(boost::shared_ptr<TCPConnection> conn, boost::array<char, 1024>* buf); ///< Callback after calling generateMove
 	void setTimeout(int seconds);
 
-	boost::asio::io_service io_service;
-	TCPServer tcp_server;
+	boost::asio::io_service io_service; ///< Boost io service used for asynchronous methods
+	TCPServer tcp_server; ///< TCP server backend
 private:
-	void checkDeadConnections();
-	void ioServiceStarter();
+	void checkDeadConnections(); ///< Test for dead connections and drop them
+	void ioServiceStarter(); ///< Start the io_service
 	
-	GTPEngine gtp;
-	std::vector<UCBrow> ucbTable;
-	bool writingToUcbTable;
-	int genmoveResponses;
-	bool genmoveResponseWait;
-	int genmoveTimeoutMilliSec;
-	int commandNumber;
-	GoPoint bestMove;
+	GTPEngine gtp; ///< GTP Engine object
+	std::vector<UCBrow> ucbTable; ///< Current ucbtable. Used for MC and UCB results
+	bool writingToUcbTable; ///< Mutex to prevent asyncronous operations from writing while another operation is writing to the table
+	int genmoveResponses; ///< Number of slaves that has returned a response
+	bool genmoveResponseWait; ///< Number of seconds to wait for slaves to return
+	int genmoveTimeoutMilliSec; ///< Not used
+	int commandNumber; ///< All GTP commands are numbered. This is done to prevent acting on outdated commands
+	GoPoint bestMove; ///< Selected best move from AI
 };
 
 #endif /* MASTERSERVER_H_ */

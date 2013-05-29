@@ -23,7 +23,7 @@ public:
   const bool TestAllCut(GoBoard* board, const int pos, const int color, const int dirUp);
 
   //Patterns
-  /*
+  /**
    * All patterns described below are noted as follows and are for demonstration purposes seen from blacks point of view.
    *
    * T - Any to play at(empty)
@@ -71,7 +71,7 @@ public:
    *
    * O . ?		? O ?		? O X		? O X		? O X
    * X T ?		O T X		? B ?		? W O		X W O
-   */
+   **/
   const bool TestHane1(GoBoard* board, const int pos, const int color, const int dirUp, const int dirRight);
   const bool TestHane2(GoBoard* board, const int pos, const int color, const int dirUp, const int dirRight);
   const bool TestHane3(GoBoard* board, const int pos, const int color, const int dirUp, const int dirRight);
@@ -84,9 +84,9 @@ public:
 
 private:
   GoBoard* board;
-  const int getRightDirection(const int dirNorth) const;
-  const int getLeftDirection(const int dirNorth) const;
-  const int getOpponentColor(int color) const;
+  const int getRightDirection(const int dirNorth) const; ///< Get the correct right direction based on the up direction parameter. Given north, this will output east. Given east, this will output south etc.
+  const int getLeftDirection(const int dirNorth) const; ///< Same as getRightDirection, but returns left direction
+  const int getOpponentColor(int color) const; ///< Converts black to white and white to black.
 };
 
 #endif /* PLAYPOLICY_H_ */

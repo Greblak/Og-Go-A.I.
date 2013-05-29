@@ -1,3 +1,5 @@
+/** @file */ 
+
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
@@ -6,10 +8,10 @@
 const std::string 	PROGRAM_NAME = "Og-Go Random Play A.I."; ///< Used by gtp protocol
 const std::string 	PROGRAM_VERSION = "0.1"; ///< Used by gtp protocol
 const std::string 	PROGRAM_GTP_VERSION = "2"; ///< Used by gtp protocol
-const std::string 	PROGRAM_EGTP_VERSION = "1";
+const std::string 	PROGRAM_EGTP_VERSION = "1"; ///< Used by for Master-slave handshake to validate EGTP version
 
-const std::string 	NETWORK_DEFAULT_MASTER_IP = "127.0.0.1";
-const int 			NETWORK_DEFAULT_MASTER_PORT = 1919;
+const std::string 	NETWORK_DEFAULT_MASTER_IP = "127.0.0.1"; ///< Slaves should connect to localhost by default
+const int 			NETWORK_DEFAULT_MASTER_PORT = 1919; ///< Default port
 
 const int 			BOARD_DEFAULT_SIZE = 19; ///< Default board size used unless otherwise stated
 const int 			BOARD_MAX_SIZE = 19; ///< Maximum supported board size

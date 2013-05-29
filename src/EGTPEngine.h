@@ -1,4 +1,4 @@
-/*
+G/*
  * EGTPEngine.h
  *
  *  Created on: Mar 27, 2013
@@ -31,12 +31,12 @@ public:
 	static GoPoint genMoveFromChildProcs(int color, GoGame* game);
 	void genmoveTimer(int seconds, UpperConfidence* ucb);
 private:
-	boost::asio::deadline_timer simulationTimer;
-	AiType aiType;
-	int timeAlloc;
-	int simulations;
-	std::vector<int> preselRandMoves;
-	int numRandMoves;
+	boost::asio::deadline_timer simulationTimer; ///< Timer to halt simulations based on time settings
+	AiType aiType; ///< Current AI type
+	int timeAlloc; ///< Number of seconds available for simulations
+	int simulations; ///< Number of simulations that will be run
+	std::vector<int> preselRandMoves; ///< A container of moves to be evaluated
+	int numRandMoves; ///< Number of random moves added
 
 };
 
